@@ -1,15 +1,20 @@
 import { useEffect, useState } from 'react'
 import { FlashcardList } from './views/FlashcardList'
+import { Something } from './views/Something'
+import { MainMenu } from './views/MainMenu'
 
 function App() {
   const [count, setCount] = useState(0)
 
   return (
     <>
-      <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-4 mt-4">
-        Button
-      </button>
-      <FlashcardList
+      <div className='flex flex-col items-start space-y-1 gap-4 p-5'>
+        <MainMenu />
+        <Something />
+        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          Button
+        </button>
+        <FlashcardList
           flashcards={
             [
               {
@@ -94,6 +99,7 @@ function App() {
               },
             ]
           } />
+      </div>
     </>
   )
 }

@@ -35,7 +35,6 @@ export function FlashcardList(props: FlashcardListProps) {
         <>
         {
             <Flashcard
-                classTop="fixed left-80" 
                 questions={props.flashcards[indexes[index]].questions}
                 answers={props.flashcards[indexes[index]].answers}
                 onPrevClick={() => ChangeIndex(-1)}
