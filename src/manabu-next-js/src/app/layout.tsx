@@ -18,7 +18,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${roboto.className} body-font font-poppins `}>
+      <body className={`${roboto.className} body-font font-poppins px-6`}>
         <header className="relative w-full">{/* <Navbar /> */}</header>
         <MainMenu />
         {children}
