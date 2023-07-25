@@ -2,11 +2,15 @@
 module.exports = {
   content: [
     "./src/**/*.{js,ts,jsx,tsx,mdx}",
+    "/node_modules/flowbite-react/**/*.js"
+  ],
+  purge: [
+    "./src/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   mode: "jit",
   plugins: [],
   theme: {
     extend: {},
   },
-  plugins: [require("tw-elements/dist/plugin.cjs")]
+  plugins: [require("tw-elements/dist/plugin.cjs"), require('flowbite/plugin')]
 }

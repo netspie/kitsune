@@ -391,20 +391,17 @@ export default function MainMenu() {
         {/* Sidenav */}
         {/* Toggler */}
         <button
-            className="inline-block rounded bg-primary px-3 py-2.5 text-xs font-medium uppercase 
-            leading-tight text-white shadow-md transition duration-150 ease-in-out 
-            hover:bg-primary-700 hover:shadow-lg focus:bg-primary-700 focus:shadow-lg focus:outline-none focus:ring-0 
-            active:bg-primary-800 active:shadow-lg"
+            className="absolute left-1 top-2 rounded px-2 py-1 text-xs font-medium uppercase text-white"
             data-te-sidenav-toggle-ref=""
             data-te-target="#sidenav-8"
             aria-controls="#sidenav-8"
             aria-haspopup="true"
-        >
+            style={{ left: "0.5rem" }}>
             <span className="block [&>svg]:h-5 [&>svg]:w-5 [&>svg]:text-white">
             <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
-                fill="currentColor"
+                fill="black"
                 className="h-5 w-5"
             >
                 <path
