@@ -5,6 +5,8 @@ import Grid from './Grid'
 import Navbar from './Navbar'
 import Card from './Card'
 import Dropdown from './Dropdown'
+import DropdownLabeled from './DropdownLabeled'
+import Breadcrumbs from './Breadcrumbs'
 
 export {
     Hero,
@@ -13,5 +15,7 @@ export {
     Grid,
     Navbar,
     Card,
-    Dropdown
+    Dropdown,
+    DropdownLabeled,
+    Breadcrumbs
 }

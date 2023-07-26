@@ -1,22 +1,32 @@
 'use client';
-import { Card, Dropdown } from "../components";
+import { Card, DropdownLabeled } from "../components";
 import React from "react";
 
 function MediaX() {
   return (
-    <div className="mt-32">
-      <div className="flex gap-4 h-12 lg:-mr-14 md:px-0">
-        <Dropdown
+    <div className="mt-32 xl:mx-64">
+      <div className="flex gap-6 h-12 lg:-mr-14 md:px-0">
+        <DropdownLabeled
+          label="Sort By"
           dropdownKey="1"
+          selectedId="Author"
+          items={["Creation", "Author", "Item Name"]}
+          onItemClick={selected => {console.log(selected)}}
+        />
+        <DropdownLabeled
+          label=""
+          dropdownKey="2"
           selectedId="Ascending"
           items={["Ascending", "Descending"]}
           onItemClick={selected => {console.log(selected)}}
         />
-        <Dropdown
-          dropdownKey="2"
+        <DropdownLabeled
+          label="Filter By"
+          dropdownKey="3"
           selectedId="Anime"
           onItemClick={selected => {console.log(selected)}}
           items={[
+            "None",
             "Anime",
             "Drama",
             "TV Show",

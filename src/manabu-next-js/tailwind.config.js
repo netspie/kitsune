@@ -8,7 +8,12 @@ module.exports = {
     "./src/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   mode: "jit",
-  plugins: [],
+  variants: {
+    extend: {
+        display: ["group-hover"],
+        visibility: ["group-hover"]
+    },
+  },
   theme: {
     extend: {},
   },

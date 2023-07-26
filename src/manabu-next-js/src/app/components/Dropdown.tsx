@@ -2,14 +2,14 @@
 import React from "react";
 import { useState, useRef } from "react";
 
-type DropdownProps = {
+export type DropdownProps = {
   dropdownKey: string;
   selectedId: string;
   items: DropdownItem[];
   onItemClick?: (id: string) => void;
 };
 
-type DropdownItem =
+export type DropdownItem =
   | {
       id: string;
       name: string;
