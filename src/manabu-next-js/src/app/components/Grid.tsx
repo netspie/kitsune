@@ -16,13 +16,7 @@ export default function Grid(props: GridProps) {
       <div className="container mx-auto md:px-6" style={{ marginTop: "4rem" }}>
         {/* Section: Design Block */}
         <section className="mb-36">
-          <div className="flex justify-center mb-12">
-            <div className="max-w-[700px] text-center">
-              <p className="mb-6 font-bold uppercase text-primary dark:text-primary-400">
-                Vocabulary
-              </p>
-              </div>
-          </div>
+          
           <div className="grid gap-x-6 md:grid-cols-2 lg:grid-cols-4 xl:gap-x-12">
             {props.items.map(item => (
               <div className="mb-12 p-2 hover:bg-gray-100">

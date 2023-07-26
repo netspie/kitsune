@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { FlashcardList } from './views/FlashcardList'
 import { Something } from './views/Something'
 import { MainMenu } from './views/MainMenu'
+import  DropdownX from './views/DropdownX'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -9,6 +10,18 @@ function App() {
   return (
     <>
       <div className='flex flex-col items-start space-y-1 gap-4 p-5'>
+      <DropdownX
+          key="2"
+          selectedId="Anime"
+          items={[
+            "Anime",
+            "Drama",
+            "TV Show",
+            "Manga",
+            "Newspaper",
+            "Conversation",
+          ]}
+        />
         <MainMenu />
         <Something />
         <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
