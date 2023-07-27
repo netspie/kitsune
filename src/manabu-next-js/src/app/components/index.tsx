@@ -7,6 +7,9 @@ import Card from './Card'
 import Dropdown from './Dropdown'
 import DropdownLabeled from './DropdownLabeled'
 import Breadcrumbs from './Breadcrumbs'
+import Search from './Search'
+import Pin from './Pin'
+import PinList from './PinList'
 
 export {
     Hero,
@@ -17,5 +20,8 @@ export {
     Card,
     Dropdown,
     DropdownLabeled,
-    Breadcrumbs
+    Breadcrumbs,
+    Search,
+    Pin,
+    PinList
 }

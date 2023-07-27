@@ -12,10 +12,15 @@ module.exports = {
     extend: {
         display: ["group-hover"],
         visibility: ["group-hover"]
+        
     },
   },
   theme: {
-    extend: {},
+    extend: {
+      width: {
+        900: '900px'
+      }
+    }
   },
   plugins: [require("tw-elements/dist/plugin.cjs"), require('flowbite/plugin')]
 }
