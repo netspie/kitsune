@@ -8,6 +8,7 @@ type NavbarProps = {
 
 type NavbarGroup = {
   name: string;
+  href?: string;
   items?: NavbarItem[];
 };
 
@@ -77,40 +78,63 @@ export default function Navbar(props: NavbarProps) {
                   data-te-nav-item-ref=""
                   data-te-dropdown-ref=""
                 >
-                  <a
-                    className="flex items-center whitespace-nowrap py-2 pr-2  transition duration-150 ease-in-out hover:text-neutral-700 focus:text-neutral-700 dark:hover:text-white dark:focus:text-white lg:px-2"
-                    href="#"
-                    data-te-ripple-init=""
-                    data-te-ripple-color="light"
-                    type="button"
-                    id="dropdownMenuButtonX"
-                    data-te-dropdown-toggle-ref=""
-                    aria-expanded="false"
-                    data-te-nav-link-ref=""
-                    data-te-display={
-                      group.items && group.items.length > 0
-                        ? "dynamic"
-                        : "static"
-                    }
-                  >
-                    {group.name}
-                    {group.items && (
-                      <span className="ml-2 w-2" key={uuid()}>
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
-                          className="h-5 w-5"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                      </span>
-                    )}
-                  </a>
+                  {group.items && group.items.length > 0 ? (
+                    <a
+                      className="flex items-center whitespace-nowrap py-2 pr-2  transition duration-150 ease-in-out hover:text-neutral-700 focus:text-neutral-700 dark:hover:text-white dark:focus:text-white lg:px-2"
+                      href="#"
+                      data-te-ripple-init=""
+                      data-te-ripple-color="light"
+                      type="button"
+                      id="dropdownMenuButtonX"
+                      data-te-dropdown-toggle-ref=""
+                      aria-expanded="false"
+                      data-te-nav-link-ref=""
+                    >
+                      {group.name}
+                      {group.items && (
+                        <span className="ml-2 w-2" key={uuid()}>
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                            className="h-5 w-5"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                        </span>
+                      )}
+                    </a>
+                  ) : (
+                    <a
+                      className="flex items-center whitespace-nowrap py-2 pr-2  transition duration-150 ease-in-out hover:text-neutral-700 focus:text-neutral-700 dark:hover:text-white dark:focus:text-white lg:px-2"
+                      href={group.href}
+                      data-te-ripple-init=""
+                      data-te-ripple-color="light"
+                      type="button"
+                    >
+                      {group.name}
+                      {group.items && (
+                        <span className="ml-2 w-2" key={uuid()}>
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                            className="h-5 w-5"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                        </span>
+                      )}
+                    </a>
+                  )}
                   <div
                     className={`absolute top-full z-[1000] mt-0 hidden w-fit border-none bg-white bg-clip-padding text-neutral-600 shadow-lg dark:bg-neutral-700 dark:text-neutral-200 [&[data-te-dropdown-show]]:block ${
                       (!group.items || group.items.length === 0) && "invisible"

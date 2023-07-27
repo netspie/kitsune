@@ -23,7 +23,8 @@ export default function RootLayout({
           <Navbar
             groups={[
               {
-                name: "Home"
+                name: "Home",
+                href: "/"
               },
               {
                 name: "Learn"
