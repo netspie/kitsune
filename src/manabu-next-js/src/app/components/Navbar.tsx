@@ -1,103 +1,147 @@
 "use client";
 import React, { useEffect } from "react";
+import { v4 as uuid } from "uuid";
 
-export default function Navbar() {
+type NavbarProps = {
+  groups: NavbarGroup[];
+};
+
+type NavbarGroup = {
+  name: string;
+  items?: NavbarItem[];
+};
+
+type NavbarItem = {
+  name: string;
+  href: string;
+};
+
+export default function Navbar(props: NavbarProps) {
   useEffect(() => {
     const init = async () => {
-      const { Collapse, Dropdown, initTE } = await import("tw-elements");
-      initTE({ Collapse, Dropdown });
+      const { Collapse, Dropdown, Ripple, initTE } = await import(
+        "tw-elements"
+      );
+      initTE({ Collapse, Dropdown, Ripple });
+      console.log("asd");
     };
     init();
   }, []);
 
   return (
-    <nav
-      className="flex-no-wrap fixed top-0 flex w-full items-center justify-between bg-[#FBFBFB] shadow-md shadow-black/5 dark:bg-neutral-600 dark:shadow-black/10 lg:flex-wrap lg:justify-start lg:px-96 h-10 sm:invisible max-sm:invisible"
-      data-te-navbar-ref=""
-    >
-      <div className="flex w-full flex-wrap items-center justify-between">
-        {/* Hamburger button for mobile view */}
-        <button
-          className="absolute right-8 border-0 bg-transparent px-2 text-neutral-500 hover:no-underline hover:shadow-none focus:no-underline focus:shadow-none focus:outline-none focus:ring-0 dark:text-neutral-200 lg:hidden"
-          type="button"
-          data-te-collapse-init=""
-          data-te-target="#navbarSupportedContent1"
-          aria-controls="navbarSupportedContent1"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          {/* Hamburger icon */}
-          <span className="[&>svg]:w-7">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              className="h-7 w-7"
-            >
-              <path
-                fillRule="evenodd"
-                d="M3 6.75A.75.75 0 013.75 6h16.5a.75.75 0 010 1.5H3.75A.75.75 0 013 6.75zM3 12a.75.75 0 01.75-.75h16.5a.75.75 0 010 1.5H3.75A.75.75 0 013 12zm0 5.25a.75.75 0 01.75-.75h16.5a.75.75 0 010 1.5H3.75a.75.75 0 01-.75-.75z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </span>
-        </button>
-        {/* Collapsible navigation container */}
-        <div
-          className="!visible hidden flex-grow basis-[100%] items-center lg:!flex lg:basis-auto"
-          id="navbarSupportedContent1"
-          data-te-collapse-item=""
-        >
-          {/* Logo */}
-          <a
-            className="mb-4 ml-2 mr-5 mt-3 flex items-center text-neutral-900 hover:text-neutral-900 focus:text-neutral-900 dark:text-neutral-200 dark:hover:text-neutral-400 dark:focus:text-neutral-400 lg:mb-0 lg:mt-0"
-            href="#"
+    <>
+      <nav
+        className="relative flex w-full items-center justify-start py-2 text-neutral-600 dark:text-neutral-300 lg:flex-wrap lg:justify-center"
+        data-te-navbar-ref=""
+      >
+        <div className="px-6">
+          <button
+            className="border-0 bg-transparent py-3 text-xl leading-none transition-shadow duration-150 ease-in-out hover:text-neutral-700 focus:text-neutral-700 dark:hover:text-white dark:focus:text-white lg:hidden"
+            type="button"
+            data-te-collapse-init=""
+            data-te-target="#navbarSupportedContentX"
+            aria-controls="navbarSupportedContentX"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
           >
-            <img
-              src="https://tecdn.b-cdn.net/img/logo/te-transparent-noshadows.webp"
-              style={{ height: 15 }}
-              alt="TE Logo"
-              loading="lazy"
-            />
-          </a>
-          {/* Left navigation links */}
-          <ul
-            className="list-style-none mr-auto flex flex-col pl-0 lg:flex-row"
-            data-te-navbar-nav-ref=""
+            <span className="[&>svg]:w-8">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="1.5"
+                stroke="currentColor"
+                className="h-8 w-8"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+                />
+              </svg>
+            </span>
+          </button>
+          <div
+            className="!visible hidden flex-grow basis-[100%] items-center lg:!flex lg:basis-auto gap-4"
+            id="navbarSupportedContentX"
+            data-te-collapse-item=""
           >
-            <li className="mb-4 lg:mb-0 lg:pr-2" data-te-nav-item-ref="">
-              {/* Dashboard link */}
-              <a
-                className="text-neutral-500 transition duration-200 hover:text-neutral-700 hover:ease-in-out focus:text-neutral-700 disabled:text-black/30 motion-reduce:transition-none dark:text-neutral-200 dark:hover:text-neutral-300 dark:focus:text-neutral-300 lg:px-2 [&.active]:text-black/90 dark:[&.active]:text-zinc-400"
-                href="#"
-                data-te-nav-link-ref=""
+            {props.groups.map((group) => (
+              <ul
+                className="mr-auto flex flex-row"
+                data-te-navbar-nav-ref=""
+                key={uuid()}
               >
-                Dashboard
-              </a>
-            </li>
-            {/* Team link */}
-            <li className="mb-4 lg:mb-0 lg:pr-2" data-te-nav-item-ref="">
-              <a
-                className="text-neutral-500 transition duration-200 hover:text-neutral-700 hover:ease-in-out focus:text-neutral-700 disabled:text-black/30 motion-reduce:transition-none dark:text-neutral-200 dark:hover:text-neutral-300 dark:focus:text-neutral-300 lg:px-2 [&.active]:text-black/90 dark:[&.active]:text-neutral-400"
-                href="#"
-                data-te-nav-link-ref=""
-              >
-                Team
-              </a>
-            </li>
-            {/* Projects link */}
-            <li className="mb-4 lg:mb-0 lg:pr-2" data-te-nav-item-ref="">
-              <a
-                className="text-neutral-500 transition duration-200 hover:text-neutral-700 hover:ease-in-out focus:text-neutral-700 disabled:text-black/30 motion-reduce:transition-none dark:text-neutral-200 dark:hover:text-neutral-300 dark:focus:text-neutral-300 lg:px-2 [&.active]:text-black/90 dark:[&.active]:text-neutral-400"
-                href="#"
-                data-te-nav-link-ref=""
-              >
-                Projects
-              </a>
-            </li>
-          </ul>
+                <li
+                  className="static"
+                  data-te-nav-item-ref=""
+                  data-te-dropdown-ref=""
+                >
+                  <a
+                    className="flex items-center whitespace-nowrap py-2 pr-2  transition duration-150 ease-in-out hover:text-neutral-700 focus:text-neutral-700 dark:hover:text-white dark:focus:text-white lg:px-2"
+                    href="#"
+                    data-te-ripple-init=""
+                    data-te-ripple-color="light"
+                    type="button"
+                    id="dropdownMenuButtonX"
+                    data-te-dropdown-toggle-ref=""
+                    aria-expanded="false"
+                    data-te-nav-link-ref=""
+                    data-te-display={
+                      group.items && group.items.length > 0
+                        ? "dynamic"
+                        : "static"
+                    }
+                  >
+                    {group.name}
+                    {group.items && (
+                      <span className="ml-2 w-2" key={uuid()}>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                          className="h-5 w-5"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </span>
+                    )}
+                  </a>
+                  <div
+                    className={`absolute top-full z-[1000] mt-0 hidden w-fit border-none bg-white bg-clip-padding text-neutral-600 shadow-lg dark:bg-neutral-700 dark:text-neutral-200 [&[data-te-dropdown-show]]:block ${
+                      (!group.items || group.items.length === 0) && "invisible"
+                    }`}
+                    aria-labelledby="dropdownMenuButtonX"
+                    data-te-dropdown-menu-ref=""
+                  >
+                    <div className="py-5 lg:px-8 w-fit">
+                      <div className="flex flex-col">
+                        <div>
+                          {group.items &&
+                            group.items.map((item) => (
+                              <a
+                                href={item.href}
+                                key={uuid()}
+                                aria-current="true"
+                                className="block w-full border-b border-neutral-200 py-2 transition duration-150 ease-in-out hover:bg-neutral-50 hover:text-neutral-700 dark:border-neutral-500 dark:hover:bg-neutral-800 dark:hover:text-white"
+                              >
+                                {item.name}
+                              </a>
+                            ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            ))}
+          </div>
         </div>
-      </div>
-    </nav>
+      </nav>
+    </>
   );
 }

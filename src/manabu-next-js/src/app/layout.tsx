@@ -19,8 +19,58 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${roboto.className} body-font font-poppins`}>
-        <header className="relative w-full"><Navbar /></header>
-        <MainMenu />
+        <header className="relative w-full">
+          <Navbar
+            groups={[
+              {
+                name: "Home"
+              },
+              {
+                name: "Learn"
+              },
+              {
+                name: "Materials",
+                items: [
+                  { name: "Courses", href: "" },
+                  { name: "Kana", href: "" },
+                  { name: "Kanji", href: "" },
+                  { name: "Vocabulary", href: "" },
+                  { name: "Frameworks", href: "" },
+                  { name: "Themes", href: "" },
+                  { name: "Media", href: "media" },
+                  { name: "Keigo", href: "" },
+                  { name: "Linguistics", href: "" },
+                  { name: "Dialects", href: "" },
+                  { name: "Jargons", href: "" },
+                ],
+              },
+              {
+                name: "Practice",
+                items: [
+                  { name: "Review", href: "" },
+                  { name: "Spaced Repetition", href: "" },
+                  { name: "History", href: "" },
+                ],
+              },
+              {
+                name: "Account",
+                items: [
+                  { name: "Profile", href: "" },
+                  { name: "Settings", href: "" },
+                  { name: "Sign In", href: "" },
+                ],
+              },
+              {
+                name: "Help",
+                items: [
+                  { name: "About", href: "" },
+                  { name: "Contact", href: "" },
+                ],
+              }
+            ]}
+          />
+        </header>
+        {/* <MainMenu /> */}
         {children}
       </body>
     </html>
