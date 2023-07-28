@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { v4 as uuid } from "uuid";
 
 type NavbarProps = {
@@ -18,13 +18,15 @@ type NavbarItem = {
 };
 
 export default function Navbar(props: NavbarProps) {
+  const [alreadyInitialized, setAlreadyInitialized] = useState(false);
+
   useEffect(() => {
     const init = async () => {
-      const { Collapse, Dropdown, Ripple, initTE } = await import(
-        "tw-elements"
-      );
-      initTE({ Collapse, Dropdown, Ripple });
-      console.log("asd");
+      const { Dropdown, initTE } = await import("tw-elements");
+      if (!alreadyInitialized) {
+        initTE({   Dropdown });
+        setAlreadyInitialized(true);
+      }
     };
     init();
   }, []);

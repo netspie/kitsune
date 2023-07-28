@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { useState, useRef } from "react";
 
 export type DropdownProps = {
@@ -19,6 +19,7 @@ export type DropdownItem =
 function Dropdown(props: DropdownProps) {
   const reference = useRef(null);
   const [selectedId, setSelectedId] = useState(props.selectedId);
+  const [alreadyInitialized, setAlreadyInitialized] = useState(false);
 
   function GetSelectedItem(): string {
     const item = props.items.find((item) =>
@@ -33,13 +34,23 @@ function Dropdown(props: DropdownProps) {
     return "";
   }
 
+  useEffect(() => {
+    const init = async () => {
+      const { Collapse, Ripple, initTE } = await import("tw-elements");
+      if (!alreadyInitialized) {
+        initTE({  Collapse, Ripple, Dropdown });
+        setAlreadyInitialized(true);
+      }
+    };
+    init();
+  }, []);
+
   return (
     <>
       <div className="flex justify-center">
         <div>
           <div
             className="relative"
-            data-te-dropdown-ref
             id={props.dropdownKey + "-dropdown"}
             data-te-reference={reference}
           >
@@ -47,15 +58,13 @@ function Dropdown(props: DropdownProps) {
               className="flex items-center whitespace-nowrap rounded bg-primary px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] motion-reduce:transition-none"
               type="button"
               id={props.dropdownKey}
-              data-te-dropdown-toggle-ref
+              key={props.dropdownKey}
               aria-expanded="false"
               data-te-autoclose="false"
               data-te-ripple-init=""
               data-te-ripple-color="light"
               onClick={async () => {
-                const myDropdown = document.getElementById(
-                  props.dropdownKey
-                );
+                const myDropdown = document.getElementById(props.dropdownKey);
                 const { Dropdown } = await import("tw-elements");
                 const myDropdownInstance = new Dropdown(myDropdown);
                 myDropdownInstance.toggle();
@@ -90,7 +99,10 @@ function Dropdown(props: DropdownProps) {
                     data-te-dropdown-item-ref
                     onClick={async () => {
                       setSelectedId(typeof item === "string" ? item : item.id);
-                      props.onItemClick && props.onItemClick(typeof item === "string" ? item : item.id);
+                      props.onItemClick &&
+                        props.onItemClick(
+                          typeof item === "string" ? item : item.id
+                        );
                     }}
                   >
                     {typeof item === "string" ? item : item.name}

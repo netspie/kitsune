@@ -6,7 +6,7 @@ function MediaX() {
   return (
     <div className="mt-32 lg:w-900 md:w-10/12 sm:w-10/12 max-sm:w-11/12 mx-auto">
       <Search />
-      <div className="flex gap-6 h-12 lg:-mr-14 md:px-0">
+      {/* <div className="flex gap-6 h-12 lg:-mr-14 md:px-0">
         <DropdownLabeled
           label="Sort By"
           dropdownKey="1"
@@ -42,7 +42,7 @@ function MediaX() {
             "Conversation",
           ]}
         />
-      </div>
+      </div> */}
       <div className="flex flex-col gap-6">
         <Card
           name="Dragon Ball - Episode 43"

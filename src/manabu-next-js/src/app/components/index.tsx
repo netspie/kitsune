@@ -10,6 +10,7 @@ import Breadcrumbs from './Breadcrumbs'
 import Search from './Search'
 import Pin from './Pin'
 import PinList from './PinList'
+import CollapseX from './Collapse'
 
 export {
     Hero,
@@ -23,5 +24,6 @@ export {
     Breadcrumbs,
     Search,
     Pin,
-    PinList
+    PinList,
+    CollapseX as Collapse,
 }
