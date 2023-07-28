@@ -1,23 +1,40 @@
-import { Breadcrumbs } from "@/src/app/components";
+"use client"
+import { Breadcrumbs, PinList } from "@/src/app/components";
 import React from "react";
+
+
 
 function Conversation() {
   return (
-    <>
-      <div className="flex flex-col justify-center mb-12 mt-32 lg:mx-64 sm:mx-8 max-sm:mx-8">
+    <div className="my-32 lg:w-900 md:w-10/12 sm:w-10/12 max-sm:w-11/12 mx-auto">
+      <div className="flex flex-col justify-center">
         <Breadcrumbs
           items={[
             { name: "Media", href: "/media" },
             { name: "Conversations", href: "/conversations" },
           ]}
         />
+        <div className="mt-10 mb-2">
+          <PinList
+            items={[
+              { name: "All" },
+              { name: "Names" },
+              { name: "Japanese" },
+              { name: "English" },
+              { name: "Words" },
+            ]}
+            onToggle={(active:boolean, name:string, id?: string) => {
+              console.log("")
+            }}
+          />
+        </div>
         <div className="max-w-[700px] text-center">
           <p className="mb-6 font-bold text-primary dark:text-primary-400 text-left">
             Yuta Aoki - Vocabulary - 2020年6月1 日Level 4 試験どうだった
           </p>
         </div>
       </div>
-      <div className="flex flex-col gap-8 lg:mx-64 md:mx-32 sm:mx-8 max-sm:mx-8">
+      <div className="flex flex-col gap-8">
         <div className="flex flex-col">
           <h4 className="font-bold">Description</h4>
           <span className="mt-2 ml-4">
@@ -84,7 +101,7 @@ function Conversation() {
             </span>
           </div>
         </div>
-        <audio controls>
+        <audio className="" controls>
           <source
             src="../../../audio/2020年6月1日 Level 4 試験どうだった？.mp3"
             type="audio/mpeg"
@@ -92,7 +109,7 @@ function Conversation() {
           Your browser does not support the audio element.
         </audio>
       </div>
-    </>
+    </div>
   );
 }
 

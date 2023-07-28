@@ -4,10 +4,12 @@ import React, { useState } from "react";
 export type PinProps = {
   id?: string;
   name: string;
+  active?: boolean;
+  onToggle?: (active: boolean, name: string, id?: string) => void;
 };
 
 function Pin(props: PinProps) {
-  const [active, setActive] = useState(false);
+  const [active, setActive] = useState(props.active ?? false);
 
   return (
     <button
@@ -17,7 +19,7 @@ function Pin(props: PinProps) {
       role="button"
       onClick={() => {
         setActive(!active);
-        console.log(active);
+        props.onToggle && props?.onToggle(active, props.name, props.id);
       }}
     >
       {props.name}
