@@ -7,7 +7,6 @@ module.exports = {
   purge: [
     "./src/**/*.{js,ts,jsx,tsx,mdx}",
   ],
-  mode: "jit",
   variants: {
     extend: {
         display: ["group-hover"],

@@ -144,7 +144,7 @@ export default function Navbar(props: NavbarProps) {
                     aria-labelledby="dropdownMenuButtonX"
                     data-te-dropdown-menu-ref=""
                   >
-                    <div className="py-5 lg:px-8 w-fit">
+                    <div className="pt-2 lg:px-4 w-fit">
                       <div className="flex flex-col">
                         <div>
                           {group.items &&

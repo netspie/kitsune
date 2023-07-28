@@ -18,16 +18,18 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${roboto.className} body-font font-poppins`}>
-        <header className="relative w-full">
+      <body
+        className={`${roboto.className} body-font font-poppins`}
+      >
+        <header className="fixed top-0 bg-white w-full z-10 flex justify-center">
           <Navbar
             groups={[
               {
                 name: "Home",
-                href: "/"
+                href: "/",
               },
               {
-                name: "Learn"
+                name: "Learn",
               },
               {
                 name: "Materials",
@@ -67,12 +69,12 @@ export default function RootLayout({
                   { name: "About", href: "" },
                   { name: "Contact", href: "" },
                 ],
-              }
+              },
             ]}
           />
         </header>
+        <div id="wrap" className="mt-12">{children}</div>
         {/* <MainMenu /> */}
-        {children}
       </body>
     </html>
   );

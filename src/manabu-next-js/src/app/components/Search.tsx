@@ -101,7 +101,7 @@ function Search() {
               />
             </svg>
           </button>
-          <DropdownLabeled
+          {/* <DropdownLabeled
             label="Sort By"
             dropdownKey="afsdasfaf"
             selectedId="Author"
@@ -109,7 +109,7 @@ function Search() {
             onItemClick={(selected: string) => {
               console.log(selected);
             }}
-          />
+          /> */}
         </div>
         <div className="!visible hidden" id="filters" data-te-collapse-item="">
           <PinList
