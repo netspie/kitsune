@@ -11,6 +11,7 @@ import Search from './Search'
 import Pin from './Pin'
 import PinList from './PinList'
 import CollapseX from './Collapse'
+import InputX from './Input'
 
 export {
     Hero,
@@ -26,4 +27,5 @@ export {
     Pin,
     PinList,
     CollapseX as Collapse,
+    InputX as Input,
 }

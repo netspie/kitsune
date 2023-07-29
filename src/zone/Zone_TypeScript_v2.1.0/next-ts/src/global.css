@@ -1,0 +1,36 @@
+
+/* scrollbar */
+@import '~simplebar-react/dist/simplebar.min.css';
+
+/* carousel */
+@import '~slick-carousel/slick/slick.css';
+@import '~slick-carousel/slick/slick-theme.css';
+
+/* lightbox */
+@import '~yet-another-react-lightbox/styles.css';
+@import '~yet-another-react-lightbox/plugins/captions.css';
+@import '~yet-another-react-lightbox/plugins/thumbnails.css';
+
+/* lazy image */
+@import '~react-lazy-load-image-component/src/effects/blur.css';
+
+/* width */
+body::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* Track */
+body::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+body::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 5px;
+}
+
+/* Handle on hover */
+body::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
