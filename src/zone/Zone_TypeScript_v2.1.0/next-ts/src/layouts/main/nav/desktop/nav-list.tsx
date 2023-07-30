@@ -24,6 +24,7 @@ type Bounds = {
   left:number; 
   width:number; 
   height:number;
+  right:number;
 }
 
 // ----------------------------------------------------------------------
@@ -31,7 +32,7 @@ type Bounds = {
 export default function NavList({ item }: { item: NavItemBaseProps }) {
   const pathname = usePathname();
   const navRef = useRef<HTMLDivElement>(null);
-  const [popBounds, setPopBounds] = useState<Bounds>({top: 0, left:0, width:0, height: 0});
+  const [popBounds, setPopBounds] = useState<Bounds>({top: 0, left:0, right:0, width:0, height: 0});
   const menuOpen = useBoolean();
 
   const active = useActiveLink(item.path, false);
@@ -62,6 +63,8 @@ export default function NavList({ item }: { item: NavItemBaseProps }) {
   const handleOpenMenu = useCallback(() => {
     if (item.children) {
       menuOpen.onTrue();
+
+      navRef && navRef.current && setPopBounds(navRef.current.getBoundingClientRect()); 
     }
   }, [item.children, menuOpen]);
 
@@ -78,7 +81,7 @@ export default function NavList({ item }: { item: NavItemBaseProps }) {
       />
       
       {!!item.children && menuOpen.value && (
-        <Stack sx={{position: 'absolute', width: 'fit', left: popBounds.left}}>
+        <Stack sx={{position: 'absolute', width: 'fit', left: `calc(${popBounds.left}px)`}}>
           <Fade in={menuOpen.value}>
             <StyledMenu onMouseEnter={handleOpenMenu} onMouseLeave={menuOpen.onFalse}
               sx={{ width: 'fit-content'}}>

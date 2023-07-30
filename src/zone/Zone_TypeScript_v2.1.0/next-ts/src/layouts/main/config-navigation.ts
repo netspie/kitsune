@@ -211,15 +211,14 @@ export const pageLinks = [
 
 export const navConfig = [
   { title: 'Home', path: '/' },
-  { title: 'Learn', path: paths.components.root },
+  {
+    title: 'Practice',
+    path: paths.pages,
+  },
   {
     title: 'Materials',
     path: '#',
     children: [pageLinks[0]],
   },
-  {
-    title: 'Practice',
-    path: paths.pages,
-  },
-  { title: 'Docs', path: paths.docs },
+  { title: 'About', path: paths.docs },
 ];
