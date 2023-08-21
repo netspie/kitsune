@@ -24,18 +24,18 @@ builder.Services.Configure<OpenIdConnectOptions>(
     {
         options.ResponseType = OpenIdConnectResponseType.Code;
         options.SaveTokens = true;
-        options.ClientSecret = Environment.GetEnvironmentVariable("ManabuServerClientSecret");
+        options.ClientSecret = Environment.GetEnvironmentVariable("HackstudyServerClientSecret");
         options.Scope.Add("offline_access");
         options.Scope.Add(options?.ClientId);
         options.Events.OnRedirectToIdentityProvider = async context =>
         {
             if (builder.Environment.IsProduction())
-                context.ProtocolMessage.RedirectUri = "https://manabu.pl/signin-oidc";
+                context.ProtocolMessage.RedirectUri = "https://hackstudy.online/signin-oidc";
         }; 
         options.Events.OnRedirectToIdentityProviderForSignOut = async context =>
         {
             if (builder.Environment.IsProduction())
-                context.ProtocolMessage.PostLogoutRedirectUri = "https://manabu.pl/";
+                context.ProtocolMessage.PostLogoutRedirectUri = "https://hackstudy.online/";
         };
     });
 

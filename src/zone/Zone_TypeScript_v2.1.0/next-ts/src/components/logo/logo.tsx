@@ -55,18 +55,19 @@ function Logo({ single = false, sx }: LogoProps) {
       href="/"
       color="inherit"
       aria-label="go to homepage"
-      sx={{ lineHeight: 0 }}
+      sx={{ lineHeight: 0, width:'fit-content' }}
     >
       <Box
         sx={{
-          width: single ? 64 : 75,
+          width: 'fit-content',
           lineHeight: 0,
           cursor: 'pointer',
           display: 'inline-flex',
           ...sx,
+
         }}
       >
-        <h1 className='font-bold'>Manabu</h1>
+        <h1 className='font-bold'>HackStudy</h1>
       </Box>
     </Link>
   );

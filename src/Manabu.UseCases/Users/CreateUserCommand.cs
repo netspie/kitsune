@@ -3,9 +3,6 @@ using Corelibs.Basic.Blocks;
 using Corelibs.Basic.Repository;
 using Corelibs.Basic.UseCases;
 using Mediator;
-using Manabu.Entities.ExercisesAimsControls;
-using Manabu.Entities.PlanAimControls;
-using Manabu.Entities.SessionAimControls;
 using Manabu.Entities.Users;
 using System.Security.Claims;
 
@@ -15,22 +12,13 @@ public class CreateUserCommandHandler : ICommandHandler<CreateUserCommand, Resul
 {
     private readonly IAccessorAsync<ClaimsPrincipal> _userAccessor;
     private readonly IRepository<User, UserId> _userRepository;
-    private readonly IRepository<PlanAimControl, PlanAimControlId> _planAimControlRepository;
-    private readonly IRepository<SessionAimControl, SessionAimControlId> _sessionAimControlRepository;
-    private readonly IRepository<ExerciseAimControl, ExerciseAimControlId> _exerciseAimControlRepository;
 
     public CreateUserCommandHandler(
         IAccessorAsync<ClaimsPrincipal> userAccessor,
-        IRepository<User, UserId> userRepository,
-        IRepository<PlanAimControl, PlanAimControlId> planAimControlRepository,
-        IRepository<SessionAimControl, SessionAimControlId> sessionAimControlRepository,
-        IRepository<ExerciseAimControl, ExerciseAimControlId> exerciseAimControlRepository)
+        IRepository<User, UserId> userRepository)
     {
         _userAccessor = userAccessor;
         _userRepository = userRepository;
-        _planAimControlRepository = planAimControlRepository;
-        _sessionAimControlRepository = sessionAimControlRepository;
-        _exerciseAimControlRepository = exerciseAimControlRepository;
     }
 
     public async ValueTask<Result> Handle(CreateUserCommand command, CancellationToken ct)
@@ -42,19 +30,9 @@ public class CreateUserCommandHandler : ICommandHandler<CreateUserCommand, Resul
         if (user != null)
             return result;
 
-        var planAimControl = new PlanAimControl();
-        var sessionAimControl = new SessionAimControl();
-        var exerciseAimControl = new ExerciseAimControl();
-        user = new User(
-            userId,
-            planAimControl.Id,
-            sessionAimControl.Id,
-            exerciseAimControl.Id);
+        user = new User(userId);
 
         await _userRepository.Save(user, result);
-        await _planAimControlRepository.Save(planAimControl, result);
-        await _sessionAimControlRepository.Save(sessionAimControl, result);
-        await _exerciseAimControlRepository.Save(exerciseAimControl, result);
 
         return result;
     }

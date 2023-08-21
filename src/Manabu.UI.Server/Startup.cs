@@ -36,8 +36,8 @@ public static class Startup
 
     public static void AddRepositories(this IServiceCollection services, IWebHostEnvironment environment, Assembly assembly)
     {
-        var mongoConnectionString = Environment.GetEnvironmentVariable("ManabuDatabaseConn");
-        var databaseName = environment.IsDevelopment() ? "Manabu_dev" : "Manabu_prod";
+        var mongoConnectionString = Environment.GetEnvironmentVariable("HackStudyDatabaseConn");
+        var databaseName = environment.IsDevelopment() ? "HackStudy_dev" : "HackStudy_prod";
 
         MongoConventionPackExtensions.AddIgnoreConventionPack();
 

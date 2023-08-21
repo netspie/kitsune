@@ -67,7 +67,7 @@ export default function Header({ headerOnDark }: Props) {
           <Box sx={{ lineHeight: 0, position: 'relative' }}>
             <Logo />
 
-            <Link href="https://zone-docs.vercel.app/changelog" target="_blank" rel="noopener">
+            {/* <Link href="https://zone-docs.vercel.app/changelog" target="_blank" rel="noopener">
               <Label
                 color="info"
                 sx={{
@@ -83,17 +83,17 @@ export default function Header({ headerOnDark }: Props) {
               >
                 v2.1.0
               </Label>
-            </Link>
+            </Link> */}
           </Box>
 
           {mdUp && <NavDesktop data={navConfig} />}
 
           <Stack spacing={2} direction="row" alignItems="center" justifyContent="flex-end">
-            <Stack spacing={1} direction="row" alignItems="center">
+            {/* <Stack spacing={1} direction="row" alignItems="center">
               <Searchbar />
 
               <SettingsButton />
-            </Stack>
+            </Stack> */}
 
             {/* {mdUp && (
               <Button

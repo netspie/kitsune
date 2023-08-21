@@ -1,22 +1,21 @@
-﻿@page "/vocabulary"
-
-@using Manabu.UseCases.Plans;
-@using Corelibs.Basic.Reflection;
-
-@*<FullBg ImageUrl=@($@"{Config.BaseAssetsPath}/images/general/main-bg.png") />*@
-
-@if (_plans is null) { return; }
+﻿@using Corelibs.Basic.Reflection;
 
 <div class="grid-1x2f">
     <div class="v-list">
         <div class="grid-1x2">
             <List
-                Title="Your Plans"
+                Title="Courses"
                 ListItems=@_listItems
                 OnAddItemOnTop=@OnAddItem
                 OnMenuOptionSelected=@OnWorkoutPlansListDropdownOptionSelected />
         </div>
     </div>
+    @*<div class="v-list">
+        <DropdownWithLabel 
+            Title="Ownership"
+            Model=@OwnershipFilterDropdownModel 
+            OnOptionSelected=OnOwnershipFilterDropdownModelOptionSelected />
+    </div>*@
 </div>
 
 @code {
@@ -24,10 +23,12 @@
     [Inject] public ICommandExecutor CommandExecutor { get; set; }
     [Inject] public NavigationManager Navigation { get; set; }
 
-    private PlanDTO[] _plans;
     private List<List.ListItem> _listItems = new()
     {
-        new("")   
+        new("Basics", "Basics"),
+        new("Yuta Vocab", "Yuta Vocab"),
+        new("Misa Vids", "Misa Vids"),
+        new("JLTP Sensei", "JLTP Sensei"),
     };
 
     protected override async Task OnInitializedAsync()
@@ -72,7 +73,6 @@
         //var response = await QueryExecutor.Execute<GetOwnPlansQuery, GetOwnPlansQueryResponse>();
         //_plans = response?.Plans;
 
-        _listItems = _plans.Select(p => new List.ListItem(p.Id, p.Name)).ToList();
     }
 
     private static Dropdown.ViewModel DropdownModel = new(

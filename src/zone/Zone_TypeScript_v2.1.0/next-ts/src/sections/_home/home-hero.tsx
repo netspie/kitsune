@@ -43,42 +43,41 @@ export default function HomeHero() {
       }}
     >
       <Container sx={{ height: 1 }}>
-        <Grid container columnSpacing={3} alignItems="center" sx={{ height: 1 }}>
-          <Grid xs={12} md={5}>
-            <Stack
-              spacing={5}
-              justifyContent="center"
-              alignItems={{ xs: 'center', md: 'flex-start' }}
-              sx={{
-                py: 15,
-                textAlign: { xs: 'center', md: 'left' },
-              }}
-            >
-              <Typography variant="h1">
-              Learn and Explore <br />   
-                <Box component="span" sx={{ color: 'primary.main' }}>
-                  {` Japanese`}
-                </Box>
-              </Typography>
+        <Stack
+          spacing={5}
+          justifyContent="center"
+          alignItems={{ xs: 'center', md: 'flex-center' }}
+          sx={{
+            py: 15,
+            pt: 30,
+            textAlign: { xs: 'center', md: 'left' },
+          }}
+        >
+          <Typography variant="h1" textAlign={'center'}>
+            Learn and Explore <br />
+            <Box component="span" sx={{ color: 'primary.main' }}>
+              {` Japanese`}
+            </Box>
+          </Typography>
 
-              <Typography sx={{ color: 'text.secondary' }}>
-                The ultimate way to learn your favorite language. <br />   
-                Only thing you need.
-              </Typography>
+          <Typography sx={{ color: 'text.secondary' }} textAlign={'center'}>
+            The ultimate way to learn your favorite language. <br />
+            Only thing you need.
+          </Typography>
 
-              <Button
-                color="inherit"
-                size="large"
-                variant="contained"
-                endIcon={<Iconify icon="carbon:launch" />}
-                target="_blank"
-                rel="noopener"
-                href={paths.figmaPreview}
-              >
-                Get Started
-              </Button>
+          <Button
+            color="inherit"
+            size="large"
+            variant="contained"
+            endIcon={<Iconify icon="carbon:launch" />}
+            target="_blank"
+            rel="noopener"
+            href={paths.figmaPreview}
+          >
+            Get Started
+          </Button>
 
-              {/* <Stack spacing={3}>
+          {/* <Stack spacing={3}>
                 <Typography variant="overline">AVAILABLE FOR</Typography>
                 <Stack direction="row" spacing={2.5}>
                   {['js', 'ts', 'figma', 'cra', 'nextjs'].map((icon) => (
@@ -90,16 +89,14 @@ export default function HomeHero() {
                   ))}
                 </Stack>
               </Stack> */}
-            </Stack>
-          </Grid>
+        </Stack>
 
-          <Grid xs={12} md={7}>
-            <Box ref={containerRef} />
-          </Grid>
+        <Grid xs={12} md={7}>
+          <Box ref={containerRef} />
         </Grid>
       </Container>
 
-      {mdUp && (
+      {/* {mdUp && (
         <Box
           sx={{
             maxWidth: 1280,
@@ -116,7 +113,7 @@ export default function HomeHero() {
             src="/assets/images/home/home_hero.png"
           />
         </Box>
-      )}
+      )} */}
     </Box>
   );
 }

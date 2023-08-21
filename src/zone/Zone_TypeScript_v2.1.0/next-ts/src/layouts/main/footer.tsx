@@ -21,6 +21,7 @@ import { RouterLink } from 'src/routes/components';
 import { useResponsive } from 'src/hooks/use-responsive';
 
 import { NavListProps } from './nav/types';
+import { textAlign } from '@mui/system';
 // import { pageLinks, navConfig } from './config-navigation';
 
 // ----------------------------------------------------------------------
@@ -52,10 +53,17 @@ export default function Footer() {
   const isHome = pathname === '/';
 
   const simpleFooter = (
-    <Container sx={{ py: 8, textAlign: 'center' }}>
+    <Container sx={{ py: 8 }} style={{ textAlign: 'center',
+  justifyContent:'center' }}
+      >
       <Logo single />
 
-      <Typography variant="caption" component="div" sx={{ color: 'text.secondary', textAlign:'center' }}>
+      <Typography
+        variant="caption"
+        component="div"
+        style={{ textAlign: 'center' }}
+        sx={{ color: 'text.secondary', textAlign: 'center' }}
+      >
         © 2023. All rights reserved
       </Typography>
     </Container>
@@ -164,10 +172,10 @@ export default function Footer() {
         <Stack
           spacing={2.5}
           direction={{ xs: 'column', md: 'row' }}
-          justifyContent="space-between"
+          justifyContent="flex-center"
           sx={{ py: 3, textAlign: 'center' }}
         >
-          <Typography variant="caption" sx={{ color: 'text.secondary' , textAlign:'center'}}>
+          <Typography variant="caption" sx={{ color: 'text.secondary' }} textAlign={'center'}>
             © 2023. All rights reserved
           </Typography>
 
