@@ -7,6 +7,8 @@ using Mediator;
 using Manabu.UI.Server.Data;
 using System.Reflection;
 using System.Security.Claims;
+using Manabu.UseCases.Flashcards;
+using Manabu.Infrastructure.CQRS.Flashcards;
 
 namespace Manabu.UI.Server;
 
@@ -32,6 +34,8 @@ public static class Startup
         services.AddMediator(opts => opts.ServiceLifetime = ServiceLifetime.Scoped);
 
         services.AddRepositories(environment, entitiesAssembly);
+
+        services.AddSingleton<IFlashcardResolver, JapaneseFlashcardResolver>();
     }
 
     public static void AddRepositories(this IServiceCollection services, IWebHostEnvironment environment, Assembly assembly)
