@@ -19,7 +19,7 @@ public class GetFlashcardQueryHandler : IQueryHandler<GetFlashcardQuery, Result<
     {
         var result = Result<GetFlashcardQueryResponse>.Success();
 
-        var flashcardResult = await _flashcardResolver.Get(card, query.Type, query.Mode);
+        var flashcardResult = await _flashcardResolver.Get(query.ItemId, query.Type, query.Mode);
         if (!flashcardResult.ValidateSuccessAndValues())
             return result.Fail();
 
@@ -35,7 +35,7 @@ public record GetFlashcardQuery(
 public record GetFlashcardQueryResponse(FlashcardDTO Flashcard);
 
 public record FlashcardDTO(
-    string Id,
+    string ItemId,
     FlashcardItemDTO[] Questions,
     FlashcardItemDTO[][] Answers,
     int[]? LevelIndexes = null);

@@ -1,9 +1,13 @@
 ﻿using Corelibs.Basic.DDD;
+using Manabu.Entities.Audios;
+using Manabu.Entities.Words;
 
-namespace Manabu.Entities.Courses;
+namespace Manabu.Entities.Phrases;
 
 public class Phrase : Entity<PhraseId>, IAggregateRoot<PhraseId>
 {
+    public const string DefaultCollectionName = "phrases";
+
     public string Original { get; private set; }
     public List<string> Translations { get; private set; }
     public List<AudioId> Audios { get; private set; }

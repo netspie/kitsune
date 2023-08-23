@@ -1,9 +1,11 @@
 ﻿using Corelibs.Basic.DDD;
 
-namespace Manabu.Entities.Courses;
+namespace Manabu.Entities.Audios;
 
 public class Audio : Entity<AudioId>, IAggregateRoot<AudioId>
 {
+    public const string DefaultCollectionName = "audios";
+
     public string Name { get; private set; }
 
     public Audio(string name)

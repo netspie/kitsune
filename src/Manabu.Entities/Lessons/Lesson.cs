@@ -1,10 +1,18 @@
 ﻿using Corelibs.Basic.DDD;
+using Manabu.Entities.Conversations;
+using Manabu.Entities.Infos;
+using Manabu.Entities.Phrases;
 
-namespace Manabu.Entities.Courses;
+namespace Manabu.Entities.Lessons;
 
 public class Lesson : Entity<LessonId>, IAggregateRoot<LessonId>
 {
+    public const string DefaultCollectionName = "lessons";
+
     public string Name { get; private set; }
+    public List<InfoId> Infos { get; private set; }
+    public List<ConversationId> Conversations { get; private set; }
+    public List<PhraseId> Phrases { get; private set; }
 
     public Lesson(string name)
     {

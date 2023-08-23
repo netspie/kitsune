@@ -38,17 +38,53 @@ public class JapaneseFlashcardResolver : IFlashcardResolver
             questions.Add(new(phrase.Id.Value, phrase.Original, ItemType.Phrase.Value));
 
             if (phrase.Contexts?.Count > 0)
-                questions.Add(new FlashcardItemDTO(phrase.Id.Value, phrase.Contexts.First(), ItemType.Context.Value));
+                questions.Add(new FlashcardItemDTO(phraseId, phrase.Contexts.First(), ItemType.Context.Value));
 
             // Answers
             var answers = new List<FlashcardItemDTO>();
-            questions.Add(new(phrase.Id.Value, phrase.Translations.First(), ItemType.Phrase.Value));
+            answers.Add(new(phraseId, phrase.Translations.First(), ItemType.Phrase.Value));
 
             if (phrase.Audios?.Count > 0)
-                questions.Add(new FlashcardItemDTO(phrase.Id.Value, phrase.Audios.First().Value, ItemType.Audio.Value));
+                answers.Add(new FlashcardItemDTO(phraseId, phrase.Audios.First().Value, ItemType.Audio.Value));
 
-            //result.Add(new FlashcardDTO(
-            //    flashcard.Id.Value, questions.ToArray(), new[] { answers.ToArray() }, flashcard.LevelIndexes.ToArray()));
+            result.Add(new FlashcardDTO(
+                phraseId, questions.ToArray(), new[] { answers.ToArray() }));
+        }
+        else
+        if (mode == FlashcardMode.Listening)
+        {
+            // Questions
+            var questions = new List<FlashcardItemDTO>();
+            questions.Add(new(phrase.Id.Value, phrase.Audios.First().Value, ItemType.Audio.Value));
+
+            if (phrase.Contexts?.Count > 0)
+                questions.Add(new FlashcardItemDTO(phraseId, phrase.Contexts.First(), ItemType.Context.Value));
+
+            // Answers
+            var answers = new List<FlashcardItemDTO>();
+            answers.Add(new(phrase.Id.Value, phrase.Original, ItemType.Phrase.Value));
+            answers.Add(new(phraseId, phrase.Translations.First(), ItemType.Phrase.Value));
+
+            result.Add(new FlashcardDTO(
+                phraseId, questions.ToArray(), new[] { answers.ToArray() }));
+        }
+        else
+        if (mode == FlashcardMode.Speaking)
+        {
+            // Questions
+            var questions = new List<FlashcardItemDTO>();
+            questions.Add(new(phraseId, phrase.Translations.First(), ItemType.Phrase.Value));
+
+            if (phrase.Contexts?.Count > 0)
+                questions.Add(new FlashcardItemDTO(phraseId, phrase.Contexts.First(), ItemType.Context.Value));
+
+            // Answers
+            var answers = new List<FlashcardItemDTO>();
+            answers.Add(new(phrase.Id.Value, phrase.Original, ItemType.Phrase.Value));
+            answers.Add(new(phrase.Id.Value, phrase.Audios.First().Value, ItemType.Audio.Value));
+
+            result.Add(new FlashcardDTO(
+                phraseId, questions.ToArray(), new[] { answers.ToArray() }));
         }
     }
 }
