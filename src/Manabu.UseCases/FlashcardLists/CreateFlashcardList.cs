@@ -20,9 +20,10 @@ public class CreateFlashcardListCommandHandler : ICommandHandler<CreateFlashcard
     {
         var result = Result.Success();
 
-        user = new User(userId);
+        //new FlashcardList()
+        //user = new User(userId);
 
-        await _userRepository.Save(user, result);
+        //await _userRepository.Save(user, result);
 
         return result;
     }

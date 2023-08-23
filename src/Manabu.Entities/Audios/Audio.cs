@@ -22,4 +22,4 @@ public class Audio : Entity<AudioId>, IAggregateRoot<AudioId>
     }
 }
 
-public class AudioId : EntityId { public AudioId(string value) : base(value) { } }
+public class AudioId : EntityId { public AudioId(string value) : base(value) {} }

@@ -29,5 +29,3 @@ public class Lesson : Entity<LessonId>, IAggregateRoot<LessonId>
 }
 
 public class LessonId : EntityId { public LessonId(string value) : base(value) { } }
-
-
