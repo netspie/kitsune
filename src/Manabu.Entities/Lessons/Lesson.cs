@@ -10,6 +10,7 @@ public class Lesson : Entity<LessonId>, IAggregateRoot<LessonId>
     public const string DefaultCollectionName = "lessons";
 
     public string Name { get; private set; }
+    public string Description { get; private set; }
     public List<InfoId> Infos { get; private set; }
     public List<ConversationId> Conversations { get; private set; }
     public List<PhraseId> Phrases { get; private set; }

@@ -1,4 +1,5 @@
 ﻿@using Corelibs.Basic.Reflection;
+@using Manabu.UseCases.Courses;
 
 <div class="grid-1x2f">
     <div class="v-list">
@@ -23,13 +24,8 @@
     [Inject] public ICommandExecutor CommandExecutor { get; set; }
     [Inject] public NavigationManager Navigation { get; set; }
 
-    private List<List.ListItem> _listItems = new()
-    {
-        new("Basics", "Basics"),
-        new("Yuta Vocab", "Yuta Vocab"),
-        new("Misa Vids", "Misa Vids"),
-        new("JLTP Sensei", "JLTP Sensei"),
-    };
+    private CourseDTO[]? _courses;
+    private List<List.ListItem>? _listItems;
 
     protected override async Task OnInitializedAsync()
     {
@@ -50,8 +46,8 @@
 
     private async Task<bool> OnAddItem(string name)
     {
-        //await CommandExecutor.Execute(new CreatePlanCommand(name));
-        //await RefreshView();
+        await CommandExecutor.Execute(new CreateCourseCommand(name));
+        await RefreshView();
         return false;
     }
 
@@ -63,16 +59,17 @@
 
     protected async Task<bool> RefreshView()
     {
-        //await RefreshViewModel();
-        ///await InvokeAsync(StateHasChanged);
+        await RefreshViewModel();
+        await InvokeAsync(StateHasChanged);
+
         return true;
     }
 
     protected async Task RefreshViewModel()
     {
-        //var response = await QueryExecutor.Execute<GetOwnPlansQuery, GetOwnPlansQueryResponse>();
-        //_plans = response?.Plans;
-
+        var response = await QueryExecutor.Execute<GetCoursesQuery, GetCoursesQueryResponse>();
+        _courses = response?.Courses;
+        _listItems = _courses?.Select(c => new List.ListItem(c.Id, c.Name))?.ToList();
     }
 
     private static Dropdown.ViewModel DropdownModel = new(

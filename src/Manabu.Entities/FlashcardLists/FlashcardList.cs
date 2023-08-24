@@ -7,6 +7,8 @@ public class FlashcardListId : EntityId { public FlashcardListId(string value) :
 
 public class FlashcardList : Entity<FlashcardListId>, IAggregateRoot<FlashcardListId>
 {
+    public const string DefaultCollectionName = "flashcardLists";
+
     public string ParentItemId { get; private set; }
 
     public string Type { get; private set; }

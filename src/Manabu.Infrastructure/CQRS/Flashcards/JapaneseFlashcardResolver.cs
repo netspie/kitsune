@@ -1,7 +1,7 @@
 ﻿using Corelibs.Basic.Blocks;
 using Corelibs.Basic.Repository;
-using Manabu.Entities.Courses;
 using Manabu.Entities.Flashcards;
+using Manabu.Entities.Phrases;
 using Manabu.UseCases.Flashcards;
 
 namespace Manabu.Infrastructure.CQRS.Flashcards;
@@ -81,7 +81,9 @@ public class JapaneseFlashcardResolver : IFlashcardResolver
             // Answers
             var answers = new List<FlashcardItemDTO>();
             answers.Add(new(phrase.Id.Value, phrase.Original, ItemType.Phrase.Value));
-            answers.Add(new(phrase.Id.Value, phrase.Audios.First().Value, ItemType.Audio.Value));
+
+            if (phrase.Audios?.Count > 0)
+                answers.Add(new(phrase.Id.Value, phrase.Audios.First().Value, ItemType.Audio.Value));
 
             result.Add(new FlashcardDTO(
                 phraseId, questions.ToArray(), new[] { answers.ToArray() }));

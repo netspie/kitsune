@@ -4,6 +4,8 @@ namespace Manabu.Entities.WordMeanings;
 
 public class WordMeaning : Entity<WordMeaningId>, IAggregateRoot<WordMeaningId>
 {
+    public const string DefaultCollectionName = "wordMeanings";
+
     public string Original { get; private set; }
     public List<string> Translations { get; private set; }
     public string HiraganaWriting { get; private set; }

@@ -5,6 +5,8 @@ namespace Manabu.Entities.WordLexemes;
 
 public class WordLexeme : Entity<WordLexemeId>, IAggregateRoot<WordLexemeId>
 {
+    public const string DefaultCollectionName = "wordLexemes";
+
     public PartOfSpeech PartOfSpeech { get; private set; }
     public string Lemma { get; private set; }
     public List<WordInflectionPair> Inflections { get; private set; }

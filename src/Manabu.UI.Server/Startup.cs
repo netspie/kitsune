@@ -35,7 +35,7 @@ public static class Startup
 
         services.AddRepositories(environment, entitiesAssembly);
 
-        services.AddSingleton<IFlashcardResolver, JapaneseFlashcardResolver>();
+        services.AddScoped<IFlashcardResolver, JapaneseFlashcardResolver>();
     }
 
     public static void AddRepositories(this IServiceCollection services, IWebHostEnvironment environment, Assembly assembly)

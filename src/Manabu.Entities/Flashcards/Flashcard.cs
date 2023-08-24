@@ -6,6 +6,8 @@ public class FlashcardId : EntityId { public FlashcardId(string value) : base(va
 
 public class Flashcard : Entity<FlashcardId>, IAggregateRoot<FlashcardId>
 {
+    public const string DefaultCollectionName = "flashcards";
+
     public string RefId { get; private set; }
     public List<FlashcardText> Questions { get; private set; }
     public List<FlashcardItem> Answers { get; private set; }
