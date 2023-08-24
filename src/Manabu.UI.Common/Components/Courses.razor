@@ -1,5 +1,6 @@
 ﻿@using Corelibs.Basic.Reflection;
 @using Manabu.UseCases.Courses;
+@using Microsoft.AspNetCore.Components.Authorization;
 
 <div class="grid-1x2f">
     <div class="v-list">
@@ -23,6 +24,7 @@
     [Inject] public IQueryExecutor QueryExecutor { get; set; }
     [Inject] public ICommandExecutor CommandExecutor { get; set; }
     [Inject] public NavigationManager Navigation { get; set; }
+    [Inject] public AuthenticationStateProvider Auth { get; set; }
 
     private CourseDTO[]? _courses;
     private List<List.ListItem>? _listItems;
@@ -46,9 +48,13 @@
 
     private async Task<bool> OnAddItem(string name)
     {
+        if (!await Auth.IsAdmin())
+            return false;
+
         await CommandExecutor.Execute(new CreateCourseCommand(name));
         await RefreshView();
-        return false;
+
+        return true;
     }
 
     private Task OnItemClick(string id)
