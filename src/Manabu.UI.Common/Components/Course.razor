@@ -3,15 +3,35 @@
 @using Microsoft.AspNetCore.Components.Authorization;
 
 <div class="grid-1x2f">
+
     <div class="v-list">
-        <div class="grid-1x2">
-            <List
-                Title="Courses"
-                ListItems=@_listItems
-                OnAddItemOnTop=@OnAddItem
-                OnMenuOptionSelected=@OnWorkoutPlansListDropdownOptionSelected 
-                OnItemClick=@OnItemClick />
-        </div>
+        @if (_course is not null)
+        {
+            <List Title=@_course.Name
+                  TitleEdit=true
+                  OnTitleEdit=@OnTitleEdit
+                  Description=@(_course.Description ?? "No Description")
+                  DescriptionEdit=true
+                  OnDescriptionEdit=@OnDescriptionEdit
+                  OnAddItemOnTop=@OnAddItem
+                  OnMenuOptionSelected=@OnWorkoutPlansListDropdownOptionSelected
+                  OnItemClick=@OnItemClick 
+                  DropdownModel=null    />
+        }
+
+        @if (_listItems is not null)
+        {
+            @for (int i = 0; i < _listItems.Count; i++)
+            {
+                var module = _listItems[i];
+                var title = $"Module {i + 1}";
+                <List Title=@title
+                      ListItems=@module
+                      OnAddItemOnTop=@OnAddItem
+                      OnMenuOptionSelected=@OnWorkoutPlansListDropdownOptionSelected
+                      OnItemClick=@OnItemClick />
+            }
+        }
     </div>
     @*<div class="v-list">
         <DropdownWithLabel 
@@ -27,8 +47,10 @@
     [Inject] public NavigationManager Navigation { get; set; }
     [Inject] public AuthenticationStateProvider Auth { get; set; }
 
-    private CourseDTO[]? _courses;
-    private List<List.ListItem>? _listItems;
+    [Parameter] public string CourseId { get; set; }
+
+    private CourseDetailsDTO? _course;
+    private List<List<List.ListItem>>? _listItems;
 
     protected override async Task OnInitializedAsync()
     {
@@ -58,9 +80,29 @@
         return true;
     }
 
+    private Task<bool> OnTitleEdit(string name) =>
+        ExecuteUpdateCommand(() => _course with { Name = name });
+
+    private Task<bool> OnDescriptionEdit(string description) =>
+        ExecuteUpdateCommand(() => _course with { Description = description });
+
+
     private async Task OnItemClick(string id)
     {
         Navigation.NavigateTo($"courses/{id}");
+    }
+
+    private async Task<bool> ExecuteUpdateCommand(Func<CourseDetailsDTO> createDto)
+    {
+        if (!await Auth.IsAdmin())
+            return false;
+
+        var dto = createDto();
+        await CommandExecutor.Execute(new UpdateCourseCommand(
+            dto.Id, dto.Name, dto.Description, dto.Modules));
+
+        await RefreshView();
+        return true;
     }
 
     protected async Task<bool> RefreshView()
@@ -73,9 +115,12 @@
 
     protected async Task RefreshViewModel()
     {
-        var response = await QueryExecutor.Execute<GetCoursesQuery, GetCoursesQueryResponse>();
-        _courses = response?.Courses;
-        _listItems = _courses?.Select(c => new List.ListItem(c.Id, c.Name))?.ToList();
+        var response = await QueryExecutor.Execute<GetCourseQuery, GetCourseQueryResponse>(
+            new GetCourseQuery(CourseId));
+
+        _course = response?.Course;
+        _listItems = _course?.Modules?.Select(m => new List<List.ListItem>(
+            m.Lessons?.SelectOrDefault(l => new List.ListItem(l.Id, l.Name)).ToList()))?.ToList();
     }
 
     private static Dropdown.ViewModel DropdownModel = new(

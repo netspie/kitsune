@@ -1,0 +1,12 @@
+﻿@page "/courses/{id}"
+
+@using Corelibs.Basic.Reflection;
+
+@*<FullBg ImageUrl=@($@"{Config.BaseAssetsPath}/images/general/main-bg.png") />*@
+
+<Manabu.UI.Common.Components.Course 
+    CourseId=@Id />
+
+@code {
+    [Parameter] public string Id { get; set; }
+}
