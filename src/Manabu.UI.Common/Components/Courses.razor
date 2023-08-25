@@ -47,7 +47,7 @@
         return true;
     }
 
-    private async Task<bool> OnAddItem(string name)
+    private async Task<bool> OnAddItem(string id, string name, string type)
     {
         if (!await Auth.IsAdmin())
             return false;
@@ -58,7 +58,7 @@
         return true;
     }
 
-    private async Task OnItemClick(string id)
+    private async Task OnItemClick(string id, string type)
     {
         Navigation.NavigateTo($"courses/{id}");
     }

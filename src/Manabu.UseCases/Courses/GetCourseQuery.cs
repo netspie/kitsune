@@ -54,7 +54,7 @@ public record CourseDetailsDTO(
 
 public record ModuleDTO(
     string Name,
-    LessonDTO[] Lessons);
+    LessonDTO[]? Lessons = null);
 
 public record LessonDTO(
     string Id,
