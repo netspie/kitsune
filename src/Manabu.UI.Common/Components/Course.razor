@@ -23,6 +23,7 @@
 
             <List Title="Modules"
               ListItems=@listItems
+              ItemsDropdownModel=@ModulesDropdownModel
               OnAddItemOnTop=@OnAddItem
               OnMenuOptionSelected=@OnWorkoutPlansListDropdownOptionSelected
               OnItemClick=@OnItemClick />
@@ -71,8 +72,14 @@
             return false;
 
         if (parentType.IsNullOrEmpty())
-        {
             return await ExecuteUpdateCommand(() => _course with { Modules = _course.Modules.Append(new(name)).ToArray() });
+        else
+        {
+            var mi = int.Parse(parentId.TrimStart('m'));
+            return await ExecuteUpdateCommand(() => 
+                _course with { Modules = _course.Modules?.SelectOrDefault((m, i) =>
+                        i != mi ? m : m with { Lessons = m.Lessons?.Append(new("", name)).ToArray() }).ToArray()
+                    });
         }
 
         return true;
@@ -123,7 +130,7 @@
     private static Dropdown.ViewModel ModulesDropdownModel = new(
         Options: new()
         {
-            "Add",
+            new("add", "Add"),
         },
         Trigger: new(IsFixed: true, Value: "Menu", Mode: Dropdown.Mode.Component)
     );
