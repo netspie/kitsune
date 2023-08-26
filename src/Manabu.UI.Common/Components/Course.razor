@@ -8,20 +8,14 @@
 <MudStack>
     <MudBreadcrumbs Items=@_breadcrumbs Style="padding-left: 0; font-size: 12px" />
     <MudStack>
-        <MudField Label="Name" Variant="Variant.Text" DisableUnderLine=true
-            Style="font-weight: bold">
-            @_course.Name
-        </MudField>
-        <MudField Label="Description" Variant="Variant.Text" DisableUnderLine=true Style="font-weight: bold">
-            @if (!_course.Description.IsNullOrEmpty())
-            {
-                @_course.Description
-            }
-            else
-            {
-                <span>"No Description"</span>
-            }
-        </MudField>
+        <TextField 
+            Label="Name"
+            Value=@_course.Name 
+            OnEdit=@OnNameEdit />
+        <TextField 
+            Label="Description"
+            Value=@GetDescription() 
+            OnEdit=@OnDescriptionEdit />
     </MudStack>
     <MudPaper Class="py-4" Elevation="0">
         <MudText Class="pl-4 mb-2" Style="font-size: 12px">Lessons</MudText>
@@ -42,18 +36,18 @@
         { 
             "module", 
             new EditableList.MenuItem[]
-        {
+    {
                 EditableList.MenuItems.AddChildAsLast with { Name = "Add Lesson", IdSecondary = "addLesson"},
                 EditableList.MenuItems.AddChildAsFirst with { Name = "Add Lesson at Start", IdSecondary = "addLesson" },
                 EditableList.MenuItems.AddSibling with { Name = "Add Module", IdSecondary = "addModule"},
-        }
+    }
         },
         {
             "lesson",
             new EditableList.MenuItem[]
-        {
+    {
                 EditableList.MenuItems.AddSibling with { Name = "Add Lesson", IdSecondary = "addLesson"},
-        }
+    }
         }
     };
 
@@ -69,13 +63,22 @@
     private CourseDetailsDTO? _course;
     private List<List<List.ListItem>>? _listItems;
 
-
     protected override async Task OnInitializedAsync()
     {
         await RefreshViewModel();
 
         _breadcrumbs.Add(new("Courses", href: "/courses"));
         _breadcrumbs.Add(new($"{_course.Name}", href: $"/courses/{_course?.Id}"));
+    }
+
+    private async Task<bool> OnNameEdit(string text)
+    {
+        return await ExecuteUpdateCommand(() => _course with { Name = text });
+    }
+
+    private async Task<bool> OnDescriptionEdit(string text)
+    {
+        return await ExecuteUpdateCommand(() => _course with { Description = text });
     }
 
     private async Task<bool> OnAddItem(
@@ -107,7 +110,7 @@
         //    return await ExecuteUpdateCommand(() => _course with { Modules = _course.Modules.Append(new(item.Name)).ToArray() });
         //else
         //{
-           
+
         //}
 
         return true;
@@ -188,6 +191,11 @@
             new EditableList.TreeItemData($"m{i}", m.Name, "module", m.Lessons.SelectOrDefault(l =>
                 new EditableList.TreeItemData(l.Id, l.Name, "lesson")).ToList(), isExpanded: true)).ToList();
     }
+
+    private string GetDescription() =>
+        !_course.Description.IsNullOrEmpty() ?
+            _course.Description :
+            "No Description";
 
     private static Dropdown.ViewModel ModulesDropdownModel = new(
         Options: new()

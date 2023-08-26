@@ -1,0 +1,84 @@
+﻿@using Corelibs.Blazor.UIComponents.Common;
+
+@if (IsEditing)
+{
+    <MudTextField 
+        @bind-Value=@_dynamicValue
+        Label=@Label
+        Immediate=true
+        Variant="Variant.Text"
+        OnKeyDown=@OnKeyDown
+        OnBlur=@OnEditableItemBlur
+        TextChanged=OnTextFieldValueChanged
+        AutoFocus=true />
+}
+else
+{
+    <MudField
+        @onclick=OnClickItem
+        Label=@Label
+        Variant="Variant.Text" 
+        DisableUnderLine=true
+        Style="font-weight: bold">
+        @Value
+    </MudField>
+}
+
+@code {
+    public delegate Task<bool> OnEditDelegate(string text);
+
+    [Parameter] public bool IsReadonly { get; set; }
+    [Parameter] public bool IsEditing { get; set; }
+
+    [Parameter] public string Label { get; set; } = "";
+    [Parameter] public string Value { get; set; } = "";
+    [Parameter] public OnEditDelegate OnEdit { get; set; }
+
+    private string _dynamicValue;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+            _dynamicValue = Value;
+    }
+
+    private void OnTextFieldValueChanged(string value)
+    {
+        _dynamicValue = value;
+    }
+
+    private void OnEditableItemBlur(FocusEventArgs args)
+    {
+        IsEditing = false;
+    }
+
+    private async Task OnClickItem(MouseEventArgs args)
+    {
+        if (IsReadonly)
+            return;
+
+        IsEditing = true;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task OnKeyDown(
+        KeyboardEventArgs args)
+    {
+        if (args.Key != "Enter")
+            return;
+
+        var value = _dynamicValue.Trim();
+        if (IsEditing && 
+            !value.IsNullOrEmpty() &&
+            value != Value)
+        {
+            await UIComponent.InvokeBool(OnEdit, value)();
+        }
+
+        Value = value;
+        _dynamicValue = value;
+        IsEditing = false;
+
+        await InvokeAsync(StateHasChanged);
+    }
+}

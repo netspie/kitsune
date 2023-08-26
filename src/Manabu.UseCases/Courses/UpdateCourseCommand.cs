@@ -39,8 +39,8 @@ public class UpdateCourseCommandHandler : ICommandHandler<UpdateCourseCommand, R
         var updatedModuleNames = command.Modules.Select(m => m.Name).ToArray();
         var modulesToRemove = course.Modules.Where(m => !updatedModuleNames.Contains(m.Name)).ToArray();
 
-        course.Modules ??= new();
-        course.Modules = course.Modules.Concat(modulesToRemove).ToList();
+        course.ModulesRemoved ??= new();
+        course.ModulesRemoved = course.ModulesRemoved.Concat(modulesToRemove).ToList();
 
         var newLessons = new List<Lesson>();
         
