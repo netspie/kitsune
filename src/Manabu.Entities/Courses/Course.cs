@@ -1,4 +1,7 @@
-﻿using Corelibs.Basic.DDD;
+﻿using Corelibs.Basic.Collections;
+using Corelibs.Basic.DDD;
+using Corelibs.Basic.Functional;
+using Corelibs.Basic.Maths;
 using Manabu.Entities.Authors;
 using Manabu.Entities.Lessons;
 using Newtonsoft.Json;
@@ -44,8 +47,33 @@ public class Course : Entity<CourseId>, IAggregateRoot<CourseId>
         ModulesRemoved = modulesRemoved;
     }
 
-    public record Module(string Name, List<Lesson> Lessons);
-    public record Lesson(LessonId Id, string Name);
+    public bool AddLesson(LessonId lesson, int moduleIndex, int lessonIndex)
+    {
+        Modules ??= new();
+        if (moduleIndex < 0 || moduleIndex >= Modules.Count)
+            return false;
+        
+        moduleIndex = moduleIndex.Clamp(Modules.Count);
+
+        var lessons = Modules[moduleIndex];
+        lessonIndex = lessonIndex.Clamp(lessons.IsNullOrEmpty() ? 0 : lessons.Count);
+
+        return true;
+    }
+
+    public void AddModule(string name, int moduleIndex = 0)
+    {
+        Modules ??= new();
+        Modules.InsertClamped(new Module(name, new List<string>()), moduleIndex);
+    }
+
+    public bool RemoveModule(int moduleIndex)
+    {
+        Modules ??= new();
+        Modules.InsertClamped(new Module(name, new List<string>()), moduleIndex);
+    }
+
+    public record Module(string Name, List<string> LessonIds);
 }
 
 public class CourseId : EntityId { public CourseId(string value) : base(value) {} }
