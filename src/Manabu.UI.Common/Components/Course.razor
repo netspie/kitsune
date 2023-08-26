@@ -6,7 +6,7 @@
 @if (_course is null) { return; }
 
 <MudStack>
-    <MudBreadcrumbs Items="_items" Style="padding-left: 0; font-size: 12px" />
+    <MudBreadcrumbs Items=@_breadcrumbs Style="padding-left: 0; font-size: 12px" />
     <MudStack>
         <MudField Label="Name" Variant="Variant.Text" DisableUnderLine=true
             Style="font-weight: bold">
@@ -42,26 +42,22 @@
         { 
             "module", 
             new EditableList.MenuItem[]
-            {
+        {
                 EditableList.MenuItems.AddChildAsLast with { Name = "Add Lesson", IdSecondary = "addLesson"},
                 EditableList.MenuItems.AddChildAsFirst with { Name = "Add Lesson at Start", IdSecondary = "addLesson" },
                 EditableList.MenuItems.AddSibling with { Name = "Add Module", IdSecondary = "addModule"},
-            }
+        }
         },
         {
             "lesson",
             new EditableList.MenuItem[]
-            {
+        {
                 EditableList.MenuItems.AddSibling with { Name = "Add Lesson", IdSecondary = "addLesson"},
-            }
+        }
         }
     };
 
-    private List<BreadcrumbItem> _items = new()
-    {
-        new("Courses", href: "#"),
-        new("Yuta Vocab Course", href: "#"),
-    };
+    private List<BreadcrumbItem> _breadcrumbs = new();
 
     [Inject] public IQueryExecutor QueryExecutor { get; set; }
     [Inject] public ICommandExecutor CommandExecutor { get; set; }
@@ -72,6 +68,15 @@
 
     private CourseDetailsDTO? _course;
     private List<List<List.ListItem>>? _listItems;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshViewModel();
+
+        _breadcrumbs.Add(new("Courses", href: "/courses"));
+        _breadcrumbs.Add(new($"{_course.Name}", href: $"/courses/{_course?.Id}"));
+    }
 
     private async Task<bool> OnAddItem(
         EditableList.TreeItemData item, int index, EditableList.MenuItem menuItem)
@@ -108,10 +113,6 @@
         return true;
     }
 
-    protected override async Task OnInitializedAsync()
-    {
-        await RefreshViewModel();
-    }
 
     private async Task<bool> OnWorkoutPlansListDropdownOptionSelected(Dropdown.Option option)
     {
