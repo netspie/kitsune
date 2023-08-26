@@ -1,44 +1,59 @@
 ﻿@using Corelibs.Basic.Reflection;
+@using Corelibs.Basic.Collections;
 @using Manabu.UseCases.Courses;
 @using Microsoft.AspNetCore.Components.Authorization;
 
-<div class="grid-1x2f">
+<MudStack>
+    <MudBreadcrumbs Items="_items" Style="padding-left: 0; font-size: 12px" />
+    <MudStack>
+        <MudField Label="Name" Variant="Variant.Text" DisableUnderLine=true
+            Style="font-weight: bold">
+            Yuta Vocab Course
+        </MudField>
+        <MudField Label="Description" Variant="Variant.Text" DisableUnderLine=true Style="font-weight: bold">
+            No Description
+        </MudField>
+    </MudStack>
+    <MudPaper Class="py-4" Elevation="0">
+        <MudText Class="pl-4 mb-2" Style="font-size: 12px">Lessons</MudText>
 
-    <div class="v-list">
-        @if (_course is not null)
-        {
-            <List Title=@_course.Name
-                  TitleEdit=true
-                  OnTitleEdit=@OnTitleEdit
-                  Description=@(_course.Description ?? "No Description")
-                  DescriptionEdit=true
-                  OnDescriptionEdit=@OnDescriptionEdit
-                  DropdownModel=null    />
-        }
+        <EditableList 
+            TreeItems=@TreeItems 
+            OnAddItem=@OnAddItem 
+            MenuItemsPerType=@MenuItemsPerType />
 
-        @{
-            var listItems = _course?.Modules?.SelectOrDefault((m, i) =>
-                new List.ListItem($"m{i}", m.Name, "module", m.Lessons?.SelectOrDefault(l =>
-                    new List.ListItem(l.Id, l.Name, "lesson")).ToList())).ToList();
-
-            <List Title="Modules"
-              ListItems=@listItems
-              ItemsDropdownModel=@ModulesDropdownModel
-              OnAddItemOnTop=@OnAddItem
-              OnMenuOptionSelected=@OnWorkoutPlansListDropdownOptionSelected
-              OnItemClick=@OnItemClick />
-        }
-
-    </div>
-    @*<div class="v-list">
-        <DropdownWithLabel 
-            Title="Ownership"
-            Model=@OwnershipFilterDropdownModel 
-            OnOptionSelected=OnOwnershipFilterDropdownModelOptionSelected />
-    </div>*@
-</div>
+    </MudPaper>
+</MudStack>
 
 @code {
+    private List<EditableList.TreeItemData> TreeItems { get; set; } 
+
+    private Dictionary<string, EditableList.MenuItem[]> MenuItemsPerType = new()
+    {
+        { 
+            "module", 
+            new EditableList.MenuItem[]
+            {
+                EditableList.MenuItems.AddChildAsLast with { Name = "Add Lesson", IdSecondary = "addLesson"},
+                EditableList.MenuItems.AddChildAsFirst with { Name = "Add Lesson at Start", IdSecondary = "addLesson" },
+                EditableList.MenuItems.AddSibling with { Name = "Add Module", IdSecondary = "addModule"},
+            }
+        },
+        {
+            "lesson",
+            new EditableList.MenuItem[]
+            {
+                EditableList.MenuItems.AddSibling with { Name = "Add Lesson", IdSecondary = "addLesson"},
+            }
+        }
+    };
+
+    private List<BreadcrumbItem> _items = new()
+    {
+        new("Courses", href: "#"),
+        new("Yuta Vocab Course", href: "#"),
+    };
+
     [Inject] public IQueryExecutor QueryExecutor { get; set; }
     [Inject] public ICommandExecutor CommandExecutor { get; set; }
     [Inject] public NavigationManager Navigation { get; set; }
@@ -48,6 +63,46 @@
 
     private CourseDetailsDTO? _course;
     private List<List<List.ListItem>>? _listItems;
+
+    private async Task OnItemClick(MouseEventArgs args)
+    {
+
+    }
+
+    private async Task<bool> OnAddItem(
+        EditableList.TreeItemData item, int index, EditableList.MenuItem menuItem)
+    {
+        if (!await Auth.IsAdmin())
+            return false;
+
+        if (menuItem.IdSecondary == "addModule")
+        {
+            return await ExecuteUpdateCommand(() => _course with { Modules = _course.Modules.InsertOrDefault(index, new(item.Name)).ToArray() });
+        }
+        else
+        if (menuItem.IdSecondary == "addLesson")
+        {
+            var mi = int.Parse(item.Parent.Id.TrimStart('m'));
+            return await ExecuteUpdateCommand(() =>
+                _course with
+                    {
+                        Modules = _course.Modules?.SelectOrDefault((m, i) =>
+                        i != mi ? m : m with
+                        {
+                            Lessons = m.Lessons?.InsertOrDefault(index,new("", item.Name)).ToArray()
+                        }).ToArray()
+                    });
+        }
+
+        //if (!item.Parent || item.Parent.Type.IsNullOrEmpty())
+        //    return await ExecuteUpdateCommand(() => _course with { Modules = _course.Modules.Append(new(item.Name)).ToArray() });
+        //else
+        //{
+           
+        //}
+
+        return true;
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -123,8 +178,10 @@
             new GetCourseQuery(CourseId));
 
         _course = response?.Course;
-        _listItems = _course?.Modules?.Select(m => new List<List.ListItem>(
-            m.Lessons?.SelectOrDefault(l => new List.ListItem(l.Id, l.Name)).ToList()))?.ToList();
+        //TreeItems.Add(new TreeItemData("All Mail"));
+        TreeItems = _course?.Modules?.SelectOrDefault((m, i) =>
+            new EditableList.TreeItemData($"m{i}", m.Name, "module", m.Lessons.SelectOrDefault(l =>
+                new EditableList.TreeItemData(l.Id, l.Name, "lesson")).ToList(), isExpanded: true)).ToList();
     }
 
     private static Dropdown.ViewModel ModulesDropdownModel = new(

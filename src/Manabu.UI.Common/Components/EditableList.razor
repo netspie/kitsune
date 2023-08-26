@@ -1,0 +1,220 @@
+﻿@using Corelibs.Blazor.UIComponents.Common;
+
+@if (TreeItems.IsNullOrEmpty()) { return; }
+
+<MudTreeView Items=@TreeItems.ToHashSet() Hover="true" Width="100%">
+    <ItemTemplate Context="item">
+        <MudTreeViewItem 
+            Items=@item.TreeItems.ToHashSet() 
+            Expanded=@item.IsExpanded
+            ExpandedChanged=@(v => @item.IsExpanded = v)
+            Style="height: fit-content">
+            
+            <BodyContent>
+                <div style="display: grid; grid-template-columns: 1fr auto; align-items: center; width: 100%">
+                    @if (_isAdding && item.IsEditing)
+                    {
+                        <MudTextField
+                            @bind-Value=@item.Name
+                            Label="Standard" 
+                            Immediate=true
+                            Variant="Variant.Text" 
+                            OnKeyDown=@(args => OnKeyDown(args, item))
+                            OnBlur=@OnEditableItemBlur
+                            TextChanged=OnTextFieldValueChanged
+                            AutoFocus=true />
+                    }
+                    else
+                    {
+                        <MudText Style="justify-self: start;">@item.Name</MudText>
+                    }
+                    @{
+                        bool hasItemsPerLevel = 
+                            !MenuItemsPerLevel.IsNullOrEmpty() &&
+                            MenuItemsPerLevel.Length > item.Level &&
+                            !MenuItemsPerLevel[item.Level].IsNullOrEmpty();
+
+                        bool hasMenuItemsPerType =
+                            !@item.Type.IsNullOrEmpty() &&
+                            !MenuItemsPerType.IsNullOrEmpty() &&
+                            MenuItemsPerType.ContainsKey(@item.Type) &&
+                            !MenuItemsPerType[@item.Type].IsNullOrEmpty();
+
+                        bool hasMenuItemsForAll = !MenuItemsForAll.IsNullOrEmpty();
+
+                        if (hasItemsPerLevel || hasItemsPerLevel || hasMenuItemsPerType)
+                        {
+                            var menuItems = MenuItemsForAll ?? Array.Empty<MenuItem>();
+                            menuItems = !hasMenuItemsPerType ? menuItems : menuItems.Concat(MenuItemsPerType[@item.Type]).ToArray();
+                            menuItems = !hasItemsPerLevel ? menuItems : menuItems.Concat(MenuItemsPerLevel[item.Level]).ToArray();
+
+                            <div style="justify-self: end;">
+                                <MudMenu Icon="@Icons.Material.Filled.MoreVert">
+                                    @foreach (var menuItem in menuItems)
+                                    {
+                                        <MudMenuItem OnClick=@(args => OnMenuItemClickInternal(args, item, menuItem))>@menuItem.Name</MudMenuItem>
+                                    }
+                                </MudMenu>
+                            </div>
+                        }
+                    }
+                </div>
+            </BodyContent>
+        </MudTreeViewItem>
+    </ItemTemplate>
+</MudTreeView>
+
+@code {
+    public delegate Task<bool> OnAddDelegate(TreeItemData item, int index, MenuItem menuItem);
+
+    [Parameter] public OnAddDelegate OnAddItem { get; set; }
+    [Parameter] public MenuItem[] MenuItemsForAll { get; set; }
+    [Parameter] public MenuItem[][] MenuItemsPerLevel { get; set; }
+    [Parameter] public Dictionary<string, MenuItem[]> MenuItemsPerType { get; set; }
+    [Parameter] public List<TreeItemData> TreeItems { get; set; }
+
+    public string TextValue { get; set; } = "New Item...";
+
+    private bool _isAdding;
+    private MenuItem _selectedMenuItem;
+
+    public static class MenuItems
+    {
+        public static readonly MenuItem Add = new MenuItem("add", "Add");
+        public static readonly MenuItem AddChildAsFirst = new MenuItem("addChildAsFirst", "Add Child as First");
+        public static readonly MenuItem AddChildAsLast = new MenuItem("addChildAsLast", "Add Child as Last");
+        public static readonly MenuItem AddSibling = new MenuItem("addSibling", "Add Sibling");
+        public static readonly MenuItem Remove = new MenuItem("remove", "Remove");
+    }
+
+    private void OnEditableItemBlur(FocusEventArgs args)
+    {
+        ClearItemsWithNoIds();
+    }
+
+    private async Task OnTextFieldValueChanged(string value)
+    {
+        TextValue = value;
+    }
+
+    private void ClearItemsWithNoIds()
+    {
+        TreeItems = TreeItems.Where(si => !si.Id.IsNullOrEmpty()).ToList();
+
+        TreeItems
+            .Flatten(i => i.TreeItems)
+            .ForEach(i => i.TreeItems = i.TreeItems.Where(si => !si.Id.IsNullOrEmpty()).ToList());
+
+    }
+
+    protected async Task<bool> OnMenuItemClickInternal(
+        MouseEventArgs args, 
+        TreeItemData item,
+        MenuItem menuItem)
+    {
+        _selectedMenuItem = menuItem;
+
+        if (menuItem.Id == MenuItems.AddSibling.Id ||
+            menuItem.Id == MenuItems.AddChildAsFirst.Id ||
+            menuItem.Id == MenuItems.AddChildAsLast.Id ||
+            menuItem.Id == MenuItems.Add.Id)
+        {
+            _isAdding = true;
+
+            if (menuItem.Id == MenuItems.AddSibling.Id)
+            {
+                var treeItems = item.Parent ? item.Parent.TreeItems : TreeItems;
+                var i = treeItems.IndexOf(item) + 1;
+                treeItems.Insert(i, new TreeItemData("New Item..", isEditing: true, parent: item.Parent));
+            }
+            else
+            {
+                item.IsExpanded = true;
+                int i = menuItem.Id == MenuItems.AddChildAsFirst.Id ? 0 : item.TreeItems.Count;
+                item.TreeItems.Insert(i, new TreeItemData("New Item..", isEditing: true, parent: item));
+            }
+        }
+
+        await InvokeAsync(StateHasChanged);
+
+        return true;
+    }
+
+    private async Task OnKeyDown(
+        KeyboardEventArgs args, TreeItemData item)
+    {
+        if (args.Key != "Enter")
+            return;
+
+        var i = !item.Parent ? TreeItems.IndexOf(item) : item.Parent.TreeItems.IndexOf(item);
+        if (_isAdding)
+            await UIComponent.InvokeBool(OnAddItem, item, i, _selectedMenuItem)();
+
+        if (item.Id.IsNullOrEmpty())
+            item.Id = item.Name;
+
+        item.IsEditing = false;
+    }
+
+    public class TreeItemData
+    {
+        public string Id { get; set; }
+        public string Name { get; set; }
+        public string Type { get; set; }
+
+        public bool IsExpanded { get; set; }
+        public bool IsEditing { get; set; }
+        public int Level { get; private set; }
+
+        public TreeItemData Parent { get; private set; }
+
+        public List<TreeItemData> TreeItems { get; set; }
+
+        public TreeItemData(
+            string name,
+            bool isEditing,
+            TreeItemData parent,
+            List<TreeItemData>? treeItems = null) : this("", name, treeItems)
+        {
+            IsEditing = isEditing;
+            Parent = parent;
+        }
+
+        public TreeItemData(
+            string name,
+            List<TreeItemData>? treeItems = null) : this("", name, treeItems) {}
+
+        public TreeItemData(
+            string id,
+            string name,
+            List<TreeItemData>? treeItems = null,
+            bool isExpanded = false) : this(id, name, type: "", treeItems) {}
+
+        public TreeItemData(
+            string id,
+            string name,
+            string type,
+            List<TreeItemData>? treeItems = null,
+            bool isExpanded = false)
+        {
+            Id = id;
+            Name = name;
+            Type = type;
+            TreeItems = treeItems ?? new();
+            IsExpanded = isExpanded;
+
+            TreeItems.ForEach(i => i.Init(this, Level + 1));
+        }
+
+        private void Init(TreeItemData parent, int level)
+        {
+            Parent = parent;
+            Level = level;
+        }
+
+        public static implicit operator TreeItemData(string name) => new(name);
+        public static implicit operator bool(TreeItemData item) => item is not null;
+    }
+
+    public record MenuItem(string Id, string Name, string IdSecondary = "");
+}

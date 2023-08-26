@@ -2,6 +2,10 @@
 @using Manabu.UseCases.Users;
 @inherits BaseLayout
 
+<MudThemeProvider Theme=@MyCustomTheme />
+<MudDialogProvider/>
+<MudSnackbarProvider/>
+
 <main class="main" style=@_paddingLeftCssAttribute>
     
     <TopAndSideMenu
@@ -21,6 +25,21 @@
 </main>
 
 @code {
+    MudTheme MyCustomTheme = new MudTheme()
+    {
+        Typography = new Typography()
+        {
+            Default = new Default()
+            {
+                FontFamily = new[] { "ubuntu", "Helvetica", "Arial", "sans-serif" },
+            },
+            Body1 = new Body1()
+            {
+                FontSize = "13px"
+            },
+        }
+    };
+
     [Inject] public AuthenticationStateProvider Auth { get; set; }
     [Inject] public NavigationManager Navigation { get; set; }
     [Inject] public ICommandExecutor CommandExecutor { get; set; }

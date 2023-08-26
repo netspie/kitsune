@@ -3,6 +3,10 @@
 
 @inherits BaseLayout
 
+<MudThemeProvider Theme=@MyCustomTheme />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
 <main class="main" style=@_paddingLeftCssAttribute>
     <TopAndSideMenu
         OnSideMenuSizeChanged=@OnMenuSizeChanged
@@ -19,6 +23,17 @@
 </main>
 
 @code {
+    MudTheme MyCustomTheme = new MudTheme()
+    {
+        Typography = new Typography()
+        {
+            Default = new Default()
+            {
+                FontFamily = new[] { "ubuntu", "Helvetica", "Arial", "sans-serif" }
+            }
+        }
+    };
+
     [Inject] public AuthenticationStateProvider Auth { get; set; }
     [Inject] public NavigationManager Navigation { get; set; }
     [Inject] public ICommandExecutor CommandExecutor { get; set; }
