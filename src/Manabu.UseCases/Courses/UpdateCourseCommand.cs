@@ -6,6 +6,7 @@ using FluentValidation;
 using Manabu.Entities.Courses;
 using Manabu.Entities.Lessons;
 using Mediator;
+using System.Linq;
 
 namespace Manabu.UseCases.Courses;
 
@@ -28,8 +29,21 @@ public class UpdateCourseCommandHandler : ICommandHandler<UpdateCourseCommand, R
 
         var course = await _courseRepository.Get(new CourseId(command.Id), result);
 
-        var newLessons = new List<Lesson>();
+        var updatedLessons = command.Modules.SelectMany(m => m.Lessons).ToArray();
+        var existingLessons = course.Modules.SelectMany(m => m.Lessons).ToArray();
+        var lessonsToRemove = existingLessons.Where(l => updatedLessons.FirstOrDefault(ul => ul.Id == l.Id.Value) is null).ToList();
 
+        course.LessonsRemoved ??= new();
+        course.LessonsRemoved = course.LessonsRemoved.Concat(lessonsToRemove).ToList();
+
+        var updatedModuleNames = command.Modules.Select(m => m.Name).ToArray();
+        var modulesToRemove = course.Modules.Where(m => !updatedModuleNames.Contains(m.Name)).ToArray();
+
+        course.Modules ??= new();
+        course.Modules = course.Modules.Concat(modulesToRemove).ToList();
+
+        var newLessons = new List<Lesson>();
+        
         course.Name = command.Name;
         course.Description = command.Description;
         course.Modules = command.Modules.SelectOrDefault(m => 

@@ -3,15 +3,24 @@
 @using Manabu.UseCases.Courses;
 @using Microsoft.AspNetCore.Components.Authorization;
 
+@if (_course is null) { return; }
+
 <MudStack>
     <MudBreadcrumbs Items="_items" Style="padding-left: 0; font-size: 12px" />
     <MudStack>
         <MudField Label="Name" Variant="Variant.Text" DisableUnderLine=true
             Style="font-weight: bold">
-            Yuta Vocab Course
+            @_course.Name
         </MudField>
         <MudField Label="Description" Variant="Variant.Text" DisableUnderLine=true Style="font-weight: bold">
-            No Description
+            @if (!_course.Description.IsNullOrEmpty())
+            {
+                @_course.Description
+            }
+            else
+            {
+                <span>"No Description"</span>
+            }
         </MudField>
     </MudStack>
     <MudPaper Class="py-4" Elevation="0">
@@ -63,11 +72,6 @@
 
     private CourseDetailsDTO? _course;
     private List<List<List.ListItem>>? _listItems;
-
-    private async Task OnItemClick(MouseEventArgs args)
-    {
-
-    }
 
     private async Task<bool> OnAddItem(
         EditableList.TreeItemData item, int index, EditableList.MenuItem menuItem)
