@@ -2,6 +2,7 @@
 using Manabu.Entities.Phrases;
 using Manabu.Entities.Users;
 using Manabu.Entities.Lessons;
+using Corelibs.Basic.Collections;
 
 namespace Manabu.Entities.Conversations;
 
@@ -26,6 +27,13 @@ public class Conversation : Entity<ConversationId>, IAggregateRoot<ConversationI
         Name = name;
         Lessons = new() { lessonId };
         Owner = owner;
+    }
+
+    public void AddPhrase(PhraseId phrase, 
+        int index = 0)
+    {
+        Phrases ??= new();
+        Phrases.InsertClamped(phrase, index);
     }
 }
 

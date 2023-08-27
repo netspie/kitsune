@@ -1,0 +1,53 @@
+﻿using Corelibs.Basic.Auth;
+using Corelibs.Basic.Blocks;
+using Corelibs.Basic.Repository;
+using FluentValidation;
+using Manabu.Entities.Conversations;
+using Manabu.Entities.Lessons;
+using Manabu.Entities.Phrases;
+using Manabu.Entities.Users;
+using Mediator;
+using System.Security.Claims;
+
+namespace Manabu.UseCases.Phrases;
+
+public class CreatePhraseCommandHandler : ICommandHandler<CreatePhraseCommand, Result>
+{
+    private readonly IAccessorAsync<ClaimsPrincipal> _userAccessor;
+    private readonly IRepository<Conversation, ConversationId> _conversationRepository;
+    private readonly IRepository<Phrase, PhraseId> _phraseRepository;
+
+    public CreatePhraseCommandHandler(
+        IAccessorAsync<ClaimsPrincipal> userAccessor,
+        IRepository<Conversation, ConversationId> conversationRepository,
+        IRepository<Phrase, PhraseId> phraseRepository)
+    {
+        _userAccessor = userAccessor;
+        _conversationRepository = conversationRepository;
+        _phraseRepository = phraseRepository;
+    }
+
+    public async ValueTask<Result> Handle(CreatePhraseCommand command, CancellationToken ct)
+    {
+        var result = Result.Success();
+
+        var userId = await _userAccessor.GetUserID<UserId>();
+
+        var conversation = await _conversationRepository.Get(new ConversationId(command.ConversationId), result);
+        var phrase = new Phrase(userId, command.Name, conversation?.Id);
+
+        lesson.AddConversation(conversation.Id, command.Index);
+
+        await _conversationRepository.Save(conversation, result);
+        await _lessonRepository.Save(lesson, result);
+
+        return result;
+    }
+}
+
+public record CreatePhraseCommand(
+    string Name,
+    string ConversationId = null,
+    int Index = 0) : ICommand<Result>;
+
+public class CreatePhraseCommandValidator : AbstractValidator<CreatePhraseCommand> {}
