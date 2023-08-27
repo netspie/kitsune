@@ -35,12 +35,15 @@ public class GetCourseQueryHandler : IQueryHandler<GetCourseQuery, Result<GetCou
         if (!result.ValidateSuccessAndValues())
             return result.Fail();
 
-        var modules = course.Modules?
+        var modulesDtos = course.Modules?
             .SelectOrDefault((m, i) => 
                 new ModuleDTO(
                     m.Name,
                     lessons[i].SelectOrDefault(l => new LessonDTO(l.Id.Value, l.Name)).ToArray()))
             .ToArray();
+
+        var lessonsRemoved = await _lessonRepository.Get(course.LessonsRemoved ?? new(), result);
+        var lessonsRemovedDtos = lessonsRemoved.Select(l => new LessonDTO(l.Id.Value, l.Name)).ToArray();
 
         return result.With(
             new GetCourseQueryResponse(
@@ -48,7 +51,8 @@ public class GetCourseQueryHandler : IQueryHandler<GetCourseQuery, Result<GetCou
                     course.Id.Value, 
                     course.Name, 
                     course.Description, 
-                    modules)));
+                    modulesDtos,
+                    LessonsRemoved: lessonsRemovedDtos)));
     }
 }
 

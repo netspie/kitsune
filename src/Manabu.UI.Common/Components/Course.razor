@@ -26,7 +26,8 @@
             TreeItems=@_lessonsTreeItems 
             OnAddItem=@OnAddItem 
             MenuItemsRoot=@MenuItemsRoot
-            MenuItemsPerType=@MenuItemsPerType />
+            MenuItemsPerType=@MenuItemsPerType 
+            OnRemoveItem=@OnRemoveFromModuleItems/>
     </MudPaper>
 
     @if (_isEdit)
@@ -34,7 +35,8 @@
         <MudPaper Class="py-4" Elevation="0">
             <EditableList Name="Lessons Removed"
                           TreeItems=@_lessonsRemovedTreeItems
-                          MenuItemsPerType=@LessonsRemoved_MenuItemsPerType />
+                          MenuItemsPerType=@LessonsRemoved_MenuItemsPerType
+                          OnMenuItemClick=@OnRemovedLessonsMenuItemClick />
         </MudPaper>
     }
 
@@ -107,6 +109,22 @@
             var result = await CommandExecutor.Execute(
                 new CreateLessonCommand(item.Name, _course.Id, moduleIndex, index));
         }
+
+        return await RefreshView();
+    }
+
+    private async Task<bool> OnRemoveFromModuleItems(EditableList.TreeItemData item, EditableList.MenuItem menuItem)
+    {
+        if (menuItem.IdSecondary == "removeLesson")
+            await CommandExecutor.Execute(new RemoveLessonCommand(item.Id, _course.Id));
+
+        return await RefreshView();
+    }
+
+    private async Task<bool> OnRemovedLessonsMenuItemClick(EditableList.TreeItemData item, EditableList.MenuItem menuItem)
+    {
+        if (item.Type == "lesson" && menuItem.Id == "restore")
+            await CommandExecutor.Execute(new RestoreLessonCommand(item.Id, _course.Id));
 
         return await RefreshView();
     }
@@ -184,6 +202,7 @@
             new EditableList.MenuItem[]
             {
                 EditableList.MenuItems.AddSibling with { Name = "Add Lesson", IdSecondary = "addLesson"},
+                EditableList.MenuItems.Remove with { Name = "Remove", IdSecondary = "removeLesson"},
             }
         }
     };
@@ -200,7 +219,7 @@
             "lesson",
             new EditableList.MenuItem[]
             {
-                new("bringBack", "Bring Back")
+                new("restore", "Restore")
             }
         }
     };
@@ -211,7 +230,7 @@
             "module",
             new EditableList.MenuItem[]
             {
-                new("bringBack", "Bring Back")
+                new("restore", "Restore")
             }
         }
     };

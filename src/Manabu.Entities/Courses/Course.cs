@@ -93,6 +93,19 @@ public class Course : Entity<CourseId>, IAggregateRoot<CourseId>
         return true;
     }
 
+    public bool RestoreLesson(LessonId lesson)
+    {
+        if (Modules.IsNullOrEmpty())
+            return false;
+
+        LessonsRemoved ??= new();
+        if (!LessonsRemoved.Remove(lesson))
+            return false;
+
+        Modules[0].LessonIds.Add(lesson);
+        return true;
+    }
+
     public record Module(string Name, List<LessonId> LessonIds);
 }
 

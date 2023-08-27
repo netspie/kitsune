@@ -100,10 +100,14 @@
 @code {
     public delegate Task<bool> OnAddDelegate(TreeItemData item, int index, MenuItem menuItem);
     public delegate Task OnClickDelegate(TreeItemData item);
+    public delegate Task OnRemoveDelegate(TreeItemData item, MenuItem menuItem);
+    public delegate Task OnItemActionDelegate(TreeItemData item, MenuItem menuItem);
 
     [Parameter] public string Name { get; set; }
     [Parameter] public OnAddDelegate OnAddItem { get; set; }
+    [Parameter] public OnRemoveDelegate OnRemoveItem { get; set; }
     [Parameter] public OnClickDelegate OnItemClick { get; set; }
+    [Parameter] public OnItemActionDelegate OnMenuItemClick { get; set; }
     [Parameter] public MenuItem[] MenuItemsRoot { get; set; }
     [Parameter] public MenuItem[] MenuItemsForAll { get; set; }
     [Parameter] public MenuItem[][] MenuItemsPerLevel { get; set; }
@@ -178,6 +182,16 @@
                 int i = menuItem.Id == MenuItems.AddChildAsFirst.Id ? 0 : treeItems.Count;
                 treeItems.Insert(i, new TreeItemData("New Item..", isEditing: true, parent: item));
             }
+        }
+        else if (menuItem.Id == MenuItems.Remove.Id)
+        {
+            var treeItems = item?.Parent is not null ? item.Parent.TreeItems : TreeItems;
+            if (await UIComponent.InvokeBool(OnRemoveItem, item, menuItem)())
+                treeItems.Remove(item);
+        }
+        else
+        {
+            await UIComponent.InvokeBool(OnMenuItemClick, item, menuItem)();
         }
 
         await InvokeAsync(StateHasChanged);

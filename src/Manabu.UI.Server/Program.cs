@@ -5,6 +5,7 @@ using Microsoft.Identity.Web.UI;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Manabu.UI.Server;
 using MudBlazor.Services;
+using Corelibs.Basic.Corelibs.Basic.Net;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,11 +33,15 @@ builder.Services.Configure<OpenIdConnectOptions>(
         {
             if (builder.Environment.IsProduction())
                 context.ProtocolMessage.RedirectUri = "https://hackstudy.online/signin-oidc";
-        }; 
+            else
+                context.ProtocolMessage.RedirectUri = $"{GetLocalAddress()}/signin-oidc";
+        };
         options.Events.OnRedirectToIdentityProviderForSignOut = async context =>
         {
             if (builder.Environment.IsProduction())
                 context.ProtocolMessage.PostLogoutRedirectUri = "https://hackstudy.online/";
+            else
+                context.ProtocolMessage.PostLogoutRedirectUri = GetLocalAddress();
         };
     });
 
@@ -65,3 +70,6 @@ app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
 
 app.Run();
+
+string GetLocalAddress() =>
+    $"https://{NetSocketExtensions.GetLocalIPAddress()}:7073";
