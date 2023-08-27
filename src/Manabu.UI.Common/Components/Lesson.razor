@@ -11,6 +11,23 @@
 <MudStack Class="lesson">
     <MudBreadcrumbs Items=@_breadcrumbs Style="padding-left: 0; font-size: 12px" />
 
+    <EditableList 
+        Name="Conversations"
+        IsReadonly=@(!_isEdit)
+        TreeItems=@_conversationTreeItems 
+        OnAddItem=@OnAddItem
+        MenuItemsRoot=@ConvMenuItemsRoot
+        NoIndents=true>
+        
+        <CustomItemTemplate>
+            <MudStack Row=true>
+                <MudText>Himiko:</MudText>
+                <MudText>Konnichiwa!</MudText>
+            </MudStack>
+        </CustomItemTemplate>
+        
+    </EditableList>
+
     <MudStack>
         <TextField 
             Label="Name"
@@ -88,22 +105,6 @@
         return await RefreshView();
     }
 
-    //private async Task<bool> OnRemoveFromModuleItems(EditableList.TreeItemData item, EditableList.MenuItem menuItem)
-    //{
-    //    if (menuItem.IdSecondary == "removeLesson")
-    //        await CommandExecutor.Execute(new RemoveLessonCommand(item.Id, _lesson.Id));
-
-    //    return await RefreshView();
-    //}
-
-    //private async Task<bool> OnRemovedLessonsMenuItemClick(EditableList.TreeItemData item, EditableList.MenuItem menuItem)
-    //{
-    //    if (item.Type == "lesson" && menuItem.Id == "restore")
-    //        await CommandExecutor.Execute(new RestoreLessonCommand(item.Id, _lesson.Id));
-
-    //    return await RefreshView();
-    //}
-
     private Task<bool> OnTitleEdit(string id, string name, string? parentType = null) =>
         ExecuteUpdateCommand(() => _lesson with { Name = name });
 
@@ -145,7 +146,7 @@
         _lesson = response?.Course;
 
         _conversationTreeItems = _lesson?.Conversations?.SelectOrDefault((c, i) =>
-            new EditableList.TreeItemData(c.Id, $"Conversation {i + 1}", "conversation")).ToList();
+            new EditableList.TreeItemData(c.Id, c.Name, "conversation")).ToList();
     }
 
     private string GetDescription() =>

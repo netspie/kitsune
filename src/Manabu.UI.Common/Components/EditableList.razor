@@ -1,11 +1,13 @@
 ﻿@using Corelibs.Blazor.UIComponents.Common;
+@using Microsoft.JSInterop;
+@inject IJSRuntime JSRuntime
 
-
-<MudStack>
+<MudStack id=@_itemId>
     @if (!Name.IsNullOrEmpty() || !MenuItemsRoot.IsNullOrEmpty())
     {
-        <div style="
-                padding-left: 30px;
+        int paddingLeft = NoIndents ? 0 : 30;
+        <div style=@($@"
+                padding-left: {paddingLeft}px;
                 font-weight: bold;
                 display: flex;
                 flex-direction: row;
@@ -13,10 +15,9 @@
                 align-items: center;
                 width: 100%;
                 align-items: center;
-                justify-content: space-between;">
-            @*@if (!Name.IsNullOrEmpty())*@
+                justify-content: space-between;")>
             
-                <MudText Style="justify-self: start; flex-grow: 1; flex-shrink: 1; font-weight: bold;">@Name</MudText>
+             <MudText Style="justify-self: start; flex-grow: 1; flex-shrink: 1; font-weight: bold;">@Name</MudText>
 
             @if (!MenuItemsRoot.IsNullOrEmpty() && !IsReadonly)
             {
@@ -34,29 +35,41 @@
 
     @if (!TreeItems.IsNullOrEmpty())
     {
-        <MudTreeView Items=@TreeItems.ToHashSet() Hover="true" Width="100%">
+        <MudTreeView Items=@TreeItems.ToHashSet() Hover="true" Width="100%"
+            Style="margin-left: 0;">
             <ItemTemplate Context="item">
-                <MudTreeViewItem Items=@item.TreeItems.ToHashSet()
-                                 Expanded=@item.IsExpanded
-                                 ExpandedChanged=@(v => @item.IsExpanded = v)
-                                 Style="height: fit-content"
-                                 OnClick=@(args => OnItemClickInternal(item))>
+                <MudTreeViewItem 
+                    Items=@item.TreeItems.ToHashSet()
+                    Expanded=@item.IsExpanded
+                    ExpandedChanged=@(v => @item.IsExpanded = v)
+                    CanExpand=false
+                    Style="height: fit-content; margin-left: 0; padding-left: 0; left: 0;"
+                    ExpandedIconColor=@Color.Transparent
+                    OnClick=@(args => OnItemClickInternal(item))>
 
                     <BodyContent>
                         <div style="display: grid; grid-template-columns: 1fr auto; align-items: center; width: 100%">
                             @if (_isAdding && item.IsEditing)
                             {
-                                <MudTextField @bind-Value=@item.Name
-                                              Immediate=true
-                                              Variant="Variant.Text"
-                                              OnKeyDown=@(args => OnKeyDown(args, item))
-                                              OnBlur=@OnEditableItemBlur
-                                              TextChanged=OnTextFieldValueChanged
-                                              AutoFocus=true />
+                                <MudTextField 
+                                    @bind-Value=@item.Name
+                                    Immediate=true
+                                    Variant="Variant.Text"
+                                    OnKeyDown=@(args => OnKeyDown(args, item))
+                                    OnBlur=@OnEditableItemBlur
+                                    TextChanged=OnTextFieldValueChanged
+                                    AutoFocus=true />
                             }
                             else
                             {
-                                <MudText Style="justify-self: start;">@item.Name</MudText>
+                                if (CustomItemTemplate is not null)
+                                {
+                                    @CustomItemTemplate(item)
+                                }
+                                else
+                                {
+                                    <MudText Style="justify-self: start;">@item.Name</MudText>
+                                }
                             }
                             @{
                                 bool hasItemsPerLevel =
@@ -98,10 +111,20 @@
 </MudStack>
 
 @code {
+    private readonly string _itemId = Guid.NewGuid().ToString();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && NoIndents)
+            await JSRuntime.InvokeVoidAsync("EditableList_disableIndents", _itemId);
+    }
+
     public delegate Task<bool> OnAddDelegate(TreeItemData item, int index, MenuItem menuItem);
     public delegate Task OnClickDelegate(TreeItemData item);
     public delegate Task OnRemoveDelegate(TreeItemData item, MenuItem menuItem);
     public delegate Task OnItemActionDelegate(TreeItemData item, MenuItem menuItem);
+
+    [Parameter] public RenderFragment<TreeItemData> CustomItemTemplate { get; set; }
 
     [Parameter] public string Name { get; set; }
     [Parameter] public OnAddDelegate OnAddItem { get; set; }
@@ -117,6 +140,7 @@
     [Parameter] public List<TreeItemData> TreeItems { get; set; }
 
     [Parameter] public bool IsReadonly { get; set; }
+    [Parameter] public bool NoIndents { get; set; }
 
     public string TextValue { get; set; } = "New Item...";
 

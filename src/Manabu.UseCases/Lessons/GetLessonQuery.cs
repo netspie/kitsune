@@ -41,7 +41,7 @@ public class GetLessonQueryHandler : IQueryHandler<GetLessonQuery, Result<GetLes
                     lesson.Name,
                     lesson.Description,
                     courses.Select(c => new CourseDTO(c.Id.Value, c.Name)).ToArray(),
-                    conversations.Select(c => new ConversationDTO(c.Id.Value)).ToArray())));
+                    conversations.Select(c => new ConversationDTO(c.Id.Value, c.Name)).ToArray())));
     }
 }
 
@@ -58,7 +58,8 @@ public record LessonDetailsDTO(
     ConversationDTO[] Conversations);
 
 public record ConversationDTO(
-    string Id);
+    string Id,
+    string Name);
 
 public record CourseDTO(
     string Id,

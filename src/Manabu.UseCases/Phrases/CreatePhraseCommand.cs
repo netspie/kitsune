@@ -36,10 +36,10 @@ public class CreatePhraseCommandHandler : ICommandHandler<CreatePhraseCommand, R
         var conversation = await _conversationRepository.Get(new ConversationId(command.ConversationId), result);
         var phrase = new Phrase(userId, command.Name, conversation?.Id);
 
-        lesson.AddConversation(conversation.Id, command.Index);
+        //conversation.add(conversation.Id, command.Index);
 
-        await _conversationRepository.Save(conversation, result);
-        await _lessonRepository.Save(lesson, result);
+        //await _conversationRepository.Save(conversation, result);
+        //await _lessonRepository.Save(lesson, result);
 
         return result;
     }
