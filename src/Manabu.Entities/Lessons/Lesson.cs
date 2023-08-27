@@ -1,8 +1,10 @@
-﻿using Corelibs.Basic.DDD;
+﻿using Corelibs.Basic.Collections;
+using Corelibs.Basic.DDD;
 using Manabu.Entities.Conversations;
 using Manabu.Entities.Courses;
 using Manabu.Entities.Infos;
 using Manabu.Entities.Phrases;
+using Manabu.Entities.Users;
 
 namespace Manabu.Entities.Lessons;
 
@@ -25,6 +27,14 @@ public class Lesson : Entity<LessonId>, IAggregateRoot<LessonId>
         Courses = new() { courseId };
     }
 
+    public void AddToCourse(CourseId course)
+    {
+        Courses ??= new();
+        Courses.Add(course);
+    }
+
+    public bool RemoveFromCourse(CourseId course) =>
+        Courses is null ? false : Courses.Remove(course);
 }
 
 public class LessonId : EntityId { public LessonId(string value) : base(value) { } }

@@ -1,5 +1,4 @@
 ﻿using Corelibs.Basic.Blocks;
-using Corelibs.Basic.Collections;
 using Corelibs.Basic.Repository;
 using FluentValidation;
 using Manabu.Entities.Courses;
@@ -8,12 +7,12 @@ using Mediator;
 
 namespace Manabu.UseCases.Lessons;
 
-public class AddLessonCommandHandler : ICommandHandler<AddLessonCommand, Result>
+public class RemoveLessonCommandHandler : ICommandHandler<RemoveLessonCommand, Result>
 {
     private readonly IRepository<Course, CourseId> _courseRepository;
     private readonly IRepository<Lesson, LessonId> _lessonRepository;
 
-    public AddLessonCommandHandler(
+    public RemoveLessonCommandHandler(
         IRepository<Course, CourseId> courseRepository, 
         IRepository<Lesson, LessonId> lessonRepository)
     {
@@ -21,25 +20,28 @@ public class AddLessonCommandHandler : ICommandHandler<AddLessonCommand, Result>
         _lessonRepository = lessonRepository;
     }
 
-    public async ValueTask<Result> Handle(AddLessonCommand command, CancellationToken ct)
+    public async ValueTask<Result> Handle(RemoveLessonCommand command, CancellationToken ct)
     {
         var result = Result.Success();
 
         var course = await _courseRepository.Get(new CourseId(command.CourseId), result);
+        var lesson = await _lessonRepository.Get(new LessonId(command.CourseId), result);
+        
+        if (!lesson.RemoveFromCourse(course.Id))
+            return result.Fail();
 
-        new Lesson(command.LessonName, command.l)
+        if (!course.RemoveLesson(lesson.Id))
+            return result.Fail();
+
+        await _lessonRepository.Save(lesson, result);
         await _courseRepository.Save(course, result);
-        result += await Task.WhenAll(newLessons.Select(_lessonRepository.Save));
 
         return result;
     }
 }
 
-public record AddLessonCommand(
+public record RemoveLessonCommand(
     string LessonId,
-    string LessonName,
-    string CourseId,
-    int ModuleIndex,
-    int LessonIndex = 0) : ICommand<Result>;
+    string CourseId) : ICommand<Result>;
 
-public class AddLessonCommandValidator : AbstractValidator<AddLessonCommand> {}
+public class RemoveLessonCommandValidator : AbstractValidator<RemoveLessonCommand> {}

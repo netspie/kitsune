@@ -1,12 +1,14 @@
 ﻿@using Corelibs.Basic.Reflection;
 @using Corelibs.Basic.Collections;
 @using Manabu.UseCases.Courses;
+@using Manabu.UseCases.Lessons;
 @using Microsoft.AspNetCore.Components.Authorization;
 
 @if (_course is null) { return; }
 
 <MudStack>
     <MudBreadcrumbs Items=@_breadcrumbs Style="padding-left: 0; font-size: 12px" />
+
     <MudStack>
         <TextField 
             Label="Name"
@@ -17,41 +19,33 @@
             Value=@GetDescription() 
             OnEdit=@OnDescriptionEdit />
     </MudStack>
+
     <MudPaper Class="py-4" Elevation="0">
-        <MudText Class="pl-4 mb-2" Style="font-size: 12px">Lessons</MudText>
-
         <EditableList 
-            TreeItems=@TreeItems 
+            Name="Lessons"
+            TreeItems=@_lessonsTreeItems 
             OnAddItem=@OnAddItem 
+            MenuItemsRoot=@MenuItemsRoot
             MenuItemsPerType=@MenuItemsPerType />
-
     </MudPaper>
+
+    @if (_isEdit)
+    {
+        <MudPaper Class="py-4" Elevation="0">
+            <EditableList Name="Lessons Removed"
+                          TreeItems=@_lessonsRemovedTreeItems
+                          MenuItemsPerType=@LessonsRemoved_MenuItemsPerType />
+        </MudPaper>
+    }
+
+    @if (_isAdmin)
+    {
+        <MudSwitch @bind-Checked=@_isEdit Label="Edit Mode" Color="Color.Info" />
+    }
+
 </MudStack>
 
 @code {
-    private List<EditableList.TreeItemData> TreeItems { get; set; } 
-
-    private Dictionary<string, EditableList.MenuItem[]> MenuItemsPerType = new()
-    {
-        { 
-            "module", 
-            new EditableList.MenuItem[]
-    {
-                EditableList.MenuItems.AddChildAsLast with { Name = "Add Lesson", IdSecondary = "addLesson"},
-                EditableList.MenuItems.AddChildAsFirst with { Name = "Add Lesson at Start", IdSecondary = "addLesson" },
-                EditableList.MenuItems.AddSibling with { Name = "Add Module", IdSecondary = "addModule"},
-    }
-        },
-        {
-            "lesson",
-            new EditableList.MenuItem[]
-    {
-                EditableList.MenuItems.AddSibling with { Name = "Add Lesson", IdSecondary = "addLesson"},
-    }
-        }
-    };
-
-    private List<BreadcrumbItem> _breadcrumbs = new();
 
     [Inject] public IQueryExecutor QueryExecutor { get; set; }
     [Inject] public ICommandExecutor CommandExecutor { get; set; }
@@ -60,12 +54,25 @@
 
     [Parameter] public string CourseId { get; set; }
 
+    private List<EditableList.TreeItemData> _lessonsTreeItems;
+    private List<EditableList.TreeItemData> _lessonsRemovedTreeItems;
+    private List<EditableList.TreeItemData> _modulesRemovedTreeItems;
+
+    private bool _isAdmin;
+    private bool _isEdit;
+    private List<BreadcrumbItem> _breadcrumbs = new();
+
     private CourseDetailsDTO? _course;
     private List<List<List.ListItem>>? _listItems;
 
     protected override async Task OnInitializedAsync()
     {
         await RefreshViewModel();
+
+        if (_course is null)
+            return;
+
+        _isAdmin = await Auth.IsAdmin();
 
         _breadcrumbs.Add(new("Courses", href: "/courses"));
         _breadcrumbs.Add(new($"{_course.Name}", href: $"/courses/{_course?.Id}"));
@@ -84,68 +91,24 @@
     private async Task<bool> OnAddItem(
         EditableList.TreeItemData item, int index, EditableList.MenuItem menuItem)
     {
-        if (!await Auth.IsAdmin())
+        if (!_isAdmin)
             return false;
 
         if (menuItem.IdSecondary == "addModule")
         {
-            return await ExecuteUpdateCommand(() => _course with { Modules = _course.Modules.InsertOrDefault(index, new(item.Name)).ToArray() });
+            var result = await CommandExecutor.Execute(
+                new CreateModuleCommand(_course.Id, item.Name, index));
         }
         else
         if (menuItem.IdSecondary == "addLesson")
         {
-            var mi = int.Parse(item.Parent.Id.TrimStart('m'));
-            return await ExecuteUpdateCommand(() =>
-                _course with
-                    {
-                        Modules = _course.Modules?.SelectOrDefault((m, i) =>
-                        i != mi ? m : m with
-                        {
-                            Lessons = m.Lessons?.InsertOrDefault(index,new("", item.Name)).ToArray()
-                        }).ToArray()
-                    });
+            var treeItems = item.Parent?.Parent?.TreeItems ?? _lessonsTreeItems;
+            var moduleIndex = treeItems.IndexOf(item.Parent);
+            var result = await CommandExecutor.Execute(
+                new CreateLessonCommand(item.Name, _course.Id, moduleIndex, index));
         }
 
-        //if (!item.Parent || item.Parent.Type.IsNullOrEmpty())
-        //    return await ExecuteUpdateCommand(() => _course with { Modules = _course.Modules.Append(new(item.Name)).ToArray() });
-        //else
-        //{
-
-        //}
-
-        return true;
-    }
-
-
-    private async Task<bool> OnWorkoutPlansListDropdownOptionSelected(Dropdown.Option option)
-    {
-        Console.WriteLine(option.ToString());
-        return true;
-    }
-
-    private async Task<bool> OnOwnershipFilterDropdownModelOptionSelected(Dropdown.Option option)
-    {
-        Console.WriteLine(option.ToString());
-        return true;
-    }
-
-    private async Task<bool> OnAddItem(string name, string parentId, string parentType)
-    {
-        if (!await Auth.IsAdmin())
-            return false;
-
-        if (parentType.IsNullOrEmpty())
-            return await ExecuteUpdateCommand(() => _course with { Modules = _course.Modules.Append(new(name)).ToArray() });
-        else
-        {
-            var mi = int.Parse(parentId.TrimStart('m'));
-            return await ExecuteUpdateCommand(() => 
-                _course with { Modules = _course.Modules?.SelectOrDefault((m, i) =>
-                        i != mi ? m : m with { Lessons = m.Lessons?.Append(new("", name)).ToArray() }).ToArray()
-                    });
-        }
-
-        return true;
+        return await RefreshView();
     }
 
     private Task<bool> OnTitleEdit(string id, string name, string? parentType = null) =>
@@ -161,14 +124,15 @@
 
     private async Task<bool> ExecuteUpdateCommand(Func<CourseDetailsDTO> createDto)
     {
-        if (!await Auth.IsAdmin())
+        if (!_isAdmin)
             return false;
 
         var dto = createDto();
         await CommandExecutor.Execute(new UpdateCourseCommand(
-            dto.Id, dto.Name, dto.Description, dto.Modules));
+            dto.Id, dto.Name, dto.Description));
 
         await RefreshView();
+
         return true;
     }
 
@@ -186,10 +150,17 @@
             new GetCourseQuery(CourseId));
 
         _course = response?.Course;
-        //TreeItems.Add(new TreeItemData("All Mail"));
-        TreeItems = _course?.Modules?.SelectOrDefault((m, i) =>
+
+        _lessonsTreeItems = _course?.Modules?.SelectOrDefault((m, i) =>
             new EditableList.TreeItemData($"m{i}", m.Name, "module", m.Lessons.SelectOrDefault(l =>
-                new EditableList.TreeItemData(l.Id, l.Name, "lesson")).ToList(), isExpanded: true)).ToList();
+                new EditableList.TreeItemData(l.Id, l.Name, "lesson")).ToList(), isExpanded: true)).ToList() ?? new();
+
+        _lessonsRemovedTreeItems = _course?.LessonsRemoved?.SelectOrDefault((l, i) =>
+               new EditableList.TreeItemData(l.Id, l.Name, "lesson")).ToList() ?? new();
+
+        _modulesRemovedTreeItems = _course?.ModulesRemoved?.SelectOrDefault((m, i) =>
+            new EditableList.TreeItemData($"m{i}", m.Name, "module", m.Lessons.SelectOrDefault(l =>
+                new EditableList.TreeItemData(l.Id, l.Name, "lesson")).ToList())).ToList() ?? new();
     }
 
     private string GetDescription() =>
@@ -197,21 +168,51 @@
             _course.Description :
             "No Description";
 
-    private static Dropdown.ViewModel ModulesDropdownModel = new(
-        Options: new()
-        {
-            new("add", "Add"),
+    private Dictionary<string, EditableList.MenuItem[]> MenuItemsPerType = new()
+    {
+        { 
+            "module", 
+            new EditableList.MenuItem[]
+            {
+                EditableList.MenuItems.AddChildAsLast with { Name = "Add Lesson", IdSecondary = "addLesson"},
+                EditableList.MenuItems.AddChildAsFirst with { Name = "Add Lesson at Start", IdSecondary = "addLesson" },
+                EditableList.MenuItems.AddSibling with { Name = "Add Module", IdSecondary = "addModule"},
+            }
         },
-        Trigger: new(IsFixed: true, Value: "Menu", Mode: Dropdown.Mode.Component)
-    );
+        {
+            "lesson",
+            new EditableList.MenuItem[]
+            {
+                EditableList.MenuItems.AddSibling with { Name = "Add Lesson", IdSecondary = "addLesson"},
+            }
+        }
+    };
 
-    private Dropdown.ViewModel OwnershipFilterDropdownModel = new(
-        Options: new()
+    private EditableList.MenuItem[] MenuItemsRoot = new EditableList.MenuItem[]
+    {
+        EditableList.MenuItems.AddChildAsLast with { Name = "Add Module", IdSecondary = "addModule"},
+        EditableList.MenuItems.AddChildAsFirst with { Name = "Add Module at Start", IdSecondary = "addModule" },
+    };
+
+    private Dictionary<string, EditableList.MenuItem[]> LessonsRemoved_MenuItemsPerType = new()
+    {
         {
-            "Own",
-            "Public",
-            "All"
-        },
-        Trigger: new(BgOn: true)
-    );
+            "lesson",
+            new EditableList.MenuItem[]
+            {
+                new("bringBack", "Bring Back")
+            }
+        }
+    };
+
+    private Dictionary<string, EditableList.MenuItem[]> ModulesRemoved_MenuItemsPerType = new()
+    {
+        {
+            "module",
+            new EditableList.MenuItem[]
+            {
+                new("bringBack", "Bring Back")
+            }
+        }
+    };
 }

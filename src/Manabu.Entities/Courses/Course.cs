@@ -16,7 +16,7 @@ public class Course : Entity<CourseId>, IAggregateRoot<CourseId>
     public string Description { get; set; }
     public AuthorId? Author { get; set; }
     public List<Module> Modules { get; set; }
-    public List<Lesson> LessonsRemoved { get; set; }
+    public List<LessonId> LessonsRemoved { get; set; }
     public List<Module> ModulesRemoved { get; set; }
     public bool IsOfficial { get; set; }
 
@@ -35,7 +35,7 @@ public class Course : Entity<CourseId>, IAggregateRoot<CourseId>
         AuthorId author,
         List<Module> modules,
         bool isOfficial = false,
-        List<Lesson> lessonsRemoved = null,
+        List<LessonId> lessonsRemoved = null,
         List<Module> modulesRemoved = null) : base(id, version)
     {
         Name = name;
@@ -53,10 +53,8 @@ public class Course : Entity<CourseId>, IAggregateRoot<CourseId>
         if (moduleIndex < 0 || moduleIndex >= Modules.Count)
             return false;
         
-        moduleIndex = moduleIndex.Clamp(Modules.Count);
-
-        var lessons = Modules[moduleIndex];
-        lessonIndex = lessonIndex.Clamp(lessons.IsNullOrEmpty() ? 0 : lessons.Count);
+        var lessons = Modules[moduleIndex].LessonIds;
+        lessons.InsertClamped(lesson, lessonIndex);
 
         return true;
     }
@@ -64,16 +62,38 @@ public class Course : Entity<CourseId>, IAggregateRoot<CourseId>
     public void AddModule(string name, int moduleIndex = 0)
     {
         Modules ??= new();
-        Modules.InsertClamped(new Module(name, new List<string>()), moduleIndex);
+        Modules.InsertClamped(new Module(name, new()), moduleIndex);
     }
 
     public bool RemoveModule(int moduleIndex)
     {
-        Modules ??= new();
-        Modules.InsertClamped(new Module(name, new List<string>()), moduleIndex);
+        ModulesRemoved ??= new();
+        if (Modules is null || 
+            moduleIndex < 0 ||
+            moduleIndex >= Modules.Count)
+            return false;
+
+        ModulesRemoved.Add(Modules[moduleIndex]);
+        Modules.RemoveAt(moduleIndex);
+
+        return true;
     }
 
-    public record Module(string Name, List<string> LessonIds);
+    public bool RemoveLesson(LessonId lesson)
+    {
+        LessonsRemoved ??= new();
+        if (Modules is null)
+            return false;
+
+        if (!Modules.Contains(m => m.LessonIds.Remove(lesson)))
+            return false;
+
+        LessonsRemoved.Add(lesson);
+
+        return true;
+    }
+
+    public record Module(string Name, List<LessonId> LessonIds);
 }
 
 public class CourseId : EntityId { public CourseId(string value) : base(value) {} }

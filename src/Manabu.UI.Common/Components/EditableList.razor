@@ -1,6 +1,5 @@
 ﻿@using Corelibs.Blazor.UIComponents.Common;
 
-@if (TreeItems.IsNullOrEmpty()) { return; }
 
 <MudStack>
     @if (!Name.IsNullOrEmpty() || !MenuItemsRoot.IsNullOrEmpty())
@@ -15,10 +14,10 @@
                 width: 100%;
                 align-items: center;
                 justify-content: space-between;">
-            @if (!Name.IsNullOrEmpty())
-            {
+            @*@if (!Name.IsNullOrEmpty())*@
+            
                 <MudText Style="justify-self: start; flex-grow: 1; flex-shrink: 1; font-weight: bold;">@Name</MudText>
-            }
+            
             @if (!MenuItemsRoot.IsNullOrEmpty())
             {
                 <div style="justify-self: end;">
@@ -33,66 +32,69 @@
         </div>
     }
 
-    <MudTreeView Items=@TreeItems.ToHashSet() Hover="true" Width="100%">
-        <ItemTemplate Context="item">
-            <MudTreeViewItem Items=@item.TreeItems.ToHashSet()
-                             Expanded=@item.IsExpanded
-                             ExpandedChanged=@(v => @item.IsExpanded = v)
-                             Style="height: fit-content"
-                             OnClick=@(args => OnItemClickInternal(item))>
+    @if (!TreeItems.IsNullOrEmpty())
+    {
+        <MudTreeView Items=@TreeItems.ToHashSet() Hover="true" Width="100%">
+            <ItemTemplate Context="item">
+                <MudTreeViewItem Items=@item.TreeItems.ToHashSet()
+                                 Expanded=@item.IsExpanded
+                                 ExpandedChanged=@(v => @item.IsExpanded = v)
+                                 Style="height: fit-content"
+                                 OnClick=@(args => OnItemClickInternal(item))>
 
-                <BodyContent>
-                    <div style="display: grid; grid-template-columns: 1fr auto; align-items: center; width: 100%">
-                        @if (_isAdding && item.IsEditing)
-                        {
-                            <MudTextField @bind-Value=@item.Name
-                                          Label="Standard"
-                                          Immediate=true
-                                          Variant="Variant.Text"
-                                          OnKeyDown=@(args => OnKeyDown(args, item))
-                                          OnBlur=@OnEditableItemBlur
-                                          TextChanged=OnTextFieldValueChanged
-                                          AutoFocus=true />
-                        }
-                        else
-                        {
-                            <MudText Style="justify-self: start;">@item.Name</MudText>
-                        }
-                        @{
-                            bool hasItemsPerLevel =
-                                !MenuItemsPerLevel.IsNullOrEmpty() &&
-                                MenuItemsPerLevel.Length > item.Level &&
-                                !MenuItemsPerLevel[item.Level].IsNullOrEmpty();
-
-                            bool hasMenuItemsPerType =
-                                !@item.Type.IsNullOrEmpty() &&
-                                !MenuItemsPerType.IsNullOrEmpty() &&
-                                MenuItemsPerType.ContainsKey(@item.Type) &&
-                                !MenuItemsPerType[@item.Type].IsNullOrEmpty();
-
-                            bool hasMenuItemsForAll = !MenuItemsForAll.IsNullOrEmpty();
-
-                            if (hasItemsPerLevel || hasItemsPerLevel || hasMenuItemsPerType)
+                    <BodyContent>
+                        <div style="display: grid; grid-template-columns: 1fr auto; align-items: center; width: 100%">
+                            @if (_isAdding && item.IsEditing)
                             {
-                                var menuItems = MenuItemsForAll ?? Array.Empty<MenuItem>();
-                                menuItems = !hasMenuItemsPerType ? menuItems : menuItems.Concat(MenuItemsPerType[@item.Type]).ToArray();
-                                menuItems = !hasItemsPerLevel ? menuItems : menuItems.Concat(MenuItemsPerLevel[item.Level]).ToArray();
-
-                                <div style="justify-self: end;">
-                                    <MudMenu Icon="@Icons.Material.Filled.MoreVert">
-                                        @foreach (var menuItem in menuItems)
-                                        {
-                                            <MudMenuItem OnClick=@(args => OnMenuItemClickInternal(args, item, menuItem))>@menuItem.Name</MudMenuItem>
-                                        }
-                                    </MudMenu>
-                                </div>
+                                <MudTextField @bind-Value=@item.Name
+                                              Immediate=true
+                                              Variant="Variant.Text"
+                                              OnKeyDown=@(args => OnKeyDown(args, item))
+                                              OnBlur=@OnEditableItemBlur
+                                              TextChanged=OnTextFieldValueChanged
+                                              AutoFocus=true />
                             }
-                        }
-                    </div>
-                </BodyContent>
-            </MudTreeViewItem>
-        </ItemTemplate>
-    </MudTreeView>
+                            else
+                            {
+                                <MudText Style="justify-self: start;">@item.Name</MudText>
+                            }
+                            @{
+                                bool hasItemsPerLevel =
+                                    !MenuItemsPerLevel.IsNullOrEmpty() &&
+                                    MenuItemsPerLevel.Length > item.Level &&
+                                    !MenuItemsPerLevel[item.Level].IsNullOrEmpty();
+
+                                bool hasMenuItemsPerType =
+                                    !@item.Type.IsNullOrEmpty() &&
+                                    !MenuItemsPerType.IsNullOrEmpty() &&
+                                    MenuItemsPerType.ContainsKey(@item.Type) &&
+                                    !MenuItemsPerType[@item.Type].IsNullOrEmpty();
+
+                                bool hasMenuItemsForAll = !MenuItemsForAll.IsNullOrEmpty();
+
+                                if (hasItemsPerLevel || hasItemsPerLevel || hasMenuItemsPerType)
+                                {
+                                    var menuItems = MenuItemsForAll ?? Array.Empty<MenuItem>();
+                                    menuItems = !hasMenuItemsPerType ? menuItems : menuItems.Concat(MenuItemsPerType[@item.Type]).ToArray();
+                                    menuItems = !hasItemsPerLevel ? menuItems : menuItems.Concat(MenuItemsPerLevel[item.Level]).ToArray();
+
+                                    <div style="justify-self: end;">
+                                        <MudMenu Icon="@Icons.Material.Filled.MoreVert">
+                                            @foreach (var menuItem in menuItems)
+                                            {
+                                                <MudMenuItem OnClick=@(args => OnMenuItemClickInternal(args, item, menuItem))>@menuItem.Name</MudMenuItem>
+                                            }
+                                        </MudMenu>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </BodyContent>
+                </MudTreeViewItem>
+            </ItemTemplate>
+        </MudTreeView>
+    }
+
 </MudStack>
 
 @code {

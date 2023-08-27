@@ -2,6 +2,7 @@
 using Corelibs.Basic.Collections;
 using Corelibs.Basic.Repository;
 using Manabu.Entities.Courses;
+using Manabu.Entities.Lessons;
 using Mediator;
 
 namespace Manabu.UseCases.Courses;
@@ -9,10 +10,14 @@ namespace Manabu.UseCases.Courses;
 public class GetCourseQueryHandler : IQueryHandler<GetCourseQuery, Result<GetCourseQueryResponse>>
 {
     private readonly IRepository<Course, CourseId> _courseRepository;
+    private readonly IRepository<Lesson, LessonId> _lessonRepository;
 
-    public GetCourseQueryHandler(IRepository<Course, CourseId> courseRepository)
+    public GetCourseQueryHandler(
+        IRepository<Course, CourseId> courseRepository,
+        IRepository<Lesson, LessonId> lessonRepository)
     {
         _courseRepository = courseRepository;
+        _lessonRepository = lessonRepository;
     }
 
     public async ValueTask<Result<GetCourseQueryResponse>> Handle(GetCourseQuery query, CancellationToken cancellationToken)
@@ -23,12 +28,18 @@ public class GetCourseQueryHandler : IQueryHandler<GetCourseQuery, Result<GetCou
         if (!result.ValidateSuccessAndValues())
             return result.Fail();
 
+        var modulesTasks = course.Modules?.SelectOrDefault(m => m.LessonIds?.SelectOrDefault(lessonId =>
+            _lessonRepository.Get(lessonId, result)));
+
+        var lessons = await Task.WhenAll(modulesTasks.SelectOrDefault(m => Task.WhenAll(m)));
+        if (!result.ValidateSuccessAndValues())
+            return result.Fail();
+
         var modules = course.Modules?
-            .SelectOrDefault(m => 
+            .SelectOrDefault((m, i) => 
                 new ModuleDTO(
-                    m.Name, 
-                    m.Lessons?.SelectOrDefault(l => 
-                        new LessonDTO(l.Id.Value, l.Name)).ToArray()))
+                    m.Name,
+                    lessons[i].SelectOrDefault(l => new LessonDTO(l.Id.Value, l.Name)).ToArray()))
             .ToArray();
 
         return result.With(
@@ -50,7 +61,9 @@ public record CourseDetailsDTO(
     string Id,
     string Name,
     string Description,
-    ModuleDTO[] Modules);
+    ModuleDTO[] Modules,
+    ModuleDTO[]? ModulesRemoved = null,
+    LessonDTO[]? LessonsRemoved = null);
 
 public record ModuleDTO(
     string Name,
