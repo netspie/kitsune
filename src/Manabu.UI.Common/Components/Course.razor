@@ -4,27 +4,35 @@
 @using Manabu.UseCases.Lessons;
 @using Microsoft.AspNetCore.Components.Authorization;
 
+@inherits CoreComponent
+
 @if (_course is null) { return; }
 
-<MudStack>
+<MudStack Class="course">
     <MudBreadcrumbs Items=@_breadcrumbs Style="padding-left: 0; font-size: 12px" />
 
     <MudStack>
         <TextField 
             Label="Name"
+            IsReadonly=@(!_isEdit)
             Value=@_course.Name 
             OnEdit=@OnNameEdit />
+
         <TextField 
             Label="Description"
+            IsReadonly=@(!_isEdit)
             Value=@GetDescription() 
             OnEdit=@OnDescriptionEdit />
+
     </MudStack>
 
     <MudPaper Class="py-4" Elevation="0">
         <EditableList 
             Name="Lessons"
+            IsReadonly=@(!_isEdit)
             TreeItems=@_lessonsTreeItems 
             OnAddItem=@OnAddItem 
+            OnItemClick=OnItemClick
             MenuItemsRoot=@MenuItemsRoot
             MenuItemsPerType=@MenuItemsPerType 
             OnRemoveItem=@OnRemoveFromModuleItems/>
@@ -48,32 +56,23 @@
 </MudStack>
 
 @code {
-    [Inject] public IQueryExecutor QueryExecutor { get; set; }
-    [Inject] public ICommandExecutor CommandExecutor { get; set; }
-    [Inject] public NavigationManager Navigation { get; set; }
-    [Inject] public AuthenticationStateProvider Auth { get; set; }
-
     [Parameter] public string CourseId { get; set; }
 
     private List<EditableList.TreeItemData> _lessonsTreeItems;
     private List<EditableList.TreeItemData> _lessonsRemovedTreeItems;
     private List<EditableList.TreeItemData> _modulesRemovedTreeItems;
 
-    private bool _isAdmin;
-    private bool _isEdit;
     private List<BreadcrumbItem> _breadcrumbs = new();
 
     private CourseDetailsDTO? _course;
     private List<List<List.ListItem>>? _listItems;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnInitializedAsyncImpl()
     {
         await RefreshViewModel();
 
         if (_course is null)
             return;
-
-        _isAdmin = await Auth.IsAdmin();
 
         _breadcrumbs.Add(new("Courses", href: "/courses"));
         _breadcrumbs.Add(new($"{_course.Name}", href: $"/courses/{_course?.Id}"));
@@ -134,9 +133,9 @@
     private Task<bool> OnDescriptionEdit(string id, string description, string? parentType = null) =>
         ExecuteUpdateCommand(() => _course with { Description = description });
 
-    private async Task OnItemClick(string id, string type)
+    private async Task OnItemClick(EditableList.TreeItemData item)
     {
-        //Navigation.NavigateTo($"courses/{id}");
+        Navigation.NavigateTo($"lessons/{item.Id}");
     }
 
     private async Task<bool> ExecuteUpdateCommand(Func<CourseDetailsDTO> createDto)

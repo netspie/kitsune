@@ -17,8 +17,8 @@
             @*@if (!Name.IsNullOrEmpty())*@
             
                 <MudText Style="justify-self: start; flex-grow: 1; flex-shrink: 1; font-weight: bold;">@Name</MudText>
-            
-            @if (!MenuItemsRoot.IsNullOrEmpty())
+
+            @if (!MenuItemsRoot.IsNullOrEmpty() && !IsReadonly)
             {
                 <div style="justify-self: end;">
                     <MudMenu Icon="@Icons.Material.Filled.MoreVert">
@@ -72,7 +72,7 @@
 
                                 bool hasMenuItemsForAll = !MenuItemsForAll.IsNullOrEmpty();
 
-                                if (hasItemsPerLevel || hasItemsPerLevel || hasMenuItemsPerType)
+                                if (!IsReadonly && (hasItemsPerLevel || hasItemsPerLevel || hasMenuItemsPerType))
                                 {
                                     var menuItems = MenuItemsForAll ?? Array.Empty<MenuItem>();
                                     menuItems = !hasMenuItemsPerType ? menuItems : menuItems.Concat(MenuItemsPerType[@item.Type]).ToArray();
@@ -108,11 +108,15 @@
     [Parameter] public OnRemoveDelegate OnRemoveItem { get; set; }
     [Parameter] public OnClickDelegate OnItemClick { get; set; }
     [Parameter] public OnItemActionDelegate OnMenuItemClick { get; set; }
+
     [Parameter] public MenuItem[] MenuItemsRoot { get; set; }
     [Parameter] public MenuItem[] MenuItemsForAll { get; set; }
     [Parameter] public MenuItem[][] MenuItemsPerLevel { get; set; }
     [Parameter] public Dictionary<string, MenuItem[]> MenuItemsPerType { get; set; }
+
     [Parameter] public List<TreeItemData> TreeItems { get; set; }
+
+    [Parameter] public bool IsReadonly { get; set; }
 
     public string TextValue { get; set; } = "New Item...";
 

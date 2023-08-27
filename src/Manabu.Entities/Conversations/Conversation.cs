@@ -1,5 +1,7 @@
 ﻿using Corelibs.Basic.DDD;
 using Manabu.Entities.Phrases;
+using Manabu.Entities.Users;
+using Manabu.Entities.Lessons;
 
 namespace Manabu.Entities.Conversations;
 
@@ -7,7 +9,9 @@ public class Conversation : Entity<ConversationId>, IAggregateRoot<ConversationI
 {
     public const string DefaultCollectionName = "conversations";
 
+    public UserId Owner { get; private set; }
     public List<PhraseId> Phrases { get; private set; }
+    public List<LessonId> Lessons { get; private set; }
     public List<string> Speakers { get; private set; }
     public List<int> SpeakersOrder { get; private set; }
 
@@ -16,24 +20,12 @@ public class Conversation : Entity<ConversationId>, IAggregateRoot<ConversationI
 
     public Conversation(
         string name,
-        string description)
+        LessonId lessonId,
+        UserId owner)
     {
         Name = name;
-        Description = description;
-    }
-
-    public Conversation(
-        ConversationId id,
-        uint version,
-        string name,
-        string description,
-        List<string> speakers,
-        List<int> speakersOrder) : base(id, version)
-    {
-        Name = name;
-        Description = description;
-        Speakers = speakers;
-        SpeakersOrder = speakersOrder;
+        Lessons = new() { lessonId };
+        Owner = owner;
     }
 }
 

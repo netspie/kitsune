@@ -1,0 +1,161 @@
+﻿@using Corelibs.Basic.Reflection;
+@using Corelibs.Basic.Collections;
+@using Manabu.UseCases.Conversations;
+@using Manabu.UseCases.Lessons;
+@using Microsoft.AspNetCore.Components.Authorization;
+
+@inherits CoreComponent
+
+@if (_lesson is null) { return; }
+
+<MudStack Class="lesson">
+    <MudBreadcrumbs Items=@_breadcrumbs Style="padding-left: 0; font-size: 12px" />
+
+    <MudStack>
+        <TextField 
+            Label="Name"
+            IsReadonly=@(!_isEdit)
+            Value=@_lesson.Name 
+            OnEdit=@OnNameEdit />
+
+        <TextField 
+            Label="Description"
+            IsReadonly=@(!_isEdit)
+            Value=@GetDescription() 
+            OnEdit=@OnDescriptionEdit />
+    </MudStack>
+
+    <MudPaper Class="py-4" Elevation="0">
+        <EditableList 
+            Name="Conversations"
+            IsReadonly=@(!_isEdit)
+            TreeItems=@_conversationTreeItems 
+            OnAddItem=@OnAddItem
+            MenuItemsRoot=@ConvMenuItemsRoot />
+    </MudPaper>
+
+    @if (_isAdmin)
+    {
+        <MudSwitch @bind-Checked=@_isEdit Label="Edit Mode" Color="Color.Info" />
+    }
+
+</MudStack>
+
+@code {
+    [Parameter] public string LessonId { get; set; }
+
+    private List<EditableList.TreeItemData> _conversationTreeItems;
+    private List<EditableList.TreeItemData> _lessonsRemovedTreeItems;
+    private List<EditableList.TreeItemData> _modulesRemovedTreeItems;
+
+    private List<BreadcrumbItem> _breadcrumbs = new();
+
+    private LessonDetailsDTO? _lesson;
+    private List<List<List.ListItem>>? _listItems;
+
+    protected override async Task OnInitializedAsyncImpl()
+    {
+        await RefreshViewModel();
+
+        if (_lesson is null)
+            return;
+
+        _breadcrumbs.Add(new("Courses", href: "/courses"));
+        _breadcrumbs.Add(new(_lesson.Courses[0].Name, href: $"/courses/{_lesson.Courses[0].Id}"));
+        _breadcrumbs.Add(new("Lessons", "", disabled: true));
+        _breadcrumbs.Add(new(_lesson.Name, href: _lesson.Id));
+    }
+
+    private async Task<bool> OnNameEdit(string text)
+    {
+        return await ExecuteUpdateCommand(() => _lesson with { Name = text });
+    }
+
+    private async Task<bool> OnDescriptionEdit(string text)
+    {
+        return await ExecuteUpdateCommand(() => _lesson with { Description = text });
+    }
+
+    private async Task<bool> OnAddItem(
+        EditableList.TreeItemData item, int index, EditableList.MenuItem menuItem)
+    {
+        if (!_isAdmin)
+            return false;
+
+        if (menuItem.IdSecondary == "addConversation")
+            await CommandExecutor.Execute(new CreateConversationCommand(item.Name, _lesson.Id, index));
+
+        return await RefreshView();
+    }
+
+    //private async Task<bool> OnRemoveFromModuleItems(EditableList.TreeItemData item, EditableList.MenuItem menuItem)
+    //{
+    //    if (menuItem.IdSecondary == "removeLesson")
+    //        await CommandExecutor.Execute(new RemoveLessonCommand(item.Id, _lesson.Id));
+
+    //    return await RefreshView();
+    //}
+
+    //private async Task<bool> OnRemovedLessonsMenuItemClick(EditableList.TreeItemData item, EditableList.MenuItem menuItem)
+    //{
+    //    if (item.Type == "lesson" && menuItem.Id == "restore")
+    //        await CommandExecutor.Execute(new RestoreLessonCommand(item.Id, _lesson.Id));
+
+    //    return await RefreshView();
+    //}
+
+    private Task<bool> OnTitleEdit(string id, string name, string? parentType = null) =>
+        ExecuteUpdateCommand(() => _lesson with { Name = name });
+
+    private Task<bool> OnDescriptionEdit(string id, string description, string? parentType = null) =>
+        ExecuteUpdateCommand(() => _lesson with { Description = description });
+
+    private async Task OnItemClick(string id, string type)
+    {
+        //Navigation.NavigateTo($"courses/{id}");
+    }
+
+    private async Task<bool> ExecuteUpdateCommand(Func<LessonDetailsDTO> createDto)
+    {
+        if (!_isAdmin)
+            return false;
+
+        var dto = createDto();
+        await CommandExecutor.Execute(new UpdateLessonCommand(
+            dto.Id, dto.Name, dto.Description));
+
+        await RefreshView();
+
+        return true;
+    }
+
+    protected async Task<bool> RefreshView()
+    {
+        await RefreshViewModel();
+        await InvokeAsync(StateHasChanged);
+
+        return true;
+    }
+
+    protected async Task RefreshViewModel()
+    {
+        var response = await QueryExecutor.Execute<GetLessonQuery, GetLessonQueryResponse>(
+            new GetLessonQuery(LessonId));
+
+        _lesson = response?.Course;
+
+        _conversationTreeItems = _lesson?.Conversations?.SelectOrDefault((c, i) =>
+            new EditableList.TreeItemData(c.Id, $"Conversation {i + 1}", "conversation")).ToList();
+    }
+
+    private string GetDescription() =>
+        !_lesson.Description.IsNullOrEmpty() ?
+            _lesson.Description :
+            "No Description";
+
+    private EditableList.MenuItem[] ConvMenuItemsRoot = new EditableList.MenuItem[]
+    {
+        EditableList.MenuItems.AddChildAsLast with { Name = "Add Conversation", IdSecondary = "addConversation"},
+        EditableList.MenuItems.AddChildAsFirst with { Name = "Add Conversation at Start", IdSecondary = "addConversation" },
+    };
+}

@@ -1,4 +1,5 @@
-﻿using Corelibs.Basic.DDD;
+﻿using Corelibs.Basic.Collections;
+using Corelibs.Basic.DDD;
 using Manabu.Entities.Conversations;
 using Manabu.Entities.Courses;
 using Manabu.Entities.Infos;
@@ -35,8 +36,15 @@ public class Lesson : Entity<LessonId>, IAggregateRoot<LessonId>
         Courses.Add(course);
     }
 
+    public void AddConversation(ConversationId conversation, int index = 0)
+    {
+        Conversations ??= new();
+        Conversations.InsertClamped(conversation, index);
+    }
+
     public bool RemoveFromCourse(CourseId course) =>
-        Courses is null ? false : Courses.Remove(course);
+        Courses is null ? false :
+            Courses.Count <= 1 ? true : Courses.Remove(course);
 }
 
 public class LessonId : EntityId { public LessonId(string value) : base(value) { } }

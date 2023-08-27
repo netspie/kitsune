@@ -2,49 +2,35 @@
 @using Manabu.UseCases.Courses;
 @using Microsoft.AspNetCore.Components.Authorization;
 
-<MudStack>
+@inherits CoreComponent
+
+<MudStack Class="courses">
     <MudPaper Class="py-4" Elevation="0">
-        <EditableList Name="Courses"
-            TreeItems=@TreeItems
-                      OnAddItem=@OnAddItem
-                      MenuItemsRoot=@MenuItemsRoot
-                      OnItemClick=@OnItemClick/>
+        <EditableList 
+            Name="Courses"
+            TreeItems=@_treeItems
+            OnAddItem=@OnAddItem
+            IsReadonly=@(!_isEdit)
+            MenuItemsRoot=@MenuItemsRoot
+            OnItemClick=@OnItemClick/>
 
     </MudPaper>
+
+    @if (_isAdmin)
+    {
+        <MudSwitch @bind-Checked=@_isEdit Label="Edit Mode" Color="Color.Info" />
+    }
 </MudStack>
 
 @code {
-    private EditableList.MenuItem[] MenuItemsRoot = new EditableList.MenuItem[]
-        {
-        EditableList.MenuItems.AddChildAsLast with { Name = "Add Course", IdSecondary = "addCourse"},
-        EditableList.MenuItems.AddChildAsFirst with { Name = "Add Course at Start", IdSecondary = "addCourse" },
-        };
-
-    private List<EditableList.TreeItemData> TreeItems { get; set; }
-
-    [Inject] public IQueryExecutor QueryExecutor { get; set; }
-    [Inject] public ICommandExecutor CommandExecutor { get; set; }
-    [Inject] public NavigationManager Navigation { get; set; }
-    [Inject] public AuthenticationStateProvider Auth { get; set; }
+    private List<EditableList.TreeItemData> _treeItems;
 
     private CourseDTO[]? _courses;
     private List<List.ListItem>? _listItems;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnInitializedAsyncImpl()
     {
         await RefreshViewModel();
-    }
-
-    private async Task<bool> OnWorkoutPlansListDropdownOptionSelected(Dropdown.Option option)
-    {
-        Console.WriteLine(option.ToString());
-        return true;
-    }
-
-    private async Task<bool> OnOwnershipFilterDropdownModelOptionSelected(Dropdown.Option option)
-    {
-        Console.WriteLine(option.ToString());
-        return true;
     }
 
     private async Task<bool> OnAddItem(
@@ -76,26 +62,12 @@
     {
         var response = await QueryExecutor.Execute<GetCoursesQuery, GetCoursesQueryResponse>();
         _courses = response?.Courses;
-        TreeItems = _courses?.Select(c => new EditableList.TreeItemData(c.Id, c.Name))?.ToList();
+        _treeItems = _courses?.Select(c => new EditableList.TreeItemData(c.Id, c.Name))?.ToList();
     }
 
-    private static Dropdown.ViewModel DropdownModel = new(
-        Options: new()
-        {
-            "Add",
-            "Remove",
-            "Edit"
-        },
-        Trigger: new(IsFixed: true, Value: "Menu", Mode: Dropdown.Mode.Component)
-    );
-
-    private Dropdown.ViewModel OwnershipFilterDropdownModel = new(
-        Options: new()
-        {
-            "Own",
-            "Public",
-            "All"
-        },
-        Trigger: new(BgOn: true)
-    );
+    private EditableList.MenuItem[] MenuItemsRoot = new EditableList.MenuItem[]
+    {
+        EditableList.MenuItems.AddChildAsLast with { Name = "Add Course", IdSecondary = "addCourse"},
+        EditableList.MenuItems.AddChildAsFirst with { Name = "Add Course at Start", IdSecondary = "addCourse" },
+    };
 }
