@@ -26,27 +26,6 @@ public class Course : Entity<CourseId>, IAggregateRoot<CourseId>
         Name = name;
     }
 
-    [JsonConstructor]
-    public Course(
-        CourseId id, 
-        uint version,
-        string name,
-        string description,
-        AuthorId author,
-        List<Module> modules,
-        bool isOfficial = false,
-        List<LessonId> lessonsRemoved = null,
-        List<Module> modulesRemoved = null) : base(id, version)
-    {
-        Name = name;
-        Description = description;
-        Author = author;
-        Modules = modules;
-        IsOfficial = isOfficial;
-        LessonsRemoved = lessonsRemoved;
-        ModulesRemoved = modulesRemoved;
-    }
-
     public bool AddLesson(LessonId lesson, int moduleIndex, int lessonIndex)
     {
         Modules ??= new();
