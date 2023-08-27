@@ -1,10 +1,8 @@
 ﻿using Corelibs.Basic.Collections;
 using Corelibs.Basic.DDD;
-using Corelibs.Basic.Functional;
-using Corelibs.Basic.Maths;
 using Manabu.Entities.Authors;
 using Manabu.Entities.Lessons;
-using Newtonsoft.Json;
+using Manabu.Entities.Users;
 
 namespace Manabu.Entities.Courses;
 
@@ -12,6 +10,7 @@ public class Course : Entity<CourseId>, IAggregateRoot<CourseId>
 {
     public const string DefaultCollectionName = "courses";
 
+    public UserId Owner { get; private set; }
     public string Name { get; set; }
     public string Description { get; set; }
     public AuthorId? Author { get; set; }
@@ -21,9 +20,11 @@ public class Course : Entity<CourseId>, IAggregateRoot<CourseId>
     public bool IsOfficial { get; set; }
 
     public Course(
-        string name)
+        string name,
+        UserId owner)
     {
         Name = name;
+        Owner = owner;
     }
 
     public bool AddLesson(LessonId lesson, int moduleIndex, int lessonIndex)

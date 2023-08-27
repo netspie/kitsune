@@ -1,21 +1,27 @@
-﻿using Corelibs.Basic.Blocks;
+﻿using Corelibs.Basic.Auth;
+using Corelibs.Basic.Blocks;
 using Corelibs.Basic.Repository;
 using FluentValidation;
 using Manabu.Entities.Courses;
 using Manabu.Entities.Lessons;
+using Manabu.Entities.Users;
 using Mediator;
+using System.Security.Claims;
 
 namespace Manabu.UseCases.Lessons;
 
 public class CreateLessonCommandHandler : ICommandHandler<CreateLessonCommand, Result>
 {
+    private readonly IAccessorAsync<ClaimsPrincipal> _userAccessor;
     private readonly IRepository<Course, CourseId> _courseRepository;
     private readonly IRepository<Lesson, LessonId> _lessonRepository;
 
     public CreateLessonCommandHandler(
-        IRepository<Course, CourseId> courseRepository, 
+        IAccessorAsync<ClaimsPrincipal> userAccessor,
+        IRepository<Course, CourseId> courseRepository,
         IRepository<Lesson, LessonId> lessonRepository)
     {
+        _userAccessor = userAccessor;
         _courseRepository = courseRepository;
         _lessonRepository = lessonRepository;
     }
@@ -24,11 +30,13 @@ public class CreateLessonCommandHandler : ICommandHandler<CreateLessonCommand, R
     {
         var result = Result.Success();
 
+        var userId = await _userAccessor.GetUserID<UserId>();
+
         var course = await _courseRepository.Get(new CourseId(command.CourseId), result);
         if (!result.ValidateSuccessAndValues())
             return result.Fail();
 
-        var lesson = new Lesson(command.LessonName, course.Id);
+        var lesson = new Lesson(command.LessonName, course.Id, userId);
         if (!course.AddLesson(lesson.Id, command.ModuleIndex, command.LessonIndex))
             return result.Fail();
 

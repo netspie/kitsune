@@ -1,5 +1,4 @@
-﻿using Corelibs.Basic.Collections;
-using Corelibs.Basic.DDD;
+﻿using Corelibs.Basic.DDD;
 using Manabu.Entities.Conversations;
 using Manabu.Entities.Courses;
 using Manabu.Entities.Infos;
@@ -12,6 +11,7 @@ public class Lesson : Entity<LessonId>, IAggregateRoot<LessonId>
 {
     public const string DefaultCollectionName = "lessons";
 
+    public UserId Owner { get; private set; }
     public string Name { get; set; }
     public string Description { get; set; }
     public List<CourseId> Courses { get; private set; }
@@ -21,10 +21,12 @@ public class Lesson : Entity<LessonId>, IAggregateRoot<LessonId>
 
     public Lesson(
         string name,
-        CourseId courseId)
+        CourseId courseId,
+        UserId owner)
     {
         Name = name;
         Courses = new() { courseId };
+        Owner = owner;
     }
 
     public void AddToCourse(CourseId course)
