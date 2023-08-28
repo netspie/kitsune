@@ -3,11 +3,9 @@
 @if (IsEditing)
 {
     <MudTextField 
-        @bind-Value=@_dynamicValue
+        @bind-Value=@_dynamicText
         Label=@Label
-        Immediate=true
         Variant="Variant.Text"
-        OnKeyDown=@OnKeyDown
         OnBlur=@OnEditableItemBlur
         TextChanged=OnTextFieldValueChanged
         AutoFocus=true />
@@ -34,17 +32,24 @@ else
     [Parameter] public string Value { get; set; } = "";
     [Parameter] public OnEditDelegate OnEdit { get; set; }
 
-    private string _dynamicValue;
+    private string _dynamicText;
 
-    protected override void OnAfterRender(bool firstRender)
+    protected override void OnInitialized()
     {
-        if (firstRender)
-            _dynamicValue = Value;
+        _dynamicText = Value.Trim();
     }
 
-    private void OnTextFieldValueChanged(string value)
+    private async Task OnTextFieldValueChanged(string value)
     {
-        _dynamicValue = value;
+        var trimmed = value.Trim();
+        if (trimmed == Value)
+            return;
+
+        IsEditing = false;
+        if (!await UIComponent.InvokeBool(OnEdit, trimmed)())
+            return;
+
+        Value = value;
     }
 
     private void OnEditableItemBlur(FocusEventArgs args)
@@ -58,27 +63,6 @@ else
             return;
 
         IsEditing = true;
-        await InvokeAsync(StateHasChanged);
-    }
-
-    private async Task OnKeyDown(
-        KeyboardEventArgs args)
-    {
-        if (args.Key != "Enter")
-            return;
-
-        var value = _dynamicValue.Trim();
-        if (IsEditing && 
-            !value.IsNullOrEmpty() &&
-            value != Value)
-        {
-            await UIComponent.InvokeBool(OnEdit, value)();
-        }
-
-        Value = value;
-        _dynamicValue = value;
-        IsEditing = false;
-
         await InvokeAsync(StateHasChanged);
     }
 }

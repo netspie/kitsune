@@ -1,0 +1,84 @@
+﻿@using Corelibs.Blazor.UIComponents.Common;
+
+<MudStack Row=true>
+    @if (!IsReadonly)
+    {
+        @if (!AllSpeakers.IsNullOrEmpty())
+        {
+            <div style="flex-grow: 0;">
+                <MudSelect T="string" Label="Speaker" AnchorOrigin="Origin.BottomCenter"
+                           Style="width: fit-content;" Value=@($"{SpeakerName}:")>
+                    @foreach (var speaker in AllSpeakers)
+                    {
+                        <MudSelectItem Value=@speaker OnClick=@(() => OnSpeakerDropdownOptionSelected(speaker)) />
+                    }
+                </MudSelect>
+            </div>
+        }
+    }
+    else
+    {
+        @if (!SpeakerName.IsNullOrEmpty())
+        {
+            if (NoLabels)
+            {
+                <MudText>@SpeakerName:</MudText>
+            }
+            else
+            {
+                <MudField Label=@(NoLabels ? "" : "Speaker")
+                          Variant="Variant.Text"
+                          DisableUnderLine=true
+                          Style="font-weight: bold; flex-grow: 0;">
+                    @SpeakerName:
+                </MudField>
+            }
+        }
+    }
+
+    @if (NoLabels && IsReadonly)
+    {
+        <MudText>@Content</MudText>
+    }
+    else
+    {
+        <TextField IsReadonly=@IsReadonly
+                   Label=@(NoLabels ? "" : "Phrase")
+                   Value="Content"
+                   OnEdit=@OnSubmitPhraseInternal />
+    }
+
+</MudStack>
+
+@code {
+    public delegate Task<bool> OnPhraseSubmitDelegate(string id, string text);
+
+    [Parameter] public bool IsReadonly { get; set; }
+
+    [Parameter] public string Id { get; set; }
+    [Parameter] public string SpeakerName { get; set; }
+    [Parameter] public string Content { get; set; }
+
+    [Parameter] public string[] AllSpeakers { get; set; }
+
+    [Parameter] public bool NoLabels { get; set; } = true;
+
+    [Parameter] public OnPhraseSubmitDelegate OnPhraseSubmit { get; set; }
+
+    private string _textFieldText;
+
+    protected override void OnInitialized()
+    {
+        
+    }
+
+    private void OnSpeakerDropdownOptionSelected(string speaker)
+    {
+        SpeakerName = speaker;
+    }
+
+    private async Task<bool> OnSubmitPhraseInternal(string value)
+    {
+        return await UIComponent.InvokeBool(OnPhraseSubmit, Id, value)();
+    }
+}

@@ -17,12 +17,13 @@
                 align-items: center;
                 justify-content: space-between;")>
             
-             <MudText Style="justify-self: start; flex-grow: 1; flex-shrink: 1; font-weight: bold;">@Name</MudText>
+            <MudText Style="justify-self: start; flex-grow: 1; flex-shrink: 1; font-weight: bold;">@Name</MudText>
 
             @if (!MenuItemsRoot.IsNullOrEmpty() && !IsReadonly)
             {
                 <div style="justify-self: end;">
-                    <MudMenu Icon="@Icons.Material.Filled.MoreVert">
+                    <MudMenu Icon="@Icons.Material.Filled.MoreHoriz"
+                        Style="">
                         @foreach (var menuItem in MenuItemsRoot)
                         {
                             <MudMenuItem OnClick=@(args => OnMenuItemClickInternal(args, null, menuItem))>@menuItem.Name</MudMenuItem>
@@ -92,7 +93,7 @@
                                     menuItems = !hasItemsPerLevel ? menuItems : menuItems.Concat(MenuItemsPerLevel[item.Level]).ToArray();
 
                                     <div style="justify-self: end;">
-                                        <MudMenu Icon="@Icons.Material.Filled.MoreVert">
+                                        <MudMenu Icon="@Icons.Material.Filled.MoreHoriz">
                                             @foreach (var menuItem in menuItems)
                                             {
                                                 <MudMenuItem OnClick=@(args => OnMenuItemClickInternal(args, item, menuItem))>@menuItem.Name</MudMenuItem>
@@ -116,15 +117,21 @@
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender && NoIndents)
+        {
             await JSRuntime.InvokeVoidAsync("EditableList_disableIndents", _itemId);
+        }
+
+        await JSRuntime.InvokeVoidAsync("EditableList_removeMenuIconPadding", _itemId);
     }
 
     public delegate Task<bool> OnAddDelegate(TreeItemData item, int index, MenuItem menuItem);
     public delegate Task OnClickDelegate(TreeItemData item);
     public delegate Task OnRemoveDelegate(TreeItemData item, MenuItem menuItem);
     public delegate Task OnItemActionDelegate(TreeItemData item, MenuItem menuItem);
+    public delegate TreeItemData CreateCustomItemDataDelegate(TreeItemData parent);
 
     [Parameter] public RenderFragment<TreeItemData> CustomItemTemplate { get; set; }
+    [Parameter] public CreateCustomItemDataDelegate CreateCustomItemData { get; set; }
 
     [Parameter] public string Name { get; set; }
     [Parameter] public OnAddDelegate OnAddItem { get; set; }
@@ -199,13 +206,24 @@
             {
                 var treeItems = item.Parent && item is not null ? item.Parent.TreeItems : TreeItems;
                 var i = treeItems.IndexOf(item) + 1;
-                treeItems.Insert(i, new TreeItemData("New Item..", isEditing: true, parent: item?.Parent));
+
+                var newItem = CreateCustomItemData is not null ? CreateCustomItemData(item?.Parent) :
+                    new TreeItemData("New Item..", isEditing: true, parent: item?.Parent);
+
+                newItem.IsEditing = true;
+
+                treeItems.Insert(i, newItem);
             }
             else
             {
                 var treeItems = item is not null ? item.TreeItems : TreeItems;
                 if (item is not null)
                     item.IsExpanded = true;
+
+                var newItem = CreateCustomItemData is not null ? CreateCustomItemData(item) :
+                    new TreeItemData("New Item..", isEditing: true, parent: item);
+
+                newItem.IsEditing = true;
 
                 int i = menuItem.Id == MenuItems.AddChildAsFirst.Id ? 0 : treeItems.Count;
                 treeItems.Insert(i, new TreeItemData("New Item..", isEditing: true, parent: item));

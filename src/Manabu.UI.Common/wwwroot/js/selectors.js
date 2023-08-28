@@ -14,3 +14,13 @@
         el.style.margin = 0;
     });
 }
+
+function EditableList_removeMenuIconPadding(parentId) {
+    var parentElement = document.getElementById(parentId);
+
+    var elements = parentElement.querySelectorAll('.mud-icon-button');
+    elements.forEach(function (el) {
+        el.style.paddingTop = 0;
+        el.style.paddingBottom = 0;
+    });
+}

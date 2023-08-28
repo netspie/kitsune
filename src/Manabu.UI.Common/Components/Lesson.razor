@@ -11,22 +11,32 @@
 <MudStack Class="lesson">
     <MudBreadcrumbs Items=@_breadcrumbs Style="padding-left: 0; font-size: 12px" />
 
+    @*@{
+        var speakers = new[]
+        {
+            "himiko",
+            "mamiko"
+        };
+    }
     <EditableList 
-        Name="Conversations"
+        Name="Test"
         IsReadonly=@(!_isEdit)
-        TreeItems=@_conversationTreeItems 
+        TreeItems=@_conversationTreeItems
         OnAddItem=@OnAddItem
         MenuItemsRoot=@ConvMenuItemsRoot
         NoIndents=true>
-        
+       
+
         <CustomItemTemplate>
-            <MudStack Row=true>
-                <MudText>Himiko:</MudText>
-                <MudText>Konnichiwa!</MudText>
-            </MudStack>
+            <PhraseItem 
+                Id=@context.Id 
+                IsReadonly=@(!_isEdit)
+                Content=@context.Name 
+                AllSpeakers=@speakers
+                SpeakerName=@speakers[0] />
         </CustomItemTemplate>
         
-    </EditableList>
+    </EditableList>*@
 
     <MudStack>
         <TextField 
@@ -42,14 +52,13 @@
             OnEdit=@OnDescriptionEdit />
     </MudStack>
 
-    <MudPaper Class="py-4" Elevation="0">
-        <EditableList 
-            Name="Conversations"
-            IsReadonly=@(!_isEdit)
-            TreeItems=@_conversationTreeItems 
-            OnAddItem=@OnAddItem
-            MenuItemsRoot=@ConvMenuItemsRoot />
-    </MudPaper>
+    <EditableList 
+        Name="Conversations"
+        IsReadonly=@(!_isEdit)
+        NoIndents=true
+        TreeItems=@_conversationTreeItems 
+        OnAddItem=@OnAddItem
+        MenuItemsRoot=@ConvMenuItemsRoot />
 
     @if (_isAdmin)
     {
@@ -62,8 +71,6 @@
     [Parameter] public string LessonId { get; set; }
 
     private List<EditableList.TreeItemData> _conversationTreeItems;
-    private List<EditableList.TreeItemData> _lessonsRemovedTreeItems;
-    private List<EditableList.TreeItemData> _modulesRemovedTreeItems;
 
     private List<BreadcrumbItem> _breadcrumbs = new();
 
@@ -72,6 +79,8 @@
 
     protected override async Task OnInitializedAsyncImpl()
     {
+        var phraseItemDataList = new List<PhraseTreeItemData>();
+
         await RefreshViewModel();
 
         if (_lesson is null)
@@ -159,4 +168,19 @@
         EditableList.MenuItems.AddChildAsLast with { Name = "Add Conversation", IdSecondary = "addConversation"},
         EditableList.MenuItems.AddChildAsFirst with { Name = "Add Conversation at Start", IdSecondary = "addConversation" },
     };
+
+    class PhraseTreeItemData : EditableList.TreeItemData
+    {
+        public PhraseTreeItemData(
+            string id,
+            string phrase,
+            string type,
+            string speakerName) : base(id, phrase)
+        {
+            Type = type;
+            SpeakerName = speakerName;
+        }
+
+        public string SpeakerName { get; }
+    }
 }
