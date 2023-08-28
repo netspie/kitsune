@@ -40,15 +40,15 @@ public class GetLessonQueryHandler : IQueryHandler<GetLessonQuery, Result<GetLes
                     lesson.Id.Value,
                     lesson.Name,
                     lesson.Description,
-                    courses.Select(c => new CourseDTO(c.Id.Value, c.Name)).ToArray(),
-                    conversations.Select(c => new ConversationDTO(c.Id.Value, c.Name)).ToArray())));
+                    courses.OrderBy(c => lesson.Courses.IndexOf(c.Id)).Select(c => new CourseDTO(c.Id.Value, c.Name)).ToArray(),
+                    conversations.OrderBy(c => lesson.Conversations.IndexOf(c.Id)).Select(c => new ConversationDTO(c.Id.Value, c.Name)).ToArray())));
     }
 }
 
 public record GetLessonQuery(
     string LessonId) : IQuery<Result<GetLessonQueryResponse>>;
 
-public record GetLessonQueryResponse(LessonDetailsDTO Course);
+public record GetLessonQueryResponse(LessonDetailsDTO Content);
 
 public record LessonDetailsDTO(
     string Id,

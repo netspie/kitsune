@@ -86,7 +86,7 @@
 
                                 bool hasMenuItemsForAll = !MenuItemsForAll.IsNullOrEmpty();
 
-                                if (!IsReadonly && (hasItemsPerLevel || hasItemsPerLevel || hasMenuItemsPerType))
+                                if (!IsReadonly && (hasItemsPerLevel || hasMenuItemsForAll || hasMenuItemsPerType))
                                 {
                                     var menuItems = MenuItemsForAll ?? Array.Empty<MenuItem>();
                                     menuItems = !hasMenuItemsPerType ? menuItems : menuItems.Concat(MenuItemsPerType[@item.Type]).ToArray();
@@ -108,6 +108,10 @@
             </ItemTemplate>
         </MudTreeView>
     }
+    else
+    {
+        <MudText Style="color: gray; font-style: italic">No Items</MudText>
+    }
 
 </MudStack>
 
@@ -118,9 +122,9 @@
     {
         if (firstRender && NoIndents)
         {
-            await JSRuntime.InvokeVoidAsync("EditableList_disableIndents", _itemId);
         }
 
+        await JSRuntime.InvokeVoidAsync("EditableList_disableIndents", _itemId);
         await JSRuntime.InvokeVoidAsync("EditableList_removeMenuIconPadding", _itemId);
     }
 
@@ -226,7 +230,7 @@
                 newItem.IsEditing = true;
 
                 int i = menuItem.Id == MenuItems.AddChildAsFirst.Id ? 0 : treeItems.Count;
-                treeItems.Insert(i, new TreeItemData("New Item..", isEditing: true, parent: item));
+                treeItems.Insert(i, newItem);
             }
         }
         else if (menuItem.Id == MenuItems.Remove.Id)

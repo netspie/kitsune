@@ -1,0 +1,183 @@
+﻿@using Corelibs.Basic.Reflection;
+@using Corelibs.Basic.Collections;
+@using Manabu.UseCases.Conversations;
+@using Manabu.UseCases.Lessons;
+@using Microsoft.AspNetCore.Components.Authorization;
+
+@inherits CoreComponent
+
+@if (_conversation is null) { return; }
+
+<MudStack Class="lesson">
+    <MudBreadcrumbs Items=@_breadcrumbs Style="padding-left: 0; font-size: 12px" />
+
+    <MudStack>
+        <TextField 
+            Label="Name"
+            IsReadonly=@(!_isEdit)
+            Value=@_conversation.Name 
+            OnEdit=@OnNameEdit />
+
+        <TextField 
+            Label="Description"
+            IsReadonly=@(!_isEdit)
+            Value=@GetDescription() 
+            OnEdit=@OnDescriptionEdit />
+    </MudStack>
+
+    <EditableList 
+        Name="Phrases"
+        IsReadonly=@(!_isEdit)
+        TreeItems=@_phrasesTreeItems
+        OnAddItem=@OnAddItem
+        MenuItemsRoot=@PhrasesMenuItemsRoot
+        NoIndents=true>
+       
+        <CustomItemTemplate>
+            @{
+                var phraseItem = context as PhraseTreeItemData;
+                
+                <PhraseItem 
+                    Id=@context.Id 
+                    IsReadonly=@(!_isEdit)
+                    Content=@context.Name 
+                    AllSpeakers=@_conversation.Speakers
+                    SpeakerName=@phraseItem.SpeakerName />
+            }
+        </CustomItemTemplate>
+        
+    </EditableList>
+
+    <MudSwitch @bind-Checked=@_isSpeakersShown Label="Show Speakers" Color="Color.Info" />
+
+    @if (_isAdmin)
+    {
+        <MudSwitch @bind-Checked=@_isEdit Label="Edit Mode" Color="Color.Info" />
+    }
+
+</MudStack>
+
+@code {
+    [Parameter] public string ConversationId { get; set; }
+
+    private List<EditableList.TreeItemData> _phrasesTreeItems;
+
+    private List<BreadcrumbItem> _breadcrumbs = new();
+
+    private ConversationDetailsDTO? _conversation;
+    private List<List<List.ListItem>>? _listItems;
+
+    private bool _isSpeakersShown;
+
+    protected override async Task OnInitializedAsyncImpl()
+    {
+        var phraseItemDataList = new List<PhraseTreeItemData>();
+
+        await RefreshViewModel();
+
+        if (_conversation is null)
+            return;
+
+        //_breadcrumbs.Add(new("Courses", href: "/courses"));
+        //_breadcrumbs.Add(new(_conversation.Courses[0].Name, href: $"/courses/{_conversation.Courses[0].Id}"));
+        //_breadcrumbs.Add(new("Conversations", "", disabled: true));
+        //_breadcrumbs.Add(new(_conversation.Name, href: _conversation.Id));
+    }
+
+    private async Task<bool> OnNameEdit(string text)
+    {
+        return await ExecuteUpdateCommand(() => _conversation with { Name = text });
+    }
+
+    private async Task<bool> OnDescriptionEdit(string text)
+    {
+        return await ExecuteUpdateCommand(() => _conversation with { Description = text });
+    }
+
+    private async Task<bool> OnAddItem(
+        EditableList.TreeItemData item, int index, EditableList.MenuItem menuItem)
+    {
+        if (!_isAdmin)
+            return false;
+
+        if (menuItem.IdSecondary == "addConversation")
+            await CommandExecutor.Execute(new CreateConversationCommand(item.Name, _conversation.Id, index));
+
+        return await RefreshView();
+    }
+
+    private Task<bool> OnTitleEdit(string id, string name, string? parentType = null) =>
+        ExecuteUpdateCommand(() => _conversation with { Name = name });
+
+    private Task<bool> OnDescriptionEdit(string id, string description, string? parentType = null) =>
+        ExecuteUpdateCommand(() => _conversation with { Description = description });
+
+    private async Task OnItemClick(string id, string type)
+    {
+        //Navigation.NavigateTo($"courses/{id}");
+    }
+
+    private async Task<bool> ExecuteUpdateCommand(Func<ConversationDetailsDTO> createDto)
+    {
+        if (!_isAdmin)
+            return false;
+
+        var dto = createDto();
+        //await CommandExecutor.Execute(new UpdateLessonCommand(
+        //    dto.Id, dto.Name, dto.Description));
+
+        await RefreshView();
+
+        return true;
+    }
+
+    protected async Task<bool> RefreshView()
+    {
+        await RefreshViewModel();
+        await InvokeAsync(StateHasChanged);
+
+        return true;
+    }
+
+    protected async Task RefreshViewModel()
+    {
+        var response = await QueryExecutor.Execute<GetConversationQuery, GetConversationQueryResponse>(
+            new GetConversationQuery(ConversationId));
+
+        _conversation = response?.Content;
+
+        _phrasesTreeItems = _conversation?.Phrases?.SelectOrDefault((p, i) =>
+            new PhraseTreeItemData(p.Id, p.Original, "phrase", p.Speaker) as EditableList.TreeItemData).ToList();
+    }
+
+    private string GetDescription() =>
+        !_conversation.Description.IsNullOrEmpty() ?
+            _conversation.Description :
+            "No Description";
+
+    private EditableList.MenuItem[] PhrasesMenuItemsRoot = new EditableList.MenuItem[]
+    {
+        EditableList.MenuItems.AddChildAsLast with { Name = "Add Phrase", IdSecondary = "addPhrase"},
+        EditableList.MenuItems.AddChildAsFirst with { Name = "Add Phrase at Start", IdSecondary = "addPhrase" },
+    };
+
+    private EditableList.MenuItem[] PhraseMenuItems = new EditableList.MenuItem[]
+    {
+        EditableList.MenuItems.AddSibling with { Name = "Add Phrase", IdSecondary = "addPhrase"},
+    };
+
+    class PhraseTreeItemData : EditableList.TreeItemData
+    {
+        public PhraseTreeItemData(
+            string id,
+            string phrase,
+            string type,
+            string speakerName) : base(id, phrase)
+        {
+            Type = type;
+            SpeakerName = speakerName;
+        }
+
+        public string SpeakerName { get; }
+    }
+}
