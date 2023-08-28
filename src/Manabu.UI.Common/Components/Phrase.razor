@@ -15,7 +15,7 @@
 
     <MudStack>
         <TextField 
-            Label="Name"
+            Label="Original"
             IsReadonly=@(!_isEdit)
             Value=@_conversation.Name 
             OnEdit=@OnNameEdit />
@@ -32,7 +32,6 @@
         IsReadonly=@(!_isEdit)
         TreeItems=@_phrasesTreeItems
         OnAddItem=@OnAddItem
-        OnItemClick=@OnItemClick
         MenuItemsRoot=@PhrasesMenuItemsRoot
         MenuItemsForAll=@PhraseMenuItems
         NoIndents=true>
@@ -45,7 +44,6 @@
                     Id=@context.Id 
                     IsReadonly=@(!_isEdit)
                     Content=@context.Name 
-                    ShowSpeaker=@_isSpeakersShown
                     SpeakerName=@phraseItem.SpeakerName 
                     OnPhraseSubmit=@OnPhraseSubmit
                     OnSpeakerSubmit=@OnSpeakerSubmit />
@@ -53,8 +51,6 @@
         </CustomItemTemplate>
         
     </EditableList>
-
-    <MudSwitch @bind-Checked=@_isSpeakersShown Label="Show Speakers" Color="Color.Info" />
 
     @if (_isAdmin)
     {
@@ -64,7 +60,7 @@
 </MudStack>
 
 @code {
-    [Parameter] public string ConversationId { get; set; }
+    [Parameter] public string PhraseId { get; set; }
 
     private List<EditableList.TreeItemData> _phrasesTreeItems;
 
@@ -72,8 +68,6 @@
 
     private ConversationDetailsDTO? _conversation;
     private List<List<List.ListItem>>? _listItems;
-
-    private bool _isSpeakersShown = true;
 
     protected override async Task OnInitializedAsyncImpl()
     {
@@ -126,9 +120,9 @@
         ExecuteAdminViewAction(() => CommandExecutor.Execute(new UpdateConversationPhraseCommand(
             id, ConversationId: _conversation?.Id, Speaker: name)));
 
-    private async Task OnItemClick(EditableList.TreeItemData item)
+    private async Task OnItemClick(string id, string type)
     {
-        Navigation.NavigateTo($"phrases/{item.Id}");
+        //Navigation.NavigateTo($"phrases/{id}");
     }
 
     private async Task<bool> ExecuteUpdateCommand(Func<ConversationDetailsDTO> createDto)
@@ -168,7 +162,7 @@
     protected async Task RefreshViewModel()
     {
         var response = await QueryExecutor.Execute<GetConversationQuery, GetConversationQueryResponse>(
-            new GetConversationQuery(ConversationId));
+            new GetConversationQuery(PhraseId));
 
         _conversation = response?.Content;
 
