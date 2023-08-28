@@ -3,12 +3,15 @@
 <MudStack Row=true>
     @if (!IsReadonly)
     {
-        <TextField 
-            Label="Speaker"
-            Value=@SpeakerName
-            OnEdit=@OnSubmitPhraseInternal />
+        string width = SpeakerName.IsNullOrEmpty() || SpeakerName.Length < 5 ? "50px" : "fit-content";
+        <div style=@($"flex-grow: 0; width: {width}")>
+
+            <TextField Label="Speaker"
+                       Value=@SpeakerName
+                       OnEdit=@OnSpeakerSet/>
+        </div>
     }
-    else
+    else if (ShowSpeaker)
     {
         @if (!SpeakerName.IsNullOrEmpty())
         {
@@ -28,14 +31,26 @@
         }
     }
 
-    @if (NoLabels && IsReadonly)
+    @if (IsReadonly)
     {
-        <MudText>@Content</MudText>
+        if (NoLabels)
+        {
+            <MudText>@Content</MudText>
+        }
+        else
+        {
+            <MudField Label=@("Phrase")
+                      Variant="Variant.Text"
+                      DisableUnderLine=true
+                      Style="font-weight: bold; flex-grow: 0;">
+                @Content
+            </MudField>
+        }
     }
     else
     {
         <TextField IsReadonly=@IsReadonly
-                   Label=@(NoLabels ? "" : "Phrase")
+                   Label=@("Phrase")
                    Value=@Content
                    OnEdit=@OnSubmitPhraseInternal />
     }
@@ -51,6 +66,8 @@
     [Parameter] public string Id { get; set; }
     [Parameter] public string SpeakerName { get; set; }
     [Parameter] public string Content { get; set; }
+
+    [Parameter] public bool ShowSpeaker { get; set; } = true;
 
     [Parameter] public bool NoLabels { get; set; } = true;
 

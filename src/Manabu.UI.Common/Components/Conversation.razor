@@ -1,7 +1,9 @@
-﻿@using Corelibs.Basic.Reflection;
+﻿@using Corelibs.Basic.Blocks;
+@using Corelibs.Basic.Reflection;
 @using Corelibs.Basic.Collections;
 @using Manabu.UseCases.Conversations;
 @using Manabu.UseCases.Lessons;
+@using Manabu.UseCases.Phrases;
 @using Microsoft.AspNetCore.Components.Authorization;
 
 @inherits CoreComponent
@@ -31,6 +33,7 @@
         TreeItems=@_phrasesTreeItems
         OnAddItem=@OnAddItem
         MenuItemsRoot=@PhrasesMenuItemsRoot
+        MenuItemsForAll=@PhraseMenuItems
         NoIndents=true>
        
         <CustomItemTemplate>
@@ -41,7 +44,10 @@
                     Id=@context.Id 
                     IsReadonly=@(!_isEdit)
                     Content=@context.Name 
-                    SpeakerName=@phraseItem.SpeakerName />
+                    ShowSpeaker=@_isSpeakersShown
+                    SpeakerName=@phraseItem.SpeakerName 
+                    OnPhraseSubmit=@OnPhraseSubmit
+                    OnSpeakerSubmit=@OnSpeakerSubmit />
             }
         </CustomItemTemplate>
         
@@ -66,7 +72,7 @@
     private ConversationDetailsDTO? _conversation;
     private List<List<List.ListItem>>? _listItems;
 
-    private bool _isSpeakersShown;
+    private bool _isSpeakersShown = true;
 
     protected override async Task OnInitializedAsyncImpl()
     {
@@ -99,8 +105,8 @@
         if (!_isAdmin)
             return false;
 
-        if (menuItem.IdSecondary == "addConversation")
-            await CommandExecutor.Execute(new CreateConversationCommand(item.Name, _conversation.Id, index));
+        if (menuItem.IdSecondary == "addPhrase")
+            await CommandExecutor.Execute(new CreatePhraseCommand(item.Name, _conversation?.Id, index));
 
         return await RefreshView();
     }
@@ -111,9 +117,17 @@
     private Task<bool> OnDescriptionEdit(string id, string description, string? parentType = null) =>
         ExecuteUpdateCommand(() => _conversation with { Description = description });
 
+    private Task<bool> OnPhraseSubmit(string id, string text) =>
+        ExecuteAdminViewAction(() => CommandExecutor.Execute(new UpdateConversationPhraseCommand(
+            id, ConversationId: _conversation?.Id, Original: text)));
+
+    private Task<bool> OnSpeakerSubmit(string id, string name) =>
+        ExecuteAdminViewAction(() => CommandExecutor.Execute(new UpdateConversationPhraseCommand(
+            id, ConversationId: _conversation?.Id, Speaker: name)));
+
     private async Task OnItemClick(string id, string type)
     {
-        //Navigation.NavigateTo($"courses/{id}");
+        //Navigation.NavigateTo($"phrases/{id}");
     }
 
     private async Task<bool> ExecuteUpdateCommand(Func<ConversationDetailsDTO> createDto)
@@ -124,6 +138,18 @@
         var dto = createDto();
         var result = await CommandExecutor.Execute(new UpdateConversationCommand(
             dto.Id, dto.Name, dto.Description));
+
+        await RefreshView();
+
+        return result.IsSuccess;
+    }
+
+    private async Task<bool> ExecuteAdminViewAction(Func<Task<Result>> action)
+    {
+        if (!_isAdmin)
+            return false;
+
+        var result = await action();
 
         await RefreshView();
 

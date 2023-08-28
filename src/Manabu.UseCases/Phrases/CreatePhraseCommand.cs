@@ -43,8 +43,6 @@ public class CreatePhraseCommandHandler : ICommandHandler<CreatePhraseCommand, R
             await _conversationRepository.Save(conversation, result);
         }
 
-        //await _lessonRepository.Save(lesson, result);
-
         return result;
     }
 }

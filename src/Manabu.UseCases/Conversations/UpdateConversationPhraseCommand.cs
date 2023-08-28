@@ -25,7 +25,7 @@ public class UpdateConversationPhraseCommandHandler : ICommandHandler<UpdateConv
     {
         var result = Result.Success();
 
-        var phrase = await _phraseRepository.Get(new PhraseId(command.ConversationId), result);
+        var phrase = await _phraseRepository.Get(new PhraseId(command.PhraseId), result);
         if (!result.ValidateSuccessAndValues())
             return result.Fail();
 
@@ -48,8 +48,8 @@ public class UpdateConversationPhraseCommandHandler : ICommandHandler<UpdateConv
 
 public record UpdateConversationPhraseCommand(
     string PhraseId,
-    string Original,
     string ConversationId,
+    string? Original = null,
     int PhraseIndex = -1,
     string? Speaker = null) : ICommand<Result>;
 
