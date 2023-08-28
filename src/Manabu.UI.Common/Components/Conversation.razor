@@ -41,7 +41,6 @@
                     Id=@context.Id 
                     IsReadonly=@(!_isEdit)
                     Content=@context.Name 
-                    AllSpeakers=@_conversation.Speakers
                     SpeakerName=@phraseItem.SpeakerName />
             }
         </CustomItemTemplate>
@@ -123,12 +122,12 @@
             return false;
 
         var dto = createDto();
-        //await CommandExecutor.Execute(new UpdateLessonCommand(
-        //    dto.Id, dto.Name, dto.Description));
+        var result = await CommandExecutor.Execute(new UpdateConversationCommand(
+            dto.Id, dto.Name, dto.Description));
 
         await RefreshView();
 
-        return true;
+        return result.IsSuccess;
     }
 
     protected async Task<bool> RefreshView()

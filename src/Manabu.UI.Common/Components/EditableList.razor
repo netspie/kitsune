@@ -3,9 +3,11 @@
 @inject IJSRuntime JSRuntime
 
 <MudStack id=@_itemId>
+    @{
+        int paddingLeft = NoIndents ? 0 : 30;
+    }
     @if (!Name.IsNullOrEmpty() || !MenuItemsRoot.IsNullOrEmpty())
     {
-        int paddingLeft = NoIndents ? 0 : 30;
         <div style=@($@"
                 padding-left: {paddingLeft}px;
                 font-weight: bold;
@@ -110,7 +112,7 @@
     }
     else
     {
-        <MudText Style="color: gray; font-style: italic">No Items</MudText>
+        <MudText Style=@($"color: gray; font-style: italic; padding-left: {paddingLeft}px")>No Items</MudText>
     }
 
 </MudStack>

@@ -32,13 +32,17 @@ public class CreatePhraseCommandHandler : ICommandHandler<CreatePhraseCommand, R
         var result = Result.Success();
 
         var userId = await _userAccessor.GetUserID<UserId>();
-
         var conversation = await _conversationRepository.Get(new ConversationId(command.ConversationId), result);
-        var phrase = new Phrase(userId, command.Name, conversation?.Id);
+        
+        var phrase = new Phrase(userId, command.Original, conversation?.Id);
+        await _phraseRepository.Save(phrase, result);
 
-        //conversation.add(conversation.Id, command.Index);
+        if (conversation is not null)
+        {
+            conversation.AddPhrase(phrase.Id, command.Index);
+            await _conversationRepository.Save(conversation, result);
+        }
 
-        //await _conversationRepository.Save(conversation, result);
         //await _lessonRepository.Save(lesson, result);
 
         return result;
@@ -46,8 +50,8 @@ public class CreatePhraseCommandHandler : ICommandHandler<CreatePhraseCommand, R
 }
 
 public record CreatePhraseCommand(
-    string Name,
-    string ConversationId = null,
+    string Original,
+    string? ConversationId = null,
     int Index = 0) : ICommand<Result>;
 
 public class CreatePhraseCommandValidator : AbstractValidator<CreatePhraseCommand> {}

@@ -3,6 +3,7 @@ using Manabu.Entities.Phrases;
 using Manabu.Entities.Users;
 using Manabu.Entities.Lessons;
 using Corelibs.Basic.Collections;
+using Microsoft.VisualBasic;
 
 namespace Manabu.Entities.Conversations;
 
@@ -11,13 +12,11 @@ public class Conversation : Entity<ConversationId>, IAggregateRoot<ConversationI
     public const string DefaultCollectionName = "conversations";
 
     public UserId Owner { get; private set; }
-    public List<PhraseId> Phrases { get; private set; }
+    public List<PhraseData> Phrases { get; private set; }
     public List<LessonId> Lessons { get; private set; }
-    public List<string> Speakers { get; private set; }
-    public List<int> SpeakersOrder { get; private set; }
 
-    public string Name { get; private set; }
-    public string Description { get; private set; }
+    public string Name { get; set; }
+    public string Description { get; set; }
 
     public Conversation(
         string name,
@@ -33,8 +32,20 @@ public class Conversation : Entity<ConversationId>, IAggregateRoot<ConversationI
         int index = 0)
     {
         Phrases ??= new();
-        Phrases.InsertClamped(phrase, index);
+        Phrases.InsertClamped(new("", phrase), index);
     }
+
+    public bool ChangeSpeaker(string speaker, PhraseId phrase, int index = -1)
+    {
+        var phraseData = Phrases.Get(p => p.Phrase == phrase, index, out var foundIndex);
+        if (phraseData is null || speaker is null || speaker == phraseData.Speaker)
+            return false;
+        
+        Phrases[foundIndex] = phraseData with { Speaker = speaker };
+        return true;
+    }
+
+    public record PhraseData(string Speaker, PhraseId Phrase);
 }
 
 public class ConversationId : EntityId { public ConversationId(string value) : base(value) {} }

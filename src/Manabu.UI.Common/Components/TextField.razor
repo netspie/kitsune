@@ -47,7 +47,10 @@ else
 
         IsEditing = false;
         if (!await UIComponent.InvokeBool(OnEdit, trimmed)())
+        {
+            _dynamicText = Value;
             return;
+        }
 
         Value = value;
     }

@@ -3,18 +3,10 @@
 <MudStack Row=true>
     @if (!IsReadonly)
     {
-        @if (!AllSpeakers.IsNullOrEmpty())
-        {
-            <div style="flex-grow: 0;">
-                <MudSelect T="string" Label="Speaker" AnchorOrigin="Origin.BottomCenter"
-                           Style="width: fit-content;" Value=@($"{SpeakerName}:")>
-                    @foreach (var speaker in AllSpeakers)
-                    {
-                        <MudSelectItem Value=@speaker OnClick=@(() => OnSpeakerDropdownOptionSelected(speaker)) />
-                    }
-                </MudSelect>
-            </div>
-        }
+        <TextField 
+            Label="Speaker"
+            Value=@SpeakerName
+            OnEdit=@OnSubmitPhraseInternal />
     }
     else
     {
@@ -44,7 +36,7 @@
     {
         <TextField IsReadonly=@IsReadonly
                    Label=@(NoLabels ? "" : "Phrase")
-                   Value="Content"
+                   Value=@Content
                    OnEdit=@OnSubmitPhraseInternal />
     }
 
@@ -52,6 +44,7 @@
 
 @code {
     public delegate Task<bool> OnPhraseSubmitDelegate(string id, string text);
+    public delegate Task<bool> OnSpeakerSubmitDelegate(string id, string name);
 
     [Parameter] public bool IsReadonly { get; set; }
 
@@ -59,22 +52,15 @@
     [Parameter] public string SpeakerName { get; set; }
     [Parameter] public string Content { get; set; }
 
-    [Parameter] public string[] AllSpeakers { get; set; }
-
     [Parameter] public bool NoLabels { get; set; } = true;
 
     [Parameter] public OnPhraseSubmitDelegate OnPhraseSubmit { get; set; }
+    [Parameter] public OnSpeakerSubmitDelegate OnSpeakerSubmit { get; set; }
 
-    private string _textFieldText;
-
-    protected override void OnInitialized()
+    private Task<bool> OnSpeakerSet(string name)
     {
-        
-    }
-
-    private void OnSpeakerDropdownOptionSelected(string speaker)
-    {
-        SpeakerName = speaker;
+        SpeakerName = name;
+        return UIComponent.InvokeBool(OnSpeakerSubmit, Id, name)();
     }
 
     private async Task<bool> OnSubmitPhraseInternal(string value)

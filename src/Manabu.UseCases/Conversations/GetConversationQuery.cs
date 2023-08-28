@@ -36,8 +36,8 @@ public class GetConversationQueryHandler : IQueryHandler<GetConversationQuery, R
         if (!result.ValidateSuccessAndValues())
             return result.Fail();
 
-        var phrases = await _phraseRepository.Get(conversation.Phrases ?? new(), result);
-        var speakersPerPhrase = conversation.SpeakersOrder?.SelectOrDefault(i => conversation.Speakers[i]).ToArray();
+        var phrasesIds = conversation.Phrases.SelectOrDefault(p => p.Phrase).ToList();
+        var phrases = await _phraseRepository.Get(phrasesIds, result);
         var lessons = await _lessonRepository.Get(conversation.Lessons ?? new(), result);
 
         return result.With(
@@ -50,10 +50,9 @@ public class GetConversationQueryHandler : IQueryHandler<GetConversationQuery, R
                         .Select((l, i) => new LessonDTO(l.Id.Value, l.Name))
                         .ToArray(),
                     phrases
-                        .OrderBy(p => conversation.Phrases.IndexOf(p.Id))
-                        .Select((p, i) => new PhraseDTO(p.Id.Value, p.Original, Speaker: speakersPerPhrase is null ? null : speakersPerPhrase[i]))
-                        .ToArray(),
-                    conversation.Speakers?.ToArray())));
+                        .OrderBy(p => phrasesIds.IndexOf(p.Id))
+                        .Select((p, i) => new PhraseDTO(p.Id.Value, p.Original, Speaker: conversation.Phrases.FirstOrDefault(p2 => p2.Phrase == p.Id)?.Speaker))
+                        .ToArray())));
     }
 }
 
@@ -67,8 +66,7 @@ public record ConversationDetailsDTO(
     string Name,
     string Description,
     LessonDTO[] Lessons,
-    PhraseDTO[] Phrases,
-    string[]? Speakers = null);
+    PhraseDTO[] Phrases);
 
 public record LessonDTO(
     string Id,

@@ -11,7 +11,7 @@ public class Phrase : Entity<PhraseId>, IAggregateRoot<PhraseId>
     public const string DefaultCollectionName = "phrases";
 
     public UserId Owner { get; private set; }
-    public string Original { get; private set; }
+    public string Original { get; set; }
     public List<string> Translations { get; private set; }
     public List<AudioId> Audios { get; private set; }
     public List<string> Contexts { get; private set; }
