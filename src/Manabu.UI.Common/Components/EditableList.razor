@@ -124,7 +124,8 @@
         {
         }
 
-        await JSRuntime.InvokeVoidAsync("EditableList_disableIndents", _itemId);
+        if (NoIndents)
+            await JSRuntime.InvokeVoidAsync("EditableList_disableIndents", _itemId);
         await JSRuntime.InvokeVoidAsync("EditableList_removeMenuIconPadding", _itemId);
     }
 
