@@ -3,7 +3,6 @@ using Manabu.Entities.Audios;
 using Manabu.Entities.Conversations;
 using Manabu.Entities.Users;
 using Manabu.Entities.WordMeanings;
-using Manabu.Entities.Words;
 
 namespace Manabu.Entities.Phrases;
 
@@ -13,9 +12,9 @@ public class Phrase : Entity<PhraseId>, IAggregateRoot<PhraseId>
 
     public UserId Owner { get; private set; }
     public string Original { get; set; }
-    public List<string> Translations { get; private set; }
+    public List<string> Translations { get; set; }
     public List<AudioId> Audios { get; private set; }
-    public List<string> Contexts { get; private set; }
+    public List<string> Contexts { get; set; }
     public List<WordMeaningId> WordMeanings { get; private set; }
     public List<ConversationId>? Conversations { get; private set; }
 

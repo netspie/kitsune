@@ -24,6 +24,8 @@
         IsReadonly=@(!_isEdit)
         TreeItems=@_translationTreeItems
         OnAddItem=@OnAddItem
+        MenuItemsRoot=@TranslationMenuItemsRoot
+        MenuItemsForAll=@TranslationMenuItems
         NoIndents=true />
 
     @if (_isEdit || !_contextTreeItems.IsNullOrEmpty())
@@ -95,28 +97,16 @@
         if (!_isAdmin)
             return false;
 
-        if (menuItem.IdSecondary == "addPhrase")
-            await CommandExecutor.Execute(new CreatePhraseCommand(item.Name, _phrase?.Id, index));
+        if (menuItem.IdSecondary == "addTranslation")
+            await ExecuteAdminViewAction(() => CommandExecutor.Execute(
+                new UpdatePhraseCommand(_phrase.Id, Translations: _translationTreeItems.Select(i => i.Name).ToArray())));
 
         return await RefreshView();
     }
 
     private Task<bool> OnOriginalEdit(string original) =>
-        ExecuteUpdateCommand(() => _phrase with { Original = original });
-
-    private async Task<bool> ExecuteUpdateCommand(Func<PhraseDetailsDTO> createDto)
-    {
-        if (!_isAdmin)
-            return false;
-
-        //var dto = createDto();
-        //var result = await CommandExecutor.Execute(new UpdateConversationCommand(
-        //    dto.Id, dto.Name, dto.Description));
-
-        return await RefreshView();
-
-        //return result.IsSuccess;
-    }
+         ExecuteAdminViewAction(() => CommandExecutor.Execute(
+                new UpdatePhraseCommand(_phrase.Id, original)));
 
     private async Task<bool> ExecuteAdminViewAction(Func<Task<Result>> action)
     {
@@ -152,14 +142,14 @@
             new EditableList.TreeItemData(c, c, "context")).ToList();
     }
 
-    private EditableList.MenuItem[] PhrasesMenuItemsRoot = new EditableList.MenuItem[]
+    private EditableList.MenuItem[] TranslationMenuItemsRoot = new EditableList.MenuItem[]
     {
-        EditableList.MenuItems.AddChildAsLast with { Name = "Add Phrase", IdSecondary = "addPhrase"},
-        EditableList.MenuItems.AddChildAsFirst with { Name = "Add Phrase at Start", IdSecondary = "addPhrase" },
+        EditableList.MenuItems.AddChildAsLast with { Name = "Add Translation", IdSecondary = "addTranslation"},
+        EditableList.MenuItems.AddChildAsFirst with { Name = "Add Translation at Start", IdSecondary = "addTranslation" },
     };
 
-    private EditableList.MenuItem[] PhraseMenuItems = new EditableList.MenuItem[]
+    private EditableList.MenuItem[] TranslationMenuItems = new EditableList.MenuItem[]
     {
-        EditableList.MenuItems.AddSibling with { Name = "Add Phrase", IdSecondary = "addPhrase"},
+        EditableList.MenuItems.AddSibling with { Name = "Add Translation", IdSecondary = "addTranslation"},
     };
 }

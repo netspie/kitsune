@@ -1,5 +1,6 @@
 ﻿using Corelibs.Basic.Auth;
 using Corelibs.Basic.Blocks;
+using Corelibs.Basic.Collections;
 using Corelibs.Basic.Repository;
 using FluentValidation;
 using Manabu.Entities.Conversations;
@@ -36,7 +37,11 @@ public class UpdatePhraseCommandHandler : ICommandHandler<UpdatePhraseCommand, R
         if (!result.ValidateSuccessAndValues())
             return result.Fail();
 
+        phrase.Original = command.Original ?? phrase.Original;
+        phrase.Translations = command.Translations.ToListOrDefault() ?? phrase.Translations;
+        phrase.Contexts = command.Contexts.ToListOrDefault() ?? phrase.Contexts;
 
+        await _phraseRepository.Save(phrase, result);
 
         return result;
     }
@@ -44,8 +49,8 @@ public class UpdatePhraseCommandHandler : ICommandHandler<UpdatePhraseCommand, R
 
 public record UpdatePhraseCommand(
     string PhraseId,
-    string Original,
-    string[] Translations,
-    string[] Contexts) : ICommand<Result>;
+    string? Original = null,
+    string[]? Translations = null,
+    string[]? Contexts = null) : ICommand<Result>;
 
 public class UpdatePhraseCommandValidator : AbstractValidator<UpdatePhraseCommand> {}
