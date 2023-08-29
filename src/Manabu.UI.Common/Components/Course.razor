@@ -152,15 +152,7 @@
         return true;
     }
 
-    protected async Task<bool> RefreshView()
-    {
-        await RefreshViewModel();
-        await InvokeAsync(StateHasChanged);
-
-        return true;
-    }
-
-    protected async Task RefreshViewModel()
+    protected override async Task RefreshViewModel()
     {
         var response = await QueryExecutor.Execute<GetCourseQuery, GetCourseQueryResponse>(
             new GetCourseQuery(CourseId));

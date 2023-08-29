@@ -77,8 +77,6 @@
 
     protected override async Task OnInitializedAsyncImpl()
     {
-        await RefreshViewModel();
-
         if (_conversation is null)
             return;
 
@@ -88,15 +86,11 @@
         //_breadcrumbs.Add(new(_conversation.Name, href: _conversation.Id));
     }
 
-    private async Task<bool> OnNameEdit(string text)
-    {
-        return await ExecuteUpdateCommand(() => _conversation with { Name = text });
-    }
+    private Task<bool> OnNameEdit(string text) =>
+        ExecuteUpdateCommand(() => _conversation with { Name = text });
 
-    private async Task<bool> OnDescriptionEdit(string text)
-    {
-        return await ExecuteUpdateCommand(() => _conversation with { Description = text });
-    }
+    private Task<bool> OnDescriptionEdit(string text) =>
+        ExecuteUpdateCommand(() => _conversation with { Description = text });
 
     private async Task<bool> OnAddItem(
         EditableList.TreeItemData item, int index, EditableList.MenuItem menuItem)
@@ -109,12 +103,6 @@
 
         return await RefreshView();
     }
-
-    private Task<bool> OnTitleEdit(string id, string name, string? parentType = null) =>
-        ExecuteUpdateCommand(() => _conversation with { Name = name });
-
-    private Task<bool> OnDescriptionEdit(string id, string description, string? parentType = null) =>
-        ExecuteUpdateCommand(() => _conversation with { Description = description });
 
     private Task<bool> OnPhraseSubmit(string id, string text) =>
         ExecuteAdminViewAction(() => CommandExecutor.Execute(new UpdateConversationPhraseCommand(
@@ -143,27 +131,7 @@
         return result.IsSuccess;
     }
 
-    private async Task<bool> ExecuteAdminViewAction(Func<Task<Result>> action)
-    {
-        if (!_isAdmin)
-            return false;
-
-        var result = await action();
-
-        await RefreshView();
-
-        return result.IsSuccess;
-    }
-
-    protected async Task<bool> RefreshView()
-    {
-        await RefreshViewModel();
-        await InvokeAsync(StateHasChanged);
-
-        return true;
-    }
-
-    protected async Task RefreshViewModel()
+    protected override async Task RefreshViewModel()
     {
         var response = await QueryExecutor.Execute<GetConversationQuery, GetConversationQueryResponse>(
             new GetConversationQuery(ConversationId));

@@ -94,15 +94,13 @@
         _breadcrumbs.Add(new(_lesson.Name, href: _lesson.Id));
     }
 
-    private async Task<bool> OnNameEdit(string text)
-    {
-        return await ExecuteUpdateCommand(() => _lesson with { Name = text });
-    }
+    private Task<bool> OnNameEdit(string text) =>
+        ExecuteAdminViewAction(() => CommandExecutor.Execute(
+            new UpdateLessonCommand(_lesson.Id, text, _lesson.Description)));
 
-    private async Task<bool> OnDescriptionEdit(string text)
-    {
-        return await ExecuteUpdateCommand(() => _lesson with { Description = text });
-    }
+    private Task<bool> OnDescriptionEdit(string text) =>
+        ExecuteAdminViewAction(() => CommandExecutor.Execute(
+            new UpdateLessonCommand(_lesson.Id, _lesson.Name, text)));
 
     private async Task<bool> OnAddItem(
         EditableList.TreeItemData item, int index, EditableList.MenuItem menuItem)
@@ -116,40 +114,12 @@
         return await RefreshView();
     }
 
-    private Task<bool> OnTitleEdit(string id, string name, string? parentType = null) =>
-        ExecuteUpdateCommand(() => _lesson with { Name = name });
-
-    private Task<bool> OnDescriptionEdit(string id, string description, string? parentType = null) =>
-        ExecuteUpdateCommand(() => _lesson with { Description = description });
-
     private async Task OnItemClick(EditableList.TreeItemData item)
     {
         Navigation.NavigateTo($"conversations/{item.Id}");
     }
 
-    private async Task<bool> ExecuteUpdateCommand(Func<LessonDetailsDTO> createDto)
-    {
-        if (!_isAdmin)
-            return false;
-
-        var dto = createDto();
-        await CommandExecutor.Execute(new UpdateLessonCommand(
-            dto.Id, dto.Name, dto.Description));
-
-        await RefreshView();
-
-        return true;
-    }
-
-    protected async Task<bool> RefreshView()
-    {
-        await RefreshViewModel();
-        await InvokeAsync(StateHasChanged);
-
-        return true;
-    }
-
-    protected async Task RefreshViewModel()
+    protected override async Task RefreshViewModel()
     {
         var response = await QueryExecutor.Execute<GetLessonQuery, GetLessonQueryResponse>(
             new GetLessonQuery(LessonId));

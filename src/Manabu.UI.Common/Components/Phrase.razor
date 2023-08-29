@@ -93,48 +93,7 @@
          ExecuteAdminViewAction(() => CommandExecutor.Execute(
                 new UpdatePhraseCommand(_phrase.Id, original)));
 
-    private Task<bool> OnAddTranslation(
-        EditableList.TreeItemData item, int index, EditableList.MenuItem menuItem) =>
-            ExecuteAdminViewAction(() => CommandExecutor.Execute(
-                new UpdatePhraseCommand(_phrase.Id, Translations: _translationTreeItems.Select(i => i.Name).ToArray())));
-
-    private async Task OnRemoveTranslation(EditableList.TreeItemData item, EditableList.MenuItem menuItem) =>
-        await ExecuteAdminViewAction(() => CommandExecutor.Execute(
-            new UpdatePhraseCommand(_phrase.Id, Translations: _translationTreeItems.Select(i => i.Name).ToArray())));
-
-    private async Task<bool> ExecuteAdminViewAction(Func<Task<Result>> action)
-    {
-        if (!_isAdmin)
-            return false;
-
-        var result = await action();
-
-        await RefreshView();
-
-        return result.IsSuccess;
-    }
-
-    protected async Task<bool> RefreshView()
-    {
-        await RefreshViewModel();
-        await InvokeAsync(StateHasChanged);
-
-        return true;
-    }
-
-    protected async Task RefreshViewModel()
-    {
-        var response = await QueryExecutor.Execute<GetPhraseQuery, GetPhraseQueryResponse>(
-            new GetPhraseQuery(PhraseId));
-
-        _phrase = response?.Content;
-
-        _translationTreeItems = _phrase?.Translations?.SelectOrDefault(t =>
-            new EditableList.TreeItemData(t, t, "translation")).ToList();
-
-        _contextTreeItems = _phrase?.Contexts?.SelectOrDefault(c =>
-            new EditableList.TreeItemData(c, c, "context")).ToList();
-    }
+    #region Translations
 
     private EditableList.MenuItem[] TranslationMenuItemsRoot = new EditableList.MenuItem[]
     {
@@ -147,4 +106,54 @@
         EditableList.MenuItems.AddSibling with { Name = "Add Translation", IdSecondary = "addTranslation"},
         EditableList.MenuItems.Remove with { Name = "Remove Translation", IdSecondary = "removeTranslation"},
     };
+
+    private Task<bool> OnAddTranslation(
+        EditableList.TreeItemData item, int index, EditableList.MenuItem menuItem) =>
+            ExecuteAdminViewAction(() => CommandExecutor.Execute(
+                new UpdatePhraseCommand(_phrase.Id, Translations: _translationTreeItems.Select(i => i.Name).ToArray())));
+
+    private async Task OnRemoveTranslation(EditableList.TreeItemData item, EditableList.MenuItem menuItem) =>
+        await ExecuteAdminViewAction(() => CommandExecutor.Execute(
+            new UpdatePhraseCommand(_phrase.Id, Translations: _translationTreeItems.Select(i => i.Name).ToArray())));
+
+    #endregion
+
+    #region Translations
+
+    private Task<bool> OnAddContext(
+        EditableList.TreeItemData item, int index, EditableList.MenuItem menuItem) =>
+            ExecuteAdminViewAction(() => CommandExecutor.Execute(
+                new UpdatePhraseCommand(_phrase.Id, Contexts: _contextTreeItems.Select(i => i.Name).ToArray())));
+
+    private async Task OnRemoveContext(EditableList.TreeItemData item, EditableList.MenuItem menuItem) =>
+        await ExecuteAdminViewAction(() => CommandExecutor.Execute(
+            new UpdatePhraseCommand(_phrase.Id, Translations: _contextTreeItems.Select(i => i.Name).ToArray())));
+
+    private EditableList.MenuItem[] ContextsMenuItemsRoot = new EditableList.MenuItem[]
+    {
+        EditableList.MenuItems.AddChildAsLast with { Name = "Add Context", IdSecondary = "addContext"},
+        EditableList.MenuItems.AddChildAsFirst with { Name = "Add Context at Start", IdSecondary = "addContext" },
+    };
+
+    private EditableList.MenuItem[] ContextsMenuItems = new EditableList.MenuItem[]
+    {
+        EditableList.MenuItems.AddSibling with { Name = "Add Context", IdSecondary = "addContext" },
+        EditableList.MenuItems.Remove with { Name = "Remove Context", IdSecondary = "removeContext" },
+    };
+
+    #endregion
+    
+    protected override async Task RefreshViewModel()
+    {
+        var response = await QueryExecutor.Execute<GetPhraseQuery, GetPhraseQueryResponse>(
+            new GetPhraseQuery(PhraseId));
+
+        _phrase = response?.Content;
+
+        _translationTreeItems = _phrase?.Translations?.SelectOrDefault(t =>
+            new EditableList.TreeItemData(t, t, "translation")).ToList();
+
+        _contextTreeItems = _phrase?.Contexts?.SelectOrDefault(c =>
+            new EditableList.TreeItemData(c, c, "context")).ToList();
+    }
 }

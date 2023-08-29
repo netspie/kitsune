@@ -50,17 +50,10 @@
         Navigation.NavigateTo($"courses/{item.Id}");
     }
 
-    protected async Task<bool> RefreshView()
-    {
-        await RefreshViewModel();
-        await InvokeAsync(StateHasChanged);
-
-        return true;
-    }
-
-    protected async Task RefreshViewModel()
+    protected override async Task RefreshViewModel()
     {
         var response = await QueryExecutor.Execute<GetCoursesQuery, GetCoursesQueryResponse>();
+
         _courses = response?.Courses;
         _treeItems = _courses?.Select(c => new EditableList.TreeItemData(c.Id, c.Name))?.ToList();
     }
