@@ -30,7 +30,9 @@ else
 
     [Parameter] public string Label { get; set; } = "";
     [Parameter] public string Value { get; set; } = "";
+
     [Parameter] public OnEditDelegate OnEdit { get; set; }
+    [Parameter] public Action OnBlur { get; set; }
 
     private string _dynamicText;
 
@@ -58,6 +60,7 @@ else
     private void OnEditableItemBlur(FocusEventArgs args)
     {
         IsEditing = false;
+        OnBlur?.Invoke();
     }
 
     private async Task OnClickItem(MouseEventArgs args)

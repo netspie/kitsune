@@ -54,14 +54,16 @@
                         <div style="display: grid; grid-template-columns: 1fr auto; align-items: center; width: 100%">
                             @if (_isAdding && item.IsEditing)
                             {
-                                <MudTextField 
-                                    @bind-Value=@item.Name
-                                    Immediate=true
-                                    Variant="Variant.Text"
-                                    OnKeyDown=@(args => OnKeyDown(args, item))
+                                <TextField 
+                                    Label="Original"
+                                    IsEditing=true
+                                    Value=@item.Name
                                     OnBlur=@OnEditableItemBlur
-                                    TextChanged=OnTextFieldValueChanged
-                                    AutoFocus=true />
+                                    OnEdit=@(text => 
+                                    {
+                                        item.Name = text;
+                                        return OnTextFieldValueChanged(item);
+                                    }) />
                             }
                             else
                             {
@@ -122,12 +124,9 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender && NoIndents)
-        {
-        }
-
         if (NoIndents)
             await JSRuntime.InvokeVoidAsync("EditableList_disableIndents", _itemId);
+
         await JSRuntime.InvokeVoidAsync("EditableList_removeMenuIconPadding", _itemId);
     }
 
@@ -156,8 +155,6 @@
     [Parameter] public bool IsReadonly { get; set; }
     [Parameter] public bool NoIndents { get; set; }
 
-    public string TextValue { get; set; } = "New Item...";
-
     private bool _isAdding;
     private MenuItem _selectedMenuItem;
 
@@ -170,14 +167,26 @@
         public static readonly MenuItem Remove = new MenuItem("remove", "Remove");
     }
 
-    private void OnEditableItemBlur(FocusEventArgs args)
+    private void OnEditableItemBlur()
     {
         ClearItemsWithNoIds();
+        InvokeAsync(StateHasChanged);
     }
 
-    private async Task OnTextFieldValueChanged(string value)
+    private async Task<bool> OnTextFieldValueChanged(TreeItemData item)
     {
-        TextValue = value;
+        var i = !item.Parent ? TreeItems.IndexOf(item) : item.Parent.TreeItems.IndexOf(item);
+
+        var result = true;
+        if (_isAdding)
+            result = await UIComponent.InvokeBool(OnAddItem, item, i, _selectedMenuItem)();
+
+        if (item.Id.IsNullOrEmpty())
+            item.Id = item.Name;
+
+        item.IsEditing = false;
+
+        return result;
     }
 
     private void ClearItemsWithNoIds()
@@ -239,8 +248,11 @@
         else if (menuItem.Id == MenuItems.Remove.Id)
         {
             var treeItems = item?.Parent is not null ? item.Parent.TreeItems : TreeItems;
-            if (await UIComponent.InvokeBool(OnRemoveItem, item, menuItem)())
-                treeItems.Remove(item);
+
+            int i = treeItems.IndexOf(item);
+            treeItems.Remove(item);
+            if (!await UIComponent.InvokeBool(OnRemoveItem, item, menuItem)())
+                treeItems.Insert(i, item);
         }
         else
         {
@@ -250,22 +262,6 @@
         await InvokeAsync(StateHasChanged);
 
         return true;
-    }
-
-    private async Task OnKeyDown(
-        KeyboardEventArgs args, TreeItemData item)
-    {
-        if (args.Key != "Enter")
-            return;
-
-        var i = !item.Parent ? TreeItems.IndexOf(item) : item.Parent.TreeItems.IndexOf(item);
-        if (_isAdding)
-            await UIComponent.InvokeBool(OnAddItem, item, i, _selectedMenuItem)();
-
-        if (item.Id.IsNullOrEmpty())
-            item.Id = item.Name;
-
-        item.IsEditing = false;
     }
 
     public class TreeItemData

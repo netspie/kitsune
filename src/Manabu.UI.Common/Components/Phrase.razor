@@ -23,7 +23,8 @@
         Name="Translations"
         IsReadonly=@(!_isEdit)
         TreeItems=@_translationTreeItems
-        OnAddItem=@OnAddItem
+        OnAddItem=@OnAddTranslation
+        OnRemoveItem=@OnRemoveTranslation
         MenuItemsRoot=@TranslationMenuItemsRoot
         MenuItemsForAll=@TranslationMenuItems
         NoIndents=true />
@@ -34,7 +35,6 @@
             Name="Contexts"
             IsReadonly=@(!_isEdit)
             TreeItems=@_contextTreeItems
-            OnAddItem=@OnAddItem
             NoIndents=true />
     }
 
@@ -44,7 +44,6 @@
             Name="Audios"
             IsReadonly=@(!_isEdit)
             TreeItems=@_audioTreeItems
-            OnAddItem=@OnAddItem
             NoIndents=true />
     }
 
@@ -54,7 +53,6 @@
             Name="Words"
             IsReadonly=@(!_isEdit)
             TreeItems=@_wordTreeItems
-            OnAddItem=@OnAddItem
             NoIndents=true />
     }
 
@@ -91,22 +89,18 @@
         //_breadcrumbs.Add(new(_conversation.Name, href: _conversation.Id));
     }
 
-    private async Task<bool> OnAddItem(
-        EditableList.TreeItemData item, int index, EditableList.MenuItem menuItem)
-    {
-        if (!_isAdmin)
-            return false;
-
-        if (menuItem.IdSecondary == "addTranslation")
-            await ExecuteAdminViewAction(() => CommandExecutor.Execute(
-                new UpdatePhraseCommand(_phrase.Id, Translations: _translationTreeItems.Select(i => i.Name).ToArray())));
-
-        return await RefreshView();
-    }
-
     private Task<bool> OnOriginalEdit(string original) =>
          ExecuteAdminViewAction(() => CommandExecutor.Execute(
                 new UpdatePhraseCommand(_phrase.Id, original)));
+
+    private Task<bool> OnAddTranslation(
+        EditableList.TreeItemData item, int index, EditableList.MenuItem menuItem) =>
+            ExecuteAdminViewAction(() => CommandExecutor.Execute(
+                new UpdatePhraseCommand(_phrase.Id, Translations: _translationTreeItems.Select(i => i.Name).ToArray())));
+
+    private async Task OnRemoveTranslation(EditableList.TreeItemData item, EditableList.MenuItem menuItem) =>
+        await ExecuteAdminViewAction(() => CommandExecutor.Execute(
+            new UpdatePhraseCommand(_phrase.Id, Translations: _translationTreeItems.Select(i => i.Name).ToArray())));
 
     private async Task<bool> ExecuteAdminViewAction(Func<Task<Result>> action)
     {
@@ -151,5 +145,6 @@
     private EditableList.MenuItem[] TranslationMenuItems = new EditableList.MenuItem[]
     {
         EditableList.MenuItems.AddSibling with { Name = "Add Translation", IdSecondary = "addTranslation"},
+        EditableList.MenuItems.Remove with { Name = "Remove Translation", IdSecondary = "removeTranslation"},
     };
 }
