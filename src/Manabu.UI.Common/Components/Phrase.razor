@@ -25,6 +25,7 @@
         TreeItems=@_translationTreeItems
         OnAddItem=@OnAddTranslation
         OnRemoveItem=@OnRemoveTranslation
+        OnMoveItem=@OnMoveTranslation
         MenuItemsRoot=@TranslationMenuItemsRoot
         MenuItemsForAll=@TranslationMenuItems
         NoIndents=true />
@@ -97,14 +98,16 @@
 
     private EditableList.MenuItem[] TranslationMenuItemsRoot = new EditableList.MenuItem[]
     {
-        EditableList.MenuItems.AddChildAsLast with { Name = "Add Translation", IdSecondary = "addTranslation"},
-        EditableList.MenuItems.AddChildAsFirst with { Name = "Add Translation at Start", IdSecondary = "addTranslation" },
+        EditableList.MenuItems.AddChildAsLast,
+        EditableList.MenuItems.AddChildAsFirst,
     };
 
     private EditableList.MenuItem[] TranslationMenuItems = new EditableList.MenuItem[]
     {
-        EditableList.MenuItems.AddSibling with { Name = "Add Translation", IdSecondary = "addTranslation"},
-        EditableList.MenuItems.Remove with { Name = "Remove Translation", IdSecondary = "removeTranslation"},
+        EditableList.MenuItems.AddSibling,
+        EditableList.MenuItems.MoveDown,
+        EditableList.MenuItems.MoveUp,
+        EditableList.MenuItems.Remove,
     };
 
     private Task<bool> OnAddTranslation(
@@ -115,6 +118,11 @@
     private async Task OnRemoveTranslation(EditableList.TreeItemData item, EditableList.MenuItem menuItem) =>
         await ExecuteAdminViewAction(() => CommandExecutor.Execute(
             new UpdatePhraseCommand(_phrase.Id, Translations: _translationTreeItems.Select(i => i.Name).ToArray())));
+
+    private Task<bool> OnMoveTranslation(
+        EditableList.TreeItemData item, int index, EditableList.MenuItem menuItem) =>
+            ExecuteAdminViewAction(() => CommandExecutor.Execute(
+                new UpdatePhraseCommand(_phrase.Id, Translations: _translationTreeItems.Select(i => i.Name).ToArray())));
 
     #endregion
 
@@ -131,14 +139,16 @@
 
     private EditableList.MenuItem[] ContextsMenuItemsRoot = new EditableList.MenuItem[]
     {
-        EditableList.MenuItems.AddChildAsLast with { Name = "Add Context", IdSecondary = "addContext"},
-        EditableList.MenuItems.AddChildAsFirst with { Name = "Add Context at Start", IdSecondary = "addContext" },
+        EditableList.MenuItems.AddChildAsLast,
+        EditableList.MenuItems.AddChildAsFirst,
     };
 
     private EditableList.MenuItem[] ContextsMenuItems = new EditableList.MenuItem[]
     {
-        EditableList.MenuItems.AddSibling with { Name = "Add Context", IdSecondary = "addContext" },
-        EditableList.MenuItems.Remove with { Name = "Remove Context", IdSecondary = "removeContext" },
+        EditableList.MenuItems.AddSibling,
+        EditableList.MenuItems.MoveDown,
+        EditableList.MenuItems.MoveUp,
+        EditableList.MenuItems.Remove,
     };
 
     #endregion

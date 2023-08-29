@@ -1,4 +1,5 @@
-﻿@using Corelibs.Blazor.UIComponents.Common;
+﻿@using Corelibs.Basic.Maths;
+@using Corelibs.Blazor.UIComponents.Common;
 @using Microsoft.JSInterop;
 @inject IJSRuntime JSRuntime
 
@@ -77,6 +78,9 @@
                                 }
                             }
                             @{
+                                var items = item.Parent?.TreeItems ?? TreeItems;
+                                int itemIndex = items.IndexOf(item);
+
                                 bool hasItemsPerLevel =
                                     !MenuItemsPerLevel.IsNullOrEmpty() &&
                                     MenuItemsPerLevel.Length > item.Level &&
@@ -100,6 +104,14 @@
                                         <MudMenu Icon="@Icons.Material.Filled.MoreHoriz">
                                             @foreach (var menuItem in menuItems)
                                             {
+                                                if (menuItem.Id == MenuItems.MoveUp.Id &&
+                                                    itemIndex == 0)
+                                                    continue;
+
+                                                if (menuItem.Id == MenuItems.MoveDown.Id &&
+                                                    itemIndex >= items.Count - 1)
+                                                    continue;
+                                                
                                                 <MudMenuItem OnClick=@(args => OnMenuItemClickInternal(args, item, menuItem))>@menuItem.Name</MudMenuItem>
                                             }
                                         </MudMenu>
@@ -131,8 +143,9 @@
     }
 
     public delegate Task<bool> OnAddDelegate(TreeItemData item, int index, MenuItem menuItem);
-    public delegate Task OnClickDelegate(TreeItemData item);
     public delegate Task OnRemoveDelegate(TreeItemData item, MenuItem menuItem);
+    public delegate Task<bool> OnMoveDelegate(TreeItemData item, int index, MenuItem menuItem);
+    public delegate Task OnClickDelegate(TreeItemData item);
     public delegate Task OnItemActionDelegate(TreeItemData item, MenuItem menuItem);
     public delegate TreeItemData CreateCustomItemDataDelegate(TreeItemData parent);
 
@@ -142,6 +155,7 @@
     [Parameter] public string Name { get; set; }
     [Parameter] public OnAddDelegate OnAddItem { get; set; }
     [Parameter] public OnRemoveDelegate OnRemoveItem { get; set; }
+    [Parameter] public OnMoveDelegate OnMoveItem { get; set; }
     [Parameter] public OnClickDelegate OnItemClick { get; set; }
     [Parameter] public OnItemActionDelegate OnMenuItemClick { get; set; }
 
@@ -164,7 +178,11 @@
         public static readonly MenuItem AddChildAsFirst = new MenuItem("addChildAsFirst", "Add Child as First");
         public static readonly MenuItem AddChildAsLast = new MenuItem("addChildAsLast", "Add Child as Last");
         public static readonly MenuItem AddSibling = new MenuItem("addSibling", "Add Sibling");
+
         public static readonly MenuItem Remove = new MenuItem("remove", "Remove");
+
+        public static readonly MenuItem MoveUp = new MenuItem("moveUp", "Move Up");
+        public static readonly MenuItem MoveDown = new MenuItem("moveDown", "Move Down");
     }
 
     private void OnEditableItemBlur()
@@ -196,7 +214,6 @@
         TreeItems
             .Flatten(i => i.TreeItems)
             .ForEach(i => i.TreeItems = i.TreeItems.Where(si => !si.Id.IsNullOrEmpty()).ToList());
-
     }
 
     private Task OnItemClickInternal(TreeItemData item)
@@ -245,7 +262,8 @@
                 treeItems.Insert(i, newItem);
             }
         }
-        else if (menuItem.Id == MenuItems.Remove.Id)
+        else 
+        if (menuItem.Id == MenuItems.Remove.Id)
         {
             var treeItems = item?.Parent is not null ? item.Parent.TreeItems : TreeItems;
 
@@ -253,6 +271,21 @@
             treeItems.Remove(item);
             if (!await UIComponent.InvokeBool(OnRemoveItem, item, menuItem)())
                 treeItems.Insert(i, item);
+        }
+        else 
+        if (menuItem.Id == MenuItems.MoveUp.Id ||
+            menuItem.Id == MenuItems.MoveDown.Id)
+        {
+            var treeItems = item?.Parent?.TreeItems ?? TreeItems;
+            int index = treeItems.IndexOf(item);
+
+            int newIndex = menuItem.Id == MenuItems.MoveUp.Id ? index - 1 : index + 1;
+            newIndex = newIndex.Clamp(treeItems.Count);
+
+            treeItems.Swap(index, newIndex);
+            if (newIndex != index)
+                if (!await UIComponent.InvokeBool(OnMoveItem, item, newIndex, menuItem)())
+                    treeItems.Swap(index, newIndex);
         }
         else
         {
