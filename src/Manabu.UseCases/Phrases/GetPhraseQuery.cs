@@ -75,28 +75,17 @@ public record ConversationDetailsDTO(
 public record WordMeaningDTO(
     string Id,
     string Original,
-    string Mode);
+    string WritingType);
 
 public record PhraseDTO(
     string Id,
     string Original,
     string? Speaker = null);
 
-public record WordInflection(string Value)
-{
-    public static readonly WordInflection Present = new("dictionary");
-    public static readonly WordInflection Inflection = new("inflection");
-}
-
-public record WordX(string Value)
-{
-    public static readonly WordInflection Positive = new("positive");
-    public static readonly WordInflection Negative = new("negative");
-}
-
 public record WritingMode(string Value)
 {
     public static readonly WritingMode Dictionary = new("dictionary");
-    public static readonly WritingMode Hiragana = new("katakana");
+    public static readonly WritingMode Hiragana = new("hiragana");
+    public static readonly WritingMode Katakana = new("katakana");
     public static readonly WritingMode OtherWriting = new("inflection");
 }
