@@ -77,8 +77,6 @@
 
     protected override async Task OnInitializedAsyncImpl()
     {
-        var phraseItemDataList = new List<PhraseTreeItemData>();
-
         await RefreshViewModel();
 
         if (_conversation is null)

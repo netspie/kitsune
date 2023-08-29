@@ -8,49 +8,53 @@
 
 @inherits CoreComponent
 
-@if (_conversation is null) { return; }
+@if (_phrase is null) { return; }
 
 <MudStack Class="lesson">
     <MudBreadcrumbs Items=@_breadcrumbs Style="padding-left: 0; font-size: 12px" />
 
-    <MudStack>
-        <TextField 
-            Label="Original"
-            IsReadonly=@(!_isEdit)
-            Value=@_conversation.Name 
-            OnEdit=@OnNameEdit />
-
-        <TextField 
-            Label="Description"
-            IsReadonly=@(!_isEdit)
-            Value=@GetDescription() 
-            OnEdit=@OnDescriptionEdit />
-    </MudStack>
-
-    <EditableList 
-        Name="Phrases"
+    <TextField 
+        Label="Original"
         IsReadonly=@(!_isEdit)
-        TreeItems=@_phrasesTreeItems
+        Value=@_phrase.Original 
+        OnEdit=@OnOriginalEdit />
+
+    <EditableList
+        Name="Translations"
+        IsReadonly=@(!_isEdit)
+        TreeItems=@_translationTreeItems
         OnAddItem=@OnAddItem
-        MenuItemsRoot=@PhrasesMenuItemsRoot
-        MenuItemsForAll=@PhraseMenuItems
-        NoIndents=true>
-       
-        <CustomItemTemplate>
-            @{
-                var phraseItem = context as PhraseTreeItemData;
-                
-                <PhraseItem 
-                    Id=@context.Id 
-                    IsReadonly=@(!_isEdit)
-                    Content=@context.Name 
-                    SpeakerName=@phraseItem.SpeakerName 
-                    OnPhraseSubmit=@OnPhraseSubmit
-                    OnSpeakerSubmit=@OnSpeakerSubmit />
-            }
-        </CustomItemTemplate>
-        
-    </EditableList>
+        NoIndents=true />
+
+    @if (_isEdit || !_contextTreeItems.IsNullOrEmpty())
+    {
+        <EditableList
+            Name="Contexts"
+            IsReadonly=@(!_isEdit)
+            TreeItems=@_contextTreeItems
+            OnAddItem=@OnAddItem
+            NoIndents=true />
+    }
+
+    @if (_isEdit || !_audioTreeItems.IsNullOrEmpty())
+    {
+        <EditableList
+            Name="Audios"
+            IsReadonly=@(!_isEdit)
+            TreeItems=@_audioTreeItems
+            OnAddItem=@OnAddItem
+            NoIndents=true />
+    }
+
+    @if (_isEdit || !_wordTreeItems.IsNullOrEmpty())
+    {
+        <EditableList
+            Name="Words"
+            IsReadonly=@(!_isEdit)
+            TreeItems=@_wordTreeItems
+            OnAddItem=@OnAddItem
+            NoIndents=true />
+    }
 
     @if (_isAdmin)
     {
@@ -62,36 +66,27 @@
 @code {
     [Parameter] public string PhraseId { get; set; }
 
-    private List<EditableList.TreeItemData> _phrasesTreeItems;
+    private List<EditableList.TreeItemData> _wordTreeItems;
+    private List<EditableList.TreeItemData> _translationTreeItems;
+    private List<EditableList.TreeItemData> _contextTreeItems;
+    private List<EditableList.TreeItemData> _audioTreeItems;
 
     private List<BreadcrumbItem> _breadcrumbs = new();
 
-    private ConversationDetailsDTO? _conversation;
+    private PhraseDetailsDTO? _phrase;
     private List<List<List.ListItem>>? _listItems;
 
     protected override async Task OnInitializedAsyncImpl()
     {
-        var phraseItemDataList = new List<PhraseTreeItemData>();
-
         await RefreshViewModel();
 
-        if (_conversation is null)
+        if (_phrase is null)
             return;
 
         //_breadcrumbs.Add(new("Courses", href: "/courses"));
         //_breadcrumbs.Add(new(_conversation.Courses[0].Name, href: $"/courses/{_conversation.Courses[0].Id}"));
         //_breadcrumbs.Add(new("Conversations", "", disabled: true));
         //_breadcrumbs.Add(new(_conversation.Name, href: _conversation.Id));
-    }
-
-    private async Task<bool> OnNameEdit(string text)
-    {
-        return await ExecuteUpdateCommand(() => _conversation with { Name = text });
-    }
-
-    private async Task<bool> OnDescriptionEdit(string text)
-    {
-        return await ExecuteUpdateCommand(() => _conversation with { Description = text });
     }
 
     private async Task<bool> OnAddItem(
@@ -101,42 +96,26 @@
             return false;
 
         if (menuItem.IdSecondary == "addPhrase")
-            await CommandExecutor.Execute(new CreatePhraseCommand(item.Name, _conversation?.Id, index));
+            await CommandExecutor.Execute(new CreatePhraseCommand(item.Name, _phrase?.Id, index));
 
         return await RefreshView();
     }
 
-    private Task<bool> OnTitleEdit(string id, string name, string? parentType = null) =>
-        ExecuteUpdateCommand(() => _conversation with { Name = name });
+    private Task<bool> OnOriginalEdit(string original) =>
+        ExecuteUpdateCommand(() => _phrase with { Original = original });
 
-    private Task<bool> OnDescriptionEdit(string id, string description, string? parentType = null) =>
-        ExecuteUpdateCommand(() => _conversation with { Description = description });
-
-    private Task<bool> OnPhraseSubmit(string id, string text) =>
-        ExecuteAdminViewAction(() => CommandExecutor.Execute(new UpdateConversationPhraseCommand(
-            id, ConversationId: _conversation?.Id, Original: text)));
-
-    private Task<bool> OnSpeakerSubmit(string id, string name) =>
-        ExecuteAdminViewAction(() => CommandExecutor.Execute(new UpdateConversationPhraseCommand(
-            id, ConversationId: _conversation?.Id, Speaker: name)));
-
-    private async Task OnItemClick(string id, string type)
-    {
-        //Navigation.NavigateTo($"phrases/{id}");
-    }
-
-    private async Task<bool> ExecuteUpdateCommand(Func<ConversationDetailsDTO> createDto)
+    private async Task<bool> ExecuteUpdateCommand(Func<PhraseDetailsDTO> createDto)
     {
         if (!_isAdmin)
             return false;
 
-        var dto = createDto();
-        var result = await CommandExecutor.Execute(new UpdateConversationCommand(
-            dto.Id, dto.Name, dto.Description));
+        //var dto = createDto();
+        //var result = await CommandExecutor.Execute(new UpdateConversationCommand(
+        //    dto.Id, dto.Name, dto.Description));
 
-        await RefreshView();
+        return await RefreshView();
 
-        return result.IsSuccess;
+        //return result.IsSuccess;
     }
 
     private async Task<bool> ExecuteAdminViewAction(Func<Task<Result>> action)
@@ -161,19 +140,17 @@
 
     protected async Task RefreshViewModel()
     {
-        var response = await QueryExecutor.Execute<GetConversationQuery, GetConversationQueryResponse>(
-            new GetConversationQuery(PhraseId));
+        var response = await QueryExecutor.Execute<GetPhraseQuery, GetPhraseQueryResponse>(
+            new GetPhraseQuery(PhraseId));
 
-        _conversation = response?.Content;
+        _phrase = response?.Content;
 
-        _phrasesTreeItems = _conversation?.Phrases?.SelectOrDefault((p, i) =>
-            new PhraseTreeItemData(p.Id, p.Original, "phrase", p.Speaker) as EditableList.TreeItemData).ToList();
+        _translationTreeItems = _phrase?.Translations?.SelectOrDefault(t =>
+            new EditableList.TreeItemData(t, t, "translation")).ToList();
+
+        _contextTreeItems = _phrase?.Contexts?.SelectOrDefault(c =>
+            new EditableList.TreeItemData(c, c, "context")).ToList();
     }
-
-    private string GetDescription() =>
-        !_conversation.Description.IsNullOrEmpty() ?
-            _conversation.Description :
-            "No Description";
 
     private EditableList.MenuItem[] PhrasesMenuItemsRoot = new EditableList.MenuItem[]
     {
@@ -185,19 +162,4 @@
     {
         EditableList.MenuItems.AddSibling with { Name = "Add Phrase", IdSecondary = "addPhrase"},
     };
-
-    class PhraseTreeItemData : EditableList.TreeItemData
-    {
-        public PhraseTreeItemData(
-            string id,
-            string phrase,
-            string type,
-            string speakerName) : base(id, phrase)
-        {
-            Type = type;
-            SpeakerName = speakerName;
-        }
-
-        public string SpeakerName { get; }
-    }
 }

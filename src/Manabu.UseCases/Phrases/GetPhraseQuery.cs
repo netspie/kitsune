@@ -32,60 +32,42 @@ public class GetPhraseQueryHandler : IQueryHandler<GetPhraseQuery, Result<GetPhr
     {
         var result = Result<GetPhraseQueryResponse>.Success();
 
-        //var conversation = await _conversationRepository.Get(new ConversationId(query.ConversationId), result);
-        //if (!result.ValidateSuccessAndValues())
-        //    return result.Fail();
+        var phrase = await _phraseRepository.Get(new PhraseId(query.PhraseId), result);
+        if (!result.ValidateSuccessAndValues())
+            return result.Fail();
 
-        //var phrasesIds = conversation.Phrases.SelectOrDefault(p => p.Phrase).ToList();
-        //var phrases = await _phraseRepository.Get(phrasesIds, result);
-        //var lessons = await _lessonRepository.Get(conversation.Lessons ?? new(), result);
-
-        //return result.With(
-        //    new GetPhraseQueryResponse(
-        //        new(conversation.Id.Value,
-        //            conversation.Name,
-        //            conversation.Description,
-        //            lessons
-        //                .OrderBy(p => conversation.Lessons.IndexOf(p.Id))
-        //                .Select((l, i) => new LessonDTO(l.Id.Value, l.Name))
-        //                .ToArray(),
-        //            phrases
-        //                .OrderBy(p => phrasesIds.IndexOf(p.Id))
-        //                .Select((p, i) => new PhraseDTO(p.Id.Value, p.Original, Speaker: conversation.Phrases.FirstOrDefault(p2 => p2.Phrase == p.Id)?.Speaker))
-        //                .ToArray())));
-
-        return result.Fail();
+        return result.With(
+            new GetPhraseQueryResponse(
+                new(phrase.Id.Value,
+                    phrase.Original,
+                    phrase.Translations.ToArrayOrDefault(),
+                    phrase.Contexts.ToArrayOrDefault(),
+                    phrase.Audios.SelectOrDefault(a => a.Value).ToArray())));
     }
 }
 
 public record GetPhraseQuery(
     string PhraseId) : IQuery<Result<GetPhraseQueryResponse>>;
 
-public record GetPhraseQueryResponse(ConversationDetailsDTO Content);
+public record GetPhraseQueryResponse(PhraseDetailsDTO Content);
 
-public record ConversationDetailsDTO(
+public record PhraseDetailsDTO(
     string Id,
     string Original,
     string[] Translations,
     string[] Contexts,
     string[] AudioIds,
-    WordMeaningDTO[] WordMeanings,
-    PhraseDTO[] Phrases);
+    WordMeaningDTO[]? WordMeanings = null);
 
 public record WordMeaningDTO(
     string Id,
     string Original,
     string WritingType);
 
-public record PhraseDTO(
-    string Id,
-    string Original,
-    string? Speaker = null);
-
 public record WritingMode(string Value)
 {
     public static readonly WritingMode Dictionary = new("dictionary");
     public static readonly WritingMode Hiragana = new("hiragana");
     public static readonly WritingMode Katakana = new("katakana");
-    public static readonly WritingMode OtherWriting = new("inflection");
+    public static readonly WritingMode OtherWriting = new("otherWriting");
 }
