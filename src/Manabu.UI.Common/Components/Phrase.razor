@@ -1,10 +1,13 @@
 ﻿@using Corelibs.Basic.Blocks;
 @using Corelibs.Basic.Reflection;
 @using Corelibs.Basic.Collections;
+@using Corelibs.Basic.Storage;
+@using Manabu.Entities.Audios;
 @using Manabu.UseCases.Conversations;
 @using Manabu.UseCases.Lessons;
 @using Manabu.UseCases.Phrases;
 @using Microsoft.AspNetCore.Components.Authorization;
+@using Microsoft.AspNetCore.Components.Forms;
 
 @inherits CoreComponent
 
@@ -62,6 +65,13 @@
         <MudSwitch @bind-Checked=@_isEdit Label="Edit Mode" Color="Color.Info" />
     }
 
+    <audio controls>
+        <source src=@($"_content/Manabu.UI.Common/data/boba.mp3") type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <FileUpload OnUpload=@OnAudioUpload />
+
 </MudStack>
 
 @code {
@@ -77,13 +87,22 @@
     private PhraseDetailsDTO? _phrase;
     private List<List<List.ListItem>>? _listItems;
 
+    [Inject] public IMediaStorage<Audio> AudioStorage { get; set; }   
+
+    private async Task<Result> OnAudioUpload(IBrowserFile file)
+    {
+        var fileName = file.Name;
+        var res = await AudioStorage.Save(file.OpenReadStream, fileName);
+        return res.Item1;
+    }
+
     protected override async Task OnInitializedAsyncImpl()
     {
         await RefreshViewModel();
 
         if (_phrase is null)
             return;
-
+        
         //_breadcrumbs.Add(new("Courses", href: "/courses"));
         //_breadcrumbs.Add(new(_conversation.Courses[0].Name, href: $"/courses/{_conversation.Courses[0].Id}"));
         //_breadcrumbs.Add(new("Conversations", "", disabled: true));

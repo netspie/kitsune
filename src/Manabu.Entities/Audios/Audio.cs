@@ -6,19 +6,11 @@ public class Audio : Entity<AudioId>, IAggregateRoot<AudioId>
 {
     public const string DefaultCollectionName = "audios";
 
-    public string Name { get; private set; }
+    public string Href { get; private set; }
 
-    public Audio(string name)
+    public Audio(string href)
     {
-        Name = name;
-    }
-
-    public Audio(
-        AudioId id,
-        uint version,
-        string name) : base(id, version)
-    {
-        Name = name;
+        Href = href;
     }
 }
 

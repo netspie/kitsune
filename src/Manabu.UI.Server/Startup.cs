@@ -1,14 +1,16 @@
 ﻿using Corelibs.Basic.Repository;
+using Corelibs.Basic.Storage;
 using Corelibs.Basic.UseCases;
 using Corelibs.MongoDB;
 using FluentValidation;
 using FluentValidation.AspNetCore;
-using Mediator;
+using Manabu.Entities.Audios;
+using Manabu.Infrastructure.CQRS.Flashcards;
 using Manabu.UI.Server.Data;
+using Manabu.UseCases.Flashcards;
+using Mediator;
 using System.Reflection;
 using System.Security.Claims;
-using Manabu.UseCases.Flashcards;
-using Manabu.Infrastructure.CQRS.Flashcards;
 
 namespace Manabu.UI.Server;
 
@@ -34,6 +36,8 @@ public static class Startup
         services.AddMediator(opts => opts.ServiceLifetime = ServiceLifetime.Scoped);
 
         services.AddRepositories(environment, entitiesAssembly);
+        services.AddSingleton<IMediaStorage<Audio>>(sp => new LocalMediaStorage<Audio>(
+            "../Manabu.UI.Common/wwwroot/media/audio", "_content/Manabu.UI.Common/media/audio"));
 
         services.AddScoped<IFlashcardResolver, JapaneseFlashcardResolver>();
     }
