@@ -1,32 +1,24 @@
-﻿using Corelibs.Basic.Auth;
-using Corelibs.Basic.Blocks;
+﻿using Corelibs.Basic.Blocks;
 using Corelibs.Basic.Collections;
 using Corelibs.Basic.Repository;
 using FluentValidation;
-using Manabu.Entities.Conversations;
-using Manabu.Entities.Lessons;
+using Manabu.Entities.Audios;
 using Manabu.Entities.Phrases;
-using Manabu.Entities.Users;
 using Mediator;
-using System.Drawing;
-using System.Security.Claims;
 
 namespace Manabu.UseCases.Phrases;
 
 public class AddPhraseAudioCommandHandler : ICommandHandler<AddPhraseAudioCommand, Result>
 {
-    private readonly IAccessorAsync<ClaimsPrincipal> _userAccessor;
-    private readonly IRepository<Conversation, ConversationId> _conversationRepository;
     private readonly IRepository<Phrase, PhraseId> _phraseRepository;
+    private readonly IRepository<Audio, AudioId> _audioRepository;
 
     public AddPhraseAudioCommandHandler(
-        IAccessorAsync<ClaimsPrincipal> userAccessor,
-        IRepository<Conversation, ConversationId> conversationRepository,
-        IRepository<Phrase, PhraseId> phraseRepository)
+        IRepository<Phrase, PhraseId> phraseRepository, 
+        IRepository<Audio, AudioId> audioRepository)
     {
-        _userAccessor = userAccessor;
-        _conversationRepository = conversationRepository;
         _phraseRepository = phraseRepository;
+        _audioRepository = audioRepository;
     }
 
     public async ValueTask<Result> Handle(AddPhraseAudioCommand command, CancellationToken ct)
@@ -37,10 +29,10 @@ public class AddPhraseAudioCommandHandler : ICommandHandler<AddPhraseAudioComman
         if (!result.ValidateSuccessAndValues())
             return result.Fail();
 
-        phrase.Original = command.Original ?? phrase.Original;
-        phrase.Translations = command.Translations.ToListOrDefault() ?? phrase.Translations;
-        phrase.Contexts = command.Contexts.ToListOrDefault() ?? phrase.Contexts;
+        var audio = new Audio(command.Href);
+        phrase.AddAudio(audio.Id);
 
+        await _audioRepository.Save(audio, result);
         await _phraseRepository.Save(phrase, result);
 
         return result;
@@ -49,8 +41,6 @@ public class AddPhraseAudioCommandHandler : ICommandHandler<AddPhraseAudioComman
 
 public record AddPhraseAudioCommand(
     string PhraseId,
-    string? Original = null,
-    string[]? Translations = null,
-    string[]? Contexts = null) : ICommand<Result>;
+    string Href) : ICommand<Result>;
 
 public class AddPhraseAudioCommandValidator : AbstractValidator<AddPhraseAudioCommand> {}

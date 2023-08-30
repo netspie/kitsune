@@ -48,7 +48,21 @@
             Name="Audios"
             IsReadonly=@(!_isEdit)
             TreeItems=@_audioTreeItems
-            NoIndents=true />
+            NoIndents=true>
+
+            <CustomItemTemplate>
+                <audio controls style="padding-bottom: 10px;">
+                    <source src=@($"{AudioStorage.BaseReadPath}/{context.Name}") type="audio/mpeg">
+                    Your browser does not support the audio element.
+                </audio>
+            </CustomItemTemplate>
+
+        </EditableList>
+
+        @if (_isEdit)
+        {
+            <FileUpload OnUpload=@OnAudioUpload />
+        }
     }
 
     @if (_isEdit || !_wordTreeItems.IsNullOrEmpty())
@@ -64,13 +78,6 @@
     {
         <MudSwitch @bind-Checked=@_isEdit Label="Edit Mode" Color="Color.Info" />
     }
-
-    <audio controls>
-        <source src=@($"_content/Manabu.UI.Common/data/boba.mp3") type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
-
-    <FileUpload OnUpload=@OnAudioUpload />
 
 </MudStack>
 
@@ -91,8 +98,12 @@
 
     private async Task<Result> OnAudioUpload(IBrowserFile file)
     {
-        var fileName = file.Name;
-        var res = await AudioStorage.Save(file.OpenReadStream, fileName);
+        var originalFileName = file.Name;
+        var res = await AudioStorage.Save((maxSize, ct) => file.OpenReadStream(1024*1024*10, ct), originalFileName);
+        if (res.Item1.IsSuccess)
+            await ExecuteAdminViewAction(() => CommandExecutor.Execute(
+                new AddPhraseAudioCommand(_phrase.Id, res.Item2)));
+
         return res.Item1;
     }
 
@@ -184,5 +195,8 @@
 
         _contextTreeItems = _phrase?.Contexts?.SelectOrDefault(c =>
             new EditableList.TreeItemData(c, c, "context")).ToList();
+
+        _audioTreeItems = _phrase?.Audios?.SelectOrDefault(a =>
+            new EditableList.TreeItemData(a.Id, a.Href, "audio")).ToList();
     }
 }

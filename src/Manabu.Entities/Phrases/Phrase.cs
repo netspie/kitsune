@@ -28,6 +28,12 @@ public class Phrase : Entity<PhraseId>, IAggregateRoot<PhraseId>
         Conversations = conversation is not null ? 
             new() { conversation } : null;
     }
+
+    public void AddAudio(AudioId audio)
+    {
+        Audios ??= new();
+        Audios.Add(audio);
+    }
 }
 
 public class PhraseId : EntityId { public PhraseId(string value) : base(value) { } }
