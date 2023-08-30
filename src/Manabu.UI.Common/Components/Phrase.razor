@@ -48,6 +48,8 @@
             Name="Audios"
             IsReadonly=@(!_isEdit)
             TreeItems=@_audioTreeItems
+            MenuItemsForAll=@AudioMenuItems
+            OnRemoveItem=@OnRemoveAudio
             NoIndents=true>
 
             <CustomItemTemplate>
@@ -113,7 +115,7 @@
 
         if (_phrase is null)
             return;
-        
+
         //_breadcrumbs.Add(new("Courses", href: "/courses"));
         //_breadcrumbs.Add(new(_conversation.Courses[0].Name, href: $"/courses/{_conversation.Courses[0].Id}"));
         //_breadcrumbs.Add(new("Conversations", "", disabled: true));
@@ -178,6 +180,25 @@
         EditableList.MenuItems.AddSibling,
         EditableList.MenuItems.MoveDown,
         EditableList.MenuItems.MoveUp,
+        EditableList.MenuItems.Remove,
+    };
+
+    #endregion
+
+    #region Audios
+
+    private async Task OnRemoveAudio(EditableList.TreeItemData item, EditableList.MenuItem menuItem)
+    {
+        var result = await AudioStorage.Delete(item.Name);
+        if (!result.IsSuccess)
+            return;
+
+        await ExecuteAdminViewAction(() => CommandExecutor.Execute(
+            new RemovePhraseAudioCommand(_phrase.Id, item.Id)));
+    }
+
+    private EditableList.MenuItem[] AudioMenuItems = new EditableList.MenuItem[]
+    {
         EditableList.MenuItems.Remove,
     };
 

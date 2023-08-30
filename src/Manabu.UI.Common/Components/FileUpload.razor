@@ -37,10 +37,10 @@
 
     private async Task UploadFiles(IBrowserFile file)
     {
+        errors.Clear();
+
         var result = await UIComponent.Invoke<Result>(OnUpload, file)();
         if (!result.IsSuccess)
             errors.AddRange(result.AllErrors.Select(e => e.ToString()));
-
-        errors.Clear();
     }
 }
