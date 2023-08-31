@@ -36,7 +36,7 @@ public class Lesson : Entity<LessonId>, IAggregateRoot<LessonId>
         Courses.Add(course);
     }
 
-    public void AddConversation(ConversationId conversation, int index = 0)
+    public void AddConversation(ConversationId conversation, int index = int.MaxValue)
     {
         Conversations ??= new();
         Conversations.InsertClamped(conversation, index);

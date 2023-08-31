@@ -29,7 +29,7 @@ public class Conversation : Entity<ConversationId>, IAggregateRoot<ConversationI
     }
 
     public void AddPhrase(PhraseId phrase, 
-        int index = 0)
+        int index = int.MaxValue)
     {
         Phrases ??= new();
         Phrases.InsertClamped(new("", phrase), index);
