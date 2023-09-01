@@ -2,6 +2,8 @@
 
 public record ItemType(string Value)
 {
+    public static readonly ItemType Conversation = new("conversation");
+    public static readonly ItemType Lesson = new("lesson");
     public static readonly ItemType Phrase = new("phrase");
     public static readonly ItemType Word = new("word");
     public static readonly ItemType WordMeaning = new("word-meaning");
