@@ -1,6 +1,4 @@
 ﻿using Corelibs.Basic.Blocks;
-using Corelibs.Basic.Repository;
-using Manabu.Entities.Flashcards;
 using Mediator;
 
 namespace Manabu.UseCases.Flashcards;
@@ -19,7 +17,7 @@ public class GetFlashcardQueryHandler : IQueryHandler<GetFlashcardQuery, Result<
     {
         var result = Result<GetFlashcardQueryResponse>.Success();
 
-        var flashcardResult = await _flashcardResolver.Get(query.ItemId, query.Type, query.Mode);
+        var flashcardResult = await _flashcardResolver.Get(query.TargetItemId, query.TargetItemType, query.FlashcardMode);
         if (!flashcardResult.ValidateSuccessAndValues())
             return result.Fail();
 
@@ -28,9 +26,9 @@ public class GetFlashcardQueryHandler : IQueryHandler<GetFlashcardQuery, Result<
 }
 
 public record GetFlashcardQuery(
-    string ItemId,
-    string Type,
-    string Mode) : IQuery<Result<GetFlashcardQueryResponse>>;
+    string TargetItemId,
+    string TargetItemType,
+    string FlashcardMode) : IQuery<Result<GetFlashcardQueryResponse>>;
 
 public record GetFlashcardQueryResponse(FlashcardDTO Flashcard);
 

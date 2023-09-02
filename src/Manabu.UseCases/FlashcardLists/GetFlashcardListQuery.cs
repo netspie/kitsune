@@ -39,15 +39,15 @@ public class GetFlashcardListQueryHandler : IQueryHandler<GetFlashcardListQuery,
     {
         var result = Result<GetFlashcardListQueryResponse>.Success();
 
-        var itemType = new ItemType(query.ItemType);
-        var flashcardType = new ItemType(query.FlashcardType);
+        var rootItemType = new ItemType(query.RootItemType);
+        var targetItemType = new ItemType(query.TargetItemType);
         var flashcardMode = new FlashcardMode(query.FlashcardMode);
         
-        if (flashcardType == ItemType.Phrase)
+        if (targetItemType == ItemType.Phrase)
         {
-            var phrases = await GetPhrases(query.ItemId, itemType);
+            var phrases = await GetPhrases(query.RootItemId, rootItemType);
             return result.With(new GetFlashcardListQueryResponse(
-                new FlashcardListDTO(query.ItemType, query.FlashcardMode, phrases.Select(p => p.Value).ToArray())));
+                new FlashcardListDTO(query.RootItemType, query.FlashcardMode, phrases.Select(p => p.Value).ToArray())));
         }
 
         return result.Fail();
@@ -73,9 +73,9 @@ public class GetFlashcardListQueryHandler : IQueryHandler<GetFlashcardListQuery,
 }
 
 public record GetFlashcardListQuery(
-    string ItemId,
-    string ItemType,
-    string FlashcardType,
+    string RootItemId,
+    string RootItemType,
+    string TargetItemType,
     string FlashcardMode) : IQuery<Result<GetFlashcardListQueryResponse>>;
 
 public record GetFlashcardListQueryResponse(FlashcardListDTO Content);
