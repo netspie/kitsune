@@ -13,6 +13,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="7.0.7" />
+    <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.2.0" />
     <PackageReference Include="MudBlazor" Version="6.9.0" />
   </ItemGroup>
 
@@ -23,6 +24,9 @@
 
   <ItemGroup>
     <Content Update="Pages\Courses.razor">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
+    <Content Update="Pages\Flashcard.razor">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
     </Content>
   </ItemGroup>

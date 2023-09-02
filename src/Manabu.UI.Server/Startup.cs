@@ -6,6 +6,7 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using Manabu.Entities.Audios;
 using Manabu.Infrastructure.CQRS.Flashcards;
+using Manabu.UI.Common.State;
 using Manabu.UI.Server.Data;
 using Manabu.UseCases.Flashcards;
 using Mediator;
@@ -40,6 +41,8 @@ public static class Startup
             "../Manabu.UI.Common/wwwroot/media/audio", "_content/Manabu.UI.Common/media/audio"));
 
         services.AddScoped<IFlashcardResolver, JapaneseFlashcardResolver>();
+
+        services.AddSingleton<FlashcardList>();
     }
 
     public static void AddRepositories(this IServiceCollection services, IWebHostEnvironment environment, Assembly assembly)

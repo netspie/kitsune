@@ -62,6 +62,10 @@
         MenuItemsRoot=@ConvMenuItemsRoot 
         MenuItemsForAll=@ConvMenuItems />
 
+    <GoFlashcardsMenu 
+        RootItemId=@LessonId
+        RootItemType="lesson" />
+
     @if (_isAdmin)
     {
         <MudSwitch @bind-Checked=@_isEdit Label="Edit Mode" Color="Color.Info" />

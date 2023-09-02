@@ -30,7 +30,7 @@ public record GetFlashcardQuery(
     string TargetItemType,
     string FlashcardMode) : IQuery<Result<GetFlashcardQueryResponse>>;
 
-public record GetFlashcardQueryResponse(FlashcardDTO Flashcard);
+public record GetFlashcardQueryResponse(FlashcardDTO Content);
 
 public record FlashcardDTO(
     string ItemId,

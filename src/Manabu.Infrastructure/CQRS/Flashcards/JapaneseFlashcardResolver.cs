@@ -1,5 +1,6 @@
 ﻿using Corelibs.Basic.Blocks;
 using Corelibs.Basic.Repository;
+using Manabu.Entities.Audios;
 using Manabu.Entities.Flashcards;
 using Manabu.Entities.Phrases;
 using Manabu.UseCases.Flashcards;
@@ -9,10 +10,14 @@ namespace Manabu.Infrastructure.CQRS.Flashcards;
 public class JapaneseFlashcardResolver : IFlashcardResolver
 {
     private readonly IRepository<Phrase, PhraseId> _phraseRepository;
+    private readonly IRepository<Audio, AudioId> _audioRepository;
 
-    public JapaneseFlashcardResolver(IRepository<Phrase, PhraseId> phraseRepository)
+    public JapaneseFlashcardResolver(
+        IRepository<Phrase, PhraseId> phraseRepository, 
+        IRepository<Audio, AudioId> audioRepository)
     {
         _phraseRepository = phraseRepository;
+        _audioRepository = audioRepository;
     }
 
     public async Task<Result<FlashcardDTO>> Get(string itemId, string itemTypeStr, string modeStr)
@@ -45,7 +50,10 @@ public class JapaneseFlashcardResolver : IFlashcardResolver
             answers.Add(new(phraseId, phrase.Translations.First(), ItemType.Phrase.Value));
 
             if (phrase.Audios?.Count > 0)
-                answers.Add(new FlashcardItemDTO(phraseId, phrase.Audios.First().Value, ItemType.Audio.Value));
+            {
+                var audio = await _audioRepository.Get(phrase.Audios.First(), result);
+                answers.Add(new FlashcardItemDTO(phraseId, audio.Href, ItemType.Audio.Value));
+            }
 
             result.Add(new FlashcardDTO(
                 phraseId, questions.ToArray(), new[] { answers.ToArray() }));

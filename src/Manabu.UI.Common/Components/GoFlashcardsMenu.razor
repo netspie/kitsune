@@ -1,0 +1,57 @@
+﻿@using Manabu.UseCases.FlashcardLists;
+
+<MudExpansionPanels DisableBorders="true" Elevation="0" 
+    Style="width: 300px;">
+    <MudExpansionPanel Text="Flashcards">
+        <MudSelect @ref=_typeSelect T="string" Label="Item" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
+            @foreach (var value in _itemValues)
+            {
+                <MudSelectItem T="string" Value="@value" />
+            }
+        </MudSelect>
+        <MudSelect @ref=_modeSelect T="string" Label="Mode" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
+            @foreach (var value in _modeValues)
+            {
+                <MudSelectItem T="string" Value="@value" />
+            }
+        </MudSelect>
+        <MudButton OnClick=@OnItemClick>Go</MudButton>
+    </MudExpansionPanel>
+</MudExpansionPanels>
+
+@code {
+    [Inject] public NavigationManager Navigation { get; set; }
+    [Inject] public IQueryExecutor QueryExecutor { get; set; }
+
+    [Inject] public State.FlashcardList _flashcardListState { get; set; }
+
+    [Parameter] public string RootItemId { get; set; }
+    [Parameter] public string RootItemType { get; set; }
+
+    private List<string> _itemValues = new() { "Phrase" };
+    private List<string> _modeValues = new() { "Reading", "Listening", "Speaking", "Writing" };
+
+    private MudSelect<string>? _typeSelect;
+    private MudSelect<string>? _modeSelect;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (!firstRender)
+            return;
+
+        _typeSelect.SelectedValues = new string[] { _itemValues.FirstOrDefault() };
+        _modeSelect.SelectedValues = new string[] { _modeValues.FirstOrDefault() };
+    }
+
+    private async Task OnItemClick(MouseEventArgs args)
+    {
+        var itemType = _typeSelect.SelectedValues.FirstOrDefault().ToLower();
+        var mode = _modeSelect.SelectedValues.FirstOrDefault().ToLower();
+        var response = await QueryExecutor.Execute<GetFlashcardListQuery, GetFlashcardListQueryResponse>(
+            new GetFlashcardListQuery(RootItemId, RootItemType, itemType, mode));
+
+        _flashcardListState.ItemIds = response.Content.ItemIds;
+
+        Navigation.NavigateTo($"/flashcard?itemType={itemType}&mode={mode}&itemId={RootItemId}");
+    }
+}

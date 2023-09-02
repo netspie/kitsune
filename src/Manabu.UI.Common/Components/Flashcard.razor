@@ -1,0 +1,112 @@
+﻿@using Corelibs.Basic.Maths;
+@using Corelibs.Basic.Storage;
+@using Manabu.Entities.Audios;
+@using Manabu.UseCases.Flashcards;
+@using Microsoft.AspNetCore.WebUtilities;
+
+@inherits CoreComponent
+
+@if (_dto is null) { return; }
+
+<MudStack Style="align-items: center; justify-content: space-evenly; height: 500px;">
+    <MudText Style="position: absolute; right: 50px; top: 50px;">
+        <span>@(_i + 1)</span>
+        &nbsp;/&nbsp;
+        <span>@(_itemIds.Length)</span>
+    </MudText>
+
+    <MudStack Style="align-items: center;">
+        @foreach (var question in _dto.Questions)
+        {
+            <MudText>@question.Text</MudText>
+        }
+    </MudStack>
+
+    <MudStack Style="align-items: center;">
+        @if (_showAnswer)
+        {
+            @foreach (var answerArr in _dto.Answers)
+            {
+                @foreach (var answer in answerArr)
+                {
+                    @if (answer.Type == "audio")
+                    {
+                        <audio controls style="padding-bottom: 10px;">
+                            <source src=@($"{AudioStorage.BaseReadPath}/{answer.Text}") type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                    }
+                    else
+                    {
+                        <MudText>@answer.Text</MudText>
+                    }
+                }
+            }
+        }
+    </MudStack>
+
+    <MudStack Row=true Style="justify-content: space-evenly;">
+        <MudButton Style="font-weight: bold;" OnClick=@OnPrevClick>Prev</MudButton>
+        <MudButton Style="font-weight: bold;" OnClick=@OnAnswerClick>Answer</MudButton>
+        <MudButton Style="font-weight: bold;" OnClick=@OnNextClick>Next</MudButton>
+    </MudStack>
+</MudStack>
+
+@code {
+    [Parameter] public string ItemId { get; set; }
+
+    [Inject] public State.FlashcardList _flashcardListState { get; set; }
+    [Inject] public IMediaStorage<Audio> AudioStorage { get; set; }
+
+    private string _rootItemId;
+    private string _itemType;
+    private string _mode;
+
+    private bool _showAnswer;
+
+    private string[] _itemIds;
+    private int _i;
+
+    private FlashcardDTO _dto;
+
+    protected override void OnInitialized()
+    {
+        _itemIds = _flashcardListState.ItemIds.Shuffle().ToArray();
+
+        var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("itemId", out var itemId))
+            _rootItemId = Convert.ToString(itemId);
+
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("itemType", out var itemType))
+            _itemType = Convert.ToString(itemType);
+
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("mode", out var mode))
+            _mode = Convert.ToString(mode);
+    }
+
+    protected override async Task RefreshViewModel()
+    {
+        var response = await QueryExecutor.Execute<GetFlashcardQuery, GetFlashcardQueryResponse>(
+            new GetFlashcardQuery(_itemIds[_i], _itemType, _mode));
+
+        _dto = response?.Content;
+        _showAnswer = false;
+    }
+
+    private void OnAnswerClick(MouseEventArgs args)
+    {
+        _showAnswer = !_showAnswer;
+    }
+
+    private Task OnPrevClick(MouseEventArgs args)
+    {
+        _i = (--_i).Clamp(_itemIds.Length - 1);
+        return RefreshViewModel();
+    }
+
+    private Task OnNextClick(MouseEventArgs args)
+    {
+        _i = (++_i).Clamp(_itemIds.Length - 1);
+        return RefreshViewModel();
+    }
+}
