@@ -4,14 +4,19 @@
 
 @inherits CoreComponent
 
+@if  (_courses is null) { return; }
+
 <MudStack Class="courses" Style="width: 100%;">
     <SiteTitle>COURSES</SiteTitle>
 
     <SimpleList 
         Name="Official Courses"
         IsReadonly=@(!_isEdit)
-        MenuItemsRoot=@TestItemsRoot
-        Items=@(TestItems.CastToList<SimpleList.ItemData>())>
+        OnAddItem=@OnAddItem
+        MenuItemsRoot=@CoursesMenuItemsRoot
+        OnItemClick=@OnItemClick
+        CreateCustomItemData=@CreateCustomItemData
+        Items=@(_items.CastToList<SimpleList.ItemData>())>
         
         <CustomItemTemplate>
             @{
@@ -23,15 +28,6 @@
         </CustomItemTemplate>
     </SimpleList>
 
-    <EditableList
-        TreeItems=@_treeItems
-        OnAddItem=@OnAddItem
-        IsReadonly=@(!_isEdit)
-        MenuItemsRoot=@MenuItemsRoot
-        OnItemClick=@OnItemClick
-        NoIndents=true />
-
-
     @if (_isAdmin)
     {
         <MudSwitch @bind-Checked=@_isEdit Label="Edit Mode" Color="Color.Info" />
@@ -40,6 +36,7 @@
 
 @code {
     private List<EditableList.TreeItemData> _treeItems;
+    private List<CourseItemData> _items;
 
     private CourseDTO[]? _courses;
     private List<List.ListItem>? _listItems;
@@ -50,7 +47,7 @@
     }
 
     private async Task<bool> OnAddItem(
-        EditableList.TreeItemData item, int index, MenuItem menuItem)
+        SimpleList.ItemData item, int index, MenuItem menuItem)
     {
         if (!await Auth.IsAdmin())
             return false;
@@ -61,9 +58,14 @@
         return true;
     }
 
-    private async Task OnItemClick(EditableList.TreeItemData item)
+    private async Task OnItemClick(SimpleList.ItemData item)
     {
         Navigation.NavigateTo($"courses/{item.Id}");
+    }
+
+    private SimpleList.ItemData CreateCustomItemData(int index)
+    {
+        return new CourseItemData("", "New Course", "");
     }
 
     protected override async Task RefreshViewModel()
@@ -71,7 +73,7 @@
         var response = await QueryExecutor.Execute<GetCoursesQuery, GetCoursesQueryResponse>();
 
         _courses = response?.Courses;
-        _treeItems = _courses?.Select(c => new EditableList.TreeItemData(c.Id, c.Name))?.ToList();
+        _items = _courses?.Select(c => new CourseItemData(c.Id, c.Name, ""))?.ToList();
     }
 
     private MenuItem[] MenuItemsRoot = new MenuItem[]
@@ -80,14 +82,7 @@
         MenuItems.AddChildAsFirst with { Name = "Add Course at Start", IdSecondary = "addCourse" },
     };
 
-    private List<CourseItemData> TestItems = new()
-    {
-        new(id: "", name: "Yuta Vocabulary", author: "Yuta Aoki"),
-        new(id: "", name: "Yuta General", author: "Yuta Aoki"),
-        new(id: "", name: "Misa Ammo Playlist", author: "Misa Ammo"),
-    };
-
-    private MenuItem[] TestItemsRoot = new MenuItem[]
+    private MenuItem[] CoursesMenuItemsRoot = new MenuItem[]
     {
         MenuItems.AddChildAsLast with { Name = "Add Course", IdSecondary = "addCourse"},
         MenuItems.AddChildAsFirst with { Name = "Add Course at Start", IdSecondary = "addCourse" },

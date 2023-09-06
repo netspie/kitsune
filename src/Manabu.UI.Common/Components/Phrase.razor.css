@@ -1,1 +1,8 @@
-﻿
+﻿.audio {
+    border-radius: 0;
+}
+
+.audio-source {
+    border-radius: 0;
+    background: black;
+}

@@ -16,10 +16,24 @@
     position: relative;
 }
 
-@media only screen and (max-width: 1000px) {
+@media only screen and (max-width: 1300px) {
     .main-content {
         padding-left: 135px;
         padding-right: 135px;
+    }
+}
+
+@media only screen and (max-width: 1000px) {
+    .main-content {
+        padding-left: 100px;
+        padding-right: 100px;
+    }
+}
+
+@media only screen and (max-width: 800px) {
+    .main-content {
+        padding-left: 45px;
+        padding-right: 45px;
     }
 }
 

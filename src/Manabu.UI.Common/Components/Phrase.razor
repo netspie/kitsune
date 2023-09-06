@@ -13,7 +13,9 @@
 
 @if (_phrase is null) { return; }
 
-<MudStack Class="lesson">
+<MudStack Class="phrase" Style="width: 100%;">
+    <SiteTitle>PHRASE</SiteTitle>
+
     <MudBreadcrumbs Items=@_breadcrumbs Style="padding-left: 0; font-size: 12px" />
 
     <TextField 
@@ -53,8 +55,8 @@
             NoIndents=true>
 
             <CustomItemTemplate>
-                <audio controls style="padding-bottom: 10px;">
-                    <source src=@($"{AudioStorage.BaseReadPath}/{context.Name}") type="audio/mpeg">
+                <audio controls style="padding-bottom: 10px;" class="audio">
+                    <source class="audio-source"  src=@($"{AudioStorage.BaseReadPath}/{context.Name}") type="audio/mpeg">
                     Your browser does not support the audio element.
                 </audio>
             </CustomItemTemplate>

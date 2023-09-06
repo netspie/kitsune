@@ -24,7 +24,7 @@
 
     width: 100%; 
     text-align: start; 
-    padding-left: 10px;
+    padding-left: 7px;
     text-transform: uppercase;
 }
 
@@ -37,4 +37,8 @@ div ::deep .menu-btn {
 div ::deep .mud-button-label {
     font-family: unica;
     color: orangered;
+}
+
+div ::deep .mud-list-item-text > .mud-typography {
+    font-family: unica;
 }

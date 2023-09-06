@@ -1,5 +1,6 @@
 ﻿@using Corelibs.Basic.Maths;
 @using Corelibs.Blazor.UIComponents.Common;
+@using Manabu.UI.Common.Components
 
 @inherits BaseElement
 
@@ -16,31 +17,46 @@
 
                 @foreach (var menuItem in MenuItemsRoot)
                 {
-                    <MudMenuItem OnClick=@(args => OnMenuItemClickInternal(args, null, menuItem))>@menuItem.Name</MudMenuItem>
+                    <MudMenuItem 
+                        Style="font-family: unica;"
+                        OnClick=@(args => OnMenuItemClickInternal(args, null, menuItem))>@menuItem.Name</MudMenuItem>
                 }
 
             </MudMenu>
         </div>
     }
 
-    @if (CustomItemTemplate is null)
+    @foreach (var item in Items)
     {
-        @foreach (var item in Items)
+        if (item.IsEdit)
         {
-            <div class="list-item">
-                <span>@item.Name</span>
-            </div>
+            <TextField 
+                IsEditing=true
+                Value=@item.Name
+                OnBlur=@OnEditableItemBlur
+                OnEdit=@(text => 
+                {
+                    item.Name = text;
+                    return OnAddItemTextFieldValueChanged(item);
+                }) />
+        }
+        else
+        {
+            if (CustomItemTemplate is null)
+            {
+                <div class="list-item" @onclick=@(() => OnItemClickInternal(item))>
+                    <span>@item.Name</span>
+                </div>
+            }
+            else
+            {
+                <div class="list-item" @onclick=@(() => OnItemClickInternal(item))>
+                    @CustomItemTemplate(item)
+                </div>
+            }
         }
     }
-    else
-    {
-        @foreach (var item in Items)
-        {
-            <div class="list-item">
-                @CustomItemTemplate(item)
-            </div>
-        }
-    }
+
 </div>
 
 @code {
@@ -49,7 +65,7 @@
     public delegate Task OnRemoveDelegate(ItemData item, MenuItem menuItem);
     public delegate Task<bool> OnMoveDelegate(ItemData item, int index, MenuItem menuItem);
     public delegate Task OnMenuItemClickDelegate(ItemData item, MenuItem menuItem);
-    public delegate ItemData CreateCustomItemDataDelegate();
+    public delegate ItemData CreateCustomItemDataDelegate(int index);
 
     [Parameter] public string Name { get; set; }
     [Parameter] public List<ItemData> Items { get; set; }
@@ -69,6 +85,17 @@
     [Parameter] public bool IsReadonly { get; set; }
 
     private MenuItem _selectedMenuItem;
+
+    private void OnEditableItemBlur()
+    {
+        ClearItemsWithNoIds();
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void ClearItemsWithNoIds()
+    {
+        Items = Items.Where(si => !si.Id.IsNullOrEmpty()).ToList();
+    }
 
     private Task OnItemClickInternal(ItemData item)
     {
@@ -90,6 +117,20 @@
         return UIComponent.InvokeBool(OnMoveItem, item, index, menuItem)();
     }
 
+    private async Task<bool> OnAddItemTextFieldValueChanged(ItemData item)
+    {
+        var i = Items.IndexOf(item);
+
+        var result = await UIComponent.InvokeBool(OnAddItem, item, i, _selectedMenuItem)();
+
+        if (item.Id.IsNullOrEmpty())
+            item.Id = item.Name;
+
+        item.IsEdit = false;
+
+        return result;
+    }
+
     protected async Task<bool> OnMenuItemClickInternal(
         MouseEventArgs args,
         ItemData item,
@@ -106,7 +147,7 @@
             {
                 var i = Items.IndexOf(item) + 1;
 
-                var newItem = CreateCustomItemData is not null ? CreateCustomItemData() :
+                var newItem = CreateCustomItemData is not null ? CreateCustomItemData(i) :
                     new ItemData("New Item..");
 
                 newItem.IsEdit = true;
@@ -115,12 +156,13 @@
             }
             else
             {
-                var newItem = CreateCustomItemData is not null ? CreateCustomItemData() :
+                int i = menuItem.Id == MenuItems.AddChildAsFirst.Id ? 0 : Items.Count;
+
+                var newItem = CreateCustomItemData is not null ? CreateCustomItemData(i) :
                     new ItemData("New Item..");
 
                 newItem.IsEdit = true;
 
-                int i = menuItem.Id == MenuItems.AddChildAsFirst.Id ? 0 : Items.Count;
                 Items.Insert(i, newItem);
             }
         }
@@ -171,7 +213,7 @@
 
         public ItemData(string id, string name, bool isEdit = false)
         {
-            Id = id.IsNullOrEmpty() ? name.ToLower() : id;
+            Id = id;
             Name = name;
             IsEdit = isEdit;
         }
