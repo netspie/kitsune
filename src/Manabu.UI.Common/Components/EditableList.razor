@@ -20,7 +20,7 @@
                 align-items: center;
                 justify-content: space-between;")>
             
-            <MudText Style="justify-self: start; flex-grow: 1; flex-shrink: 1; font-weight: bold;">@Name</MudText>
+            <MudText Typo=@Typo.h5 Style="text-transform: uppercase; justify-self: start; flex-grow: 1; flex-shrink: 1; font-weight: bold;">@Name</MudText>
 
             @if (!MenuItemsRoot.IsNullOrEmpty() && !IsReadonly)
             {
@@ -39,19 +39,19 @@
 
     @if (!TreeItems.IsNullOrEmpty())
     {
-        <MudTreeView Items=@TreeItems.ToHashSet() Hover="true" Width="100%"
-            Style="margin-left: 0;">
+        <MudTreeView Items=@TreeItems.ToHashSet() Hover="true" Width="100%" 
+                     Style="margin-left: 0;">
             <ItemTemplate Context="item">
                 <MudTreeViewItem 
                     Items=@item.TreeItems.ToHashSet()
                     Expanded=@item.IsExpanded
                     ExpandedChanged=@(v => @item.IsExpanded = v)
                     CanExpand=false
-                    Style="height: fit-content; margin-left: 0; padding-left: 0; left: 0;"
+                    Style="height: fit-content; margin-left: 0; padding-left: 0; left: 0; background: none;"
                     ExpandedIconColor=@Color.Transparent
                     OnClick=@(args => OnItemClickInternal(item))>
 
-                    <BodyContent>
+                    <BodyContent> 
                         <div style="display: grid; grid-template-columns: 1fr auto; align-items: center; width: 100%">
                             @if (_isAdding && item.IsEditing)
                             {

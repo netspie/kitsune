@@ -13,6 +13,17 @@
     src: url(../fonts/Roboto-Light.ttf);
 }
 
+@font-face {
+    font-family: unica;
+    src: url(../fonts/UnicaOne-Regular.ttf);
+}
+
+@font-face {
+    font-family: gentle;
+    src: url(../fonts/GentlemanRegular.ttf);
+}
+
+
 body {
     font-family: ubuntu;
 }

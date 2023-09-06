@@ -1,0 +1,7 @@
+﻿div ::deep .mud-treeview-item-content:hover {
+    background-color: none;
+}
+
+div ::deep .body-content:hover {
+    background-color: none;
+}

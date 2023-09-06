@@ -1,0 +1,26 @@
+﻿.course-item {
+    width: 100%;
+    background: rgba(255, 106, 0, 0.3);
+    height: 65px;
+    margin-bottom: 10px;
+
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    font-family: unica;
+    text-transform: uppercase;
+
+    cursor: pointer;
+}
+
+.title {
+    color: orangered;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.author {
+    color: white;
+}

@@ -1,0 +1,84 @@
+﻿
+<div class="hmenu">
+    <MudPaper Class="hmenu-paper">
+        <MudToolBar class="hmenu-toolbar" Style="align-items: center; width: 100%;">
+            <MudLink Href="" Style="text-decoration: none; padding-right: 25px; font-size:20px; font-weight: bold; font-family: gentle; color: darkorange !important;">KITSUNE</MudLink>
+            @for (int i = 0; i < _buttons.Count; i++)
+            {
+                var button = _buttons[i];
+                @if (button.Buttons is null)
+                {
+                    <MudButton Href=@button.Href Style="border-radius: 0; font-weight: bold; font-family: unica; font-size: 15px; height: 100%;">@button.Name</MudButton>
+                }
+                else
+                {
+                    <MudMenu Label=@button.Name ActivationEvent="@MouseEvent.MouseOver">
+                        <ChildContent>
+                            @foreach (var nButton in button.Buttons)
+                            {
+                                <MudMenuItem Href=@nButton.Href>@nButton.Name</MudMenuItem>
+                            }
+                        </ChildContent>
+                    </MudMenu>
+                }
+            }
+        </MudToolBar>
+    </MudPaper>
+</div>
+
+<div class="vmenu">
+    <MudIconButton OnClick=@OnMenuButtonClick Class="menu-btn" Icon=@Icons.Material.Outlined.Menu></MudIconButton>
+    <MudPaper Class=@($"vmenu-paper py-3 {_vmenuDisplayCssClass}") Width="150px" Elevation="0">
+        <MudNavMenu Bordered="true" Style="display: flex;  flex-direction: column; align-items: start;">
+            <MudLink Href="" Style="text-decoration: none; text-align: center; padding-left: 20px; padding-bottom: 15px; font-size:20px; font-weight: bold; font-family: gentle; color: darkorange !important;">KITSUNE</MudLink>
+            @foreach (var button in _buttons)
+            {
+                @if (button.Buttons is null)
+                {
+                    <MudButton Href=@button.Href Style="padding-left: 20px; display: flex; justify-content: start; text-align: left; width:100%; border-radius: 0; font-weight: bold; font-family: unica;">
+                        @button.Name
+                    </MudButton>
+                }
+                else
+                {
+                    <MudNavGroup Title=@button.Name>
+                        @foreach (var nButton in button.Buttons)
+                        {
+                            <MudNavLink Href=@nButton.Href>@nButton.Name</MudNavLink>
+                        }
+                    </MudNavGroup>
+                }
+            }
+        </MudNavMenu>
+    </MudPaper>
+</div>
+
+@*<div class="menu-image"></div>*@
+
+@code {
+    private bool _menuOn;
+    private string _vmenuDisplayCssClass => _menuOn ? "" : "display-none";
+
+    private Task OnMenuButtonClick(MouseEventArgs args)
+    {
+        _menuOn = !_menuOn;
+        return InvokeAsync(StateHasChanged);
+    }
+
+    private List<Button> _buttons = new()
+    {
+        new("Dashboard", "/dashboard"),
+        new("Courses", "/courses"),
+        new("Linguistics", "/linguistics"),
+        new("Media", "/media", new()
+        {
+            new("Courses", "/courses"),
+            new("Lessons", "/lessons"),
+            new("Manga", "/manga"),
+            new("Anime", "/anime"),
+        }),
+        new("Flashcards", "/flashcards"),
+    };
+
+    record Button(string Name, string? Href = "", List<Button>? Buttons = null);
+}

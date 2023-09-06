@@ -1,0 +1,40 @@
+﻿@using Corelibs.Blazor.UIComponents.Common;
+
+@inherits BaseElement
+
+<div class="list @(@class)" style=@style>
+    @if (CustomItemTemplate is null)
+    {
+        @foreach (var item in Items)
+        {
+            <div class="list-item">
+                <span>@item.Name</span>
+            </div>
+        }
+    }
+    else
+    {
+        @foreach (var item in Items)
+        {
+            <div class="list-item">
+                @CustomItemTemplate(item)
+            </div>
+        }
+    }
+</div>
+
+@code {
+    public delegate Task OnClickDelegate(ItemData item);
+
+    [Parameter] public List<ItemData> Items { get; set; }
+    [Parameter] public RenderFragment<ItemData> CustomItemTemplate { get; set; }
+
+    [Parameter] public OnClickDelegate OnItemClick { get; set; }
+
+    private Task OnItemClickInternal(ItemData item)
+    {
+        return UIComponent.InvokeBool(OnItemClick, item)();
+    }
+
+    public record ItemData(string Name, string Id = "");
+}

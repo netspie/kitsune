@@ -8,7 +8,7 @@
 
 <main class="main" style=@_paddingLeftCssAttribute>
     
-    <TopAndSideMenu
+    @*<TopAndSideMenu
         OnSideMenuSizeChanged=@OnMenuSizeChanged
         MenuIconUrl=@($"{Config.BaseAssetsPath}/images/icons/design/grid.png")
         LogoName="Manabu"
@@ -16,11 +16,13 @@
         SideMenuButtonGroups=@SideMenuButtonGroups 
         TopMenuButtonGroups=@TopMenuButtonGroups 
         BottomLeftMenuButtonGroups=@BottomLeftMenuButtonGroups 
-        OnButtonClick=@OnMenuButtonClick/>
+        OnButtonClick=@OnMenuButtonClick/>*@
 
     <div class="main-content">
         @Body
     </div>
+
+    <MainMenu />
 
 </main>
 
@@ -37,6 +39,10 @@
             {
                 FontSize = "13px"
             },
+            H3 = new H3()
+            {
+                FontFamily = new[] { "ubuntu", "Helvetica", "Arial", "sans-serif" },
+            }
         }
     };
 

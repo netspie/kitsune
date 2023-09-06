@@ -1,0 +1,110 @@
+﻿.hmenu {
+    position: fixed; 
+    left: 0; 
+    top: 0; 
+    width: 100%;
+}
+
+div ::deep .hmenu-paper {
+    border-radius: 0;
+    border-color: transparent;
+    border-bottom-width: 8px; 
+    box-shadow: none; 
+    font-family: unica;
+    height: 72px;
+    background: none;
+}
+
+div ::deep .hmenu-toolbar {
+
+}
+
+.vmenu {
+    display: none;
+    position: relative;
+
+    position: fixed;
+    
+    left: 0;
+    top: 0; 
+    border-radius: 0; 
+
+    height: 100vh;
+}
+
+div ::deep .vmenu-paper {
+    border-radius: 0;
+    height: 100vh;
+    border-color: orangered;
+    border-right-width: 8px; 
+
+}
+
+div ::deep .menu-btn {
+    position: absolute;
+    right: 0;
+    top: 0;
+    transform: translateX(100%);
+    border-radius: 0;
+    width: 64px;
+    height: 64px;
+}
+
+div ::deep .display-none {
+    display: none;
+}
+
+.menu-image {
+    width: 100%;
+    background-image: url(images/fox-autumn.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
+    height: 200px;
+    align-self: start;
+    margin-top: 72px;
+}
+
+div ::deep .mud-button-label {
+    border-radius: 0; 
+    font-weight: bold; 
+    font-family: unica; 
+    font-size: 15px; 
+    height: 100%;
+}
+
+div ::deep .mud-nav-link-text {
+    border-radius: 0; 
+    font-family: unica; 
+    font-size: 15px; 
+    height: 100%;
+    padding: 5px;
+    margin: 0;
+}
+
+div ::deep .mud-icon-root {
+    top: 5px;
+}
+
+div ::deep .mud-nav-link {
+    align-items: center;
+}
+
+div ::deep .mud-nav-group > .mud-nav-link > .mud-nav-link-text {
+    font-weight: bold; 
+}
+
+@media only screen and (max-width: 600px) {
+    div ::deep .hmenu-toolbar {
+       display: none;
+       border-color: transparent !important;
+    }
+
+    div ::deep .hmenu-paper {
+        border-color: transparent !important;
+    }
+
+    .vmenu {
+       display: block;
+    }
+}

@@ -4,17 +4,28 @@
 
 @inherits CoreComponent
 
-<MudStack Class="courses">
-    <MudPaper Class="py-4" Elevation="0">
-        <EditableList 
-            Name="Courses"
-            TreeItems=@_treeItems
-            OnAddItem=@OnAddItem
-            IsReadonly=@(!_isEdit)
-            MenuItemsRoot=@MenuItemsRoot
-            OnItemClick=@OnItemClick/>
+<MudStack Class="courses" Style="width: 100%;">
+    <SiteTitle>COURSES</SiteTitle>
 
-    </MudPaper>
+    <SimpleList Items=@(TestItems.CastToList<SimpleList.ItemData>())>
+        <CustomItemTemplate>
+            @{
+                var item = context as CourseItemData;
+                <CourseItem
+                    Title=@item.Name 
+                    Author=@item.Author />
+            }
+        </CustomItemTemplate>
+    </SimpleList>
+
+    <EditableList 
+        TreeItems=@_treeItems
+        OnAddItem=@OnAddItem
+        IsReadonly=@(!_isEdit)
+        MenuItemsRoot=@MenuItemsRoot
+        OnItemClick=@OnItemClick
+        NoIndents=true />
+
 
     @if (_isAdmin)
     {
@@ -63,4 +74,13 @@
         EditableList.MenuItems.AddChildAsLast with { Name = "Add Course", IdSecondary = "addCourse"},
         EditableList.MenuItems.AddChildAsFirst with { Name = "Add Course at Start", IdSecondary = "addCourse" },
     };
+
+    private List<CourseItemData> TestItems = new()
+    {
+        new("Yuta Vocabulary", "Yuta Aoki"),
+        new("Yuta General", "Yuta Aoki"),
+        new("Misa Ammo Playlist", "Misa Ammo"),
+    };
+
+    public record CourseItemData(string Name, string Author, string Id = "") : SimpleList.ItemData(Name, Id);
 }
