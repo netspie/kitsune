@@ -93,7 +93,7 @@
         ExecuteUpdateCommand(() => _conversation with { Description = text });
 
     private async Task<bool> OnAddItem(
-        EditableList.TreeItemData item, int index, EditableList.MenuItem menuItem)
+        EditableList.TreeItemData item, int index, MenuItem menuItem)
     {
         if (!_isAdmin)
             return false;
@@ -147,15 +147,15 @@
             _conversation.Description :
             "No Description";
 
-    private EditableList.MenuItem[] PhrasesMenuItemsRoot = new EditableList.MenuItem[]
+    private MenuItem[] PhrasesMenuItemsRoot = new MenuItem[]
     {
-        EditableList.MenuItems.AddChildAsLast with { Name = "Add Phrase", IdSecondary = "addPhrase"},
-        EditableList.MenuItems.AddChildAsFirst with { Name = "Add Phrase at Start", IdSecondary = "addPhrase" },
+        MenuItems.AddChildAsLast with { Name = "Add Phrase", IdSecondary = "addPhrase"},
+        MenuItems.AddChildAsFirst with { Name = "Add Phrase at Start", IdSecondary = "addPhrase" },
     };
 
-    private EditableList.MenuItem[] PhraseMenuItems = new EditableList.MenuItem[]
+    private MenuItem[] PhraseMenuItems = new MenuItem[]
     {
-        EditableList.MenuItems.AddSibling with { Name = "Add Phrase", IdSecondary = "addPhrase"},
+        MenuItems.AddSibling with { Name = "Add Phrase", IdSecondary = "addPhrase"},
     };
 
     class PhraseTreeItemData : EditableList.TreeItemData

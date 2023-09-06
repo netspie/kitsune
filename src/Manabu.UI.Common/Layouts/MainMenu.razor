@@ -1,4 +1,7 @@
-﻿
+﻿<div class=@_vmenuDisplayCssClass>
+    <MudOverlay Visible=@_menuOn OnClick=@OnOverlayClick DarkBackground="true" ZIndex="0"/>
+</div>
+
 <div class="hmenu">
     <MudPaper Class="hmenu-paper">
         <MudToolBar class="hmenu-toolbar" Style="align-items: center; width: 100%;">
@@ -8,7 +11,7 @@
                 var button = _buttons[i];
                 @if (button.Buttons is null)
                 {
-                    <MudButton Href=@button.Href Style="border-radius: 0; font-weight: bold; font-family: unica; font-size: 15px; height: 100%;">@button.Name</MudButton>
+                    <MudButton OnClick=@OnMenuItemButtonClick Href=@button.Href Style="border-radius: 0; font-weight: bold; font-family: unica; font-size: 15px; height: 100%;">@button.Name</MudButton>
                 }
                 else
                 {
@@ -16,7 +19,7 @@
                         <ChildContent>
                             @foreach (var nButton in button.Buttons)
                             {
-                                <MudMenuItem Href=@nButton.Href>@nButton.Name</MudMenuItem>
+                                <MudMenuItem OnClick=@OnMenuItemButtonClick Href =@nButton.Href>@nButton.Name</MudMenuItem>
                             }
                         </ChildContent>
                     </MudMenu>
@@ -35,7 +38,7 @@
             {
                 @if (button.Buttons is null)
                 {
-                    <MudButton Href=@button.Href Style="padding-left: 20px; display: flex; justify-content: start; text-align: left; width:100%; border-radius: 0; font-weight: bold; font-family: unica;">
+                    <MudButton OnClick=@OnMenuItemButtonClick Href =@button.Href Style="padding-left: 20px; display: flex; justify-content: start; text-align: left; width:100%; border-radius: 0; font-weight: bold; font-family: unica;">
                         @button.Name
                     </MudButton>
                 }
@@ -44,7 +47,7 @@
                     <MudNavGroup Title=@button.Name>
                         @foreach (var nButton in button.Buttons)
                         {
-                            <MudNavLink Href=@nButton.Href>@nButton.Name</MudNavLink>
+                            <MudNavLink OnClick=@OnMenuItemButtonClick Href=@nButton.Href>@nButton.Name</MudNavLink>
                         }
                     </MudNavGroup>
                 }
@@ -57,11 +60,18 @@
 
 @code {
     private bool _menuOn;
+
     private string _vmenuDisplayCssClass => _menuOn ? "" : "display-none";
 
     private Task OnMenuButtonClick(MouseEventArgs args)
     {
         _menuOn = !_menuOn;
+        return InvokeAsync(StateHasChanged);
+    }
+
+    private Task OnMenuItemButtonClick(MouseEventArgs args)
+    {
+        _menuOn = false;
         return InvokeAsync(StateHasChanged);
     }
 
@@ -79,6 +89,12 @@
         }),
         new("Flashcards", "/flashcards"),
     };
+
+    public Task OnOverlayClick()
+    {
+        _menuOn = !_menuOn;
+        return InvokeAsync(StateHasChanged);
+    }
 
     record Button(string Name, string? Href = "", List<Button>? Buttons = null);
 }

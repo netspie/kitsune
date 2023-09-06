@@ -1,0 +1,179 @@
+﻿@using Corelibs.Basic.Maths;
+@using Corelibs.Blazor.UIComponents.Common;
+
+@inherits BaseElement
+
+<div class="list @(@class)" style=@style>
+    @if (!Name.IsNullOrEmpty() || (!MenuItemsRoot.IsNullOrEmpty() && !IsReadonly))
+    {
+        <div class="toolbar">
+            <h3 class="title">@Name</h3>
+
+            <MudMenu
+                Label="MENU"
+                Style=""
+                Class="menu-btn">
+
+                @foreach (var menuItem in MenuItemsRoot)
+                {
+                    <MudMenuItem OnClick=@(args => OnMenuItemClickInternal(args, null, menuItem))>@menuItem.Name</MudMenuItem>
+                }
+
+            </MudMenu>
+        </div>
+    }
+
+    @if (CustomItemTemplate is null)
+    {
+        @foreach (var item in Items)
+        {
+            <div class="list-item">
+                <span>@item.Name</span>
+            </div>
+        }
+    }
+    else
+    {
+        @foreach (var item in Items)
+        {
+            <div class="list-item">
+                @CustomItemTemplate(item)
+            </div>
+        }
+    }
+</div>
+
+@code {
+    public delegate Task OnClickDelegate(ItemData item);
+    public delegate Task<bool> OnAddDelegate(ItemData item, int index, MenuItem menuItem);
+    public delegate Task OnRemoveDelegate(ItemData item, MenuItem menuItem);
+    public delegate Task<bool> OnMoveDelegate(ItemData item, int index, MenuItem menuItem);
+    public delegate Task OnMenuItemClickDelegate(ItemData item, MenuItem menuItem);
+    public delegate ItemData CreateCustomItemDataDelegate();
+
+    [Parameter] public string Name { get; set; }
+    [Parameter] public List<ItemData> Items { get; set; }
+
+    [Parameter] public RenderFragment<ItemData> CustomItemTemplate { get; set; }
+    [Parameter] public CreateCustomItemDataDelegate CreateCustomItemData { get; set; }
+
+    [Parameter] public OnAddDelegate OnAddItem { get; set; }
+    [Parameter] public OnRemoveDelegate OnRemoveItem { get; set; }
+    [Parameter] public OnMoveDelegate OnMoveItem { get; set; }
+    [Parameter] public OnClickDelegate OnItemClick { get; set; }
+    [Parameter] public OnMenuItemClickDelegate OnMenuItemClick { get; set; }
+
+    [Parameter] public MenuItem[] MenuItemsRoot { get; set; }
+    [Parameter] public MenuItem[] MenuItemsChildren { get; set; }
+
+    [Parameter] public bool IsReadonly { get; set; }
+
+    private MenuItem _selectedMenuItem;
+
+    private Task OnItemClickInternal(ItemData item)
+    {
+        return UIComponent.InvokeBool(OnItemClick, item)();
+    }
+
+    private Task<bool> OnAddInternal(ItemData item, int index, MenuItem menuItem)
+    {
+        return UIComponent.InvokeBool(OnAddItem, item, index, menuItem)();
+    }
+
+    private Task OnRemoveInternal(ItemData item, MenuItem menuItem)
+    {
+        return UIComponent.InvokeBool(OnRemoveItem, item, menuItem)();
+    }
+
+    private Task<bool> OnMoveInternal(ItemData item, int index, MenuItem menuItem)
+    {
+        return UIComponent.InvokeBool(OnMoveItem, item, index, menuItem)();
+    }
+
+    protected async Task<bool> OnMenuItemClickInternal(
+        MouseEventArgs args,
+        ItemData item,
+        MenuItem menuItem)
+    {
+        _selectedMenuItem = menuItem;
+
+        if (menuItem.Id == MenuItems.AddSibling.Id ||
+            menuItem.Id == MenuItems.AddChildAsFirst.Id ||
+            menuItem.Id == MenuItems.AddChildAsLast.Id ||
+            menuItem.Id == MenuItems.Add.Id)
+        {
+            if (menuItem.Id == MenuItems.AddSibling.Id)
+            {
+                var i = Items.IndexOf(item) + 1;
+
+                var newItem = CreateCustomItemData is not null ? CreateCustomItemData() :
+                    new ItemData("New Item..");
+
+                newItem.IsEdit = true;
+
+                Items.Insert(i, newItem);
+            }
+            else
+            {
+                var newItem = CreateCustomItemData is not null ? CreateCustomItemData() :
+                    new ItemData("New Item..");
+
+                newItem.IsEdit = true;
+
+                int i = menuItem.Id == MenuItems.AddChildAsFirst.Id ? 0 : Items.Count;
+                Items.Insert(i, newItem);
+            }
+        }
+        else
+        if (menuItem.Id == MenuItems.Remove.Id)
+        {
+            int i = Items.IndexOf(item);
+            Items.Remove(item);
+            if (!await UIComponent.InvokeBool(OnRemoveItem, item, menuItem)())
+                Items.Insert(i, item);
+        }
+        else
+        if (menuItem.Id == MenuItems.MoveUp.Id ||
+            menuItem.Id == MenuItems.MoveDown.Id)
+        {
+            int index = Items.IndexOf(item);
+
+            int newIndex = menuItem.Id == MenuItems.MoveUp.Id ? index - 1 : index + 1;
+            newIndex = newIndex.Clamp(Items.Count);
+
+            Items.Swap(index, newIndex);
+            if (newIndex != index)
+                if (!await UIComponent.InvokeBool(OnMoveItem, item, newIndex, menuItem)())
+                    Items.Swap(index, newIndex);
+        }
+        else
+        {
+            await UIComponent.InvokeBool(OnMenuItemClick, item, menuItem)();
+        }
+
+        await InvokeAsync(StateHasChanged);
+
+        return true;
+    }
+
+    public class ItemData
+    {
+        public string Id { get; set; }
+        public string Name { get; set; }
+        public bool IsEdit { get; set; }
+
+        public ItemData(string name, bool isEdit = false)
+        {
+            Id = name.ToLower();
+            Name = name;
+            IsEdit = isEdit;
+        }
+
+        public ItemData(string id, string name, bool isEdit = false)
+        {
+            Id = id.IsNullOrEmpty() ? name.ToLower() : id;
+            Name = name;
+            IsEdit = isEdit;
+        }
+    }
+}

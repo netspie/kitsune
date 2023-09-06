@@ -128,31 +128,31 @@
 
     #region Translations
 
-    private EditableList.MenuItem[] TranslationMenuItemsRoot = new EditableList.MenuItem[]
+    private MenuItem[] TranslationMenuItemsRoot = new MenuItem[]
     {
-        EditableList.MenuItems.AddChildAsLast,
-        EditableList.MenuItems.AddChildAsFirst,
+        MenuItems.AddChildAsLast,
+        MenuItems.AddChildAsFirst,
     };
 
-    private EditableList.MenuItem[] TranslationMenuItems = new EditableList.MenuItem[]
+    private MenuItem[] TranslationMenuItems = new MenuItem[]
     {
-        EditableList.MenuItems.AddSibling,
-        EditableList.MenuItems.MoveDown,
-        EditableList.MenuItems.MoveUp,
-        EditableList.MenuItems.Remove,
+        MenuItems.AddSibling,
+        MenuItems.MoveDown,
+        MenuItems.MoveUp,
+        MenuItems.Remove,
     };
 
     private Task<bool> OnAddTranslation(
-        EditableList.TreeItemData item, int index, EditableList.MenuItem menuItem) =>
+        EditableList.TreeItemData item, int index, MenuItem menuItem) =>
             ExecuteAdminViewAction(() => CommandExecutor.Execute(
                 new UpdatePhraseCommand(_phrase.Id, Translations: _translationTreeItems.Select(i => i.Name).ToArray())));
 
-    private async Task OnRemoveTranslation(EditableList.TreeItemData item, EditableList.MenuItem menuItem) =>
+    private async Task OnRemoveTranslation(EditableList.TreeItemData item, MenuItem menuItem) =>
         await ExecuteAdminViewAction(() => CommandExecutor.Execute(
             new UpdatePhraseCommand(_phrase.Id, Translations: _translationTreeItems.Select(i => i.Name).ToArray())));
 
     private Task<bool> OnMoveTranslation(
-        EditableList.TreeItemData item, int index, EditableList.MenuItem menuItem) =>
+        EditableList.TreeItemData item, int index, MenuItem menuItem) =>
             ExecuteAdminViewAction(() => CommandExecutor.Execute(
                 new UpdatePhraseCommand(_phrase.Id, Translations: _translationTreeItems.Select(i => i.Name).ToArray())));
 
@@ -161,33 +161,33 @@
     #region Contexts
 
     private Task<bool> OnAddContext(
-        EditableList.TreeItemData item, int index, EditableList.MenuItem menuItem) =>
+        EditableList.TreeItemData item, int index, MenuItem menuItem) =>
             ExecuteAdminViewAction(() => CommandExecutor.Execute(
                 new UpdatePhraseCommand(_phrase.Id, Contexts: _contextTreeItems.Select(i => i.Name).ToArray())));
 
-    private async Task OnRemoveContext(EditableList.TreeItemData item, EditableList.MenuItem menuItem) =>
+    private async Task OnRemoveContext(EditableList.TreeItemData item, MenuItem menuItem) =>
         await ExecuteAdminViewAction(() => CommandExecutor.Execute(
             new UpdatePhraseCommand(_phrase.Id, Translations: _contextTreeItems.Select(i => i.Name).ToArray())));
 
-    private EditableList.MenuItem[] ContextsMenuItemsRoot = new EditableList.MenuItem[]
+    private MenuItem[] ContextsMenuItemsRoot = new MenuItem[]
     {
-        EditableList.MenuItems.AddChildAsLast,
-        EditableList.MenuItems.AddChildAsFirst,
+        MenuItems.AddChildAsLast,
+        MenuItems.AddChildAsFirst,
     };
 
-    private EditableList.MenuItem[] ContextsMenuItems = new EditableList.MenuItem[]
+    private MenuItem[] ContextsMenuItems = new MenuItem[]
     {
-        EditableList.MenuItems.AddSibling,
-        EditableList.MenuItems.MoveDown,
-        EditableList.MenuItems.MoveUp,
-        EditableList.MenuItems.Remove,
+        MenuItems.AddSibling,
+        MenuItems.MoveDown,
+        MenuItems.MoveUp,
+        MenuItems.Remove,
     };
 
     #endregion
 
     #region Audios
 
-    private async Task OnRemoveAudio(EditableList.TreeItemData item, EditableList.MenuItem menuItem)
+    private async Task OnRemoveAudio(EditableList.TreeItemData item, MenuItem menuItem)
     {
         var result = await AudioStorage.Delete(item.Name);
         if (!result.IsSuccess)
@@ -197,9 +197,9 @@
             new RemovePhraseAudioCommand(_phrase.Id, item.Id)));
     }
 
-    private EditableList.MenuItem[] AudioMenuItems = new EditableList.MenuItem[]
+    private MenuItem[] AudioMenuItems = new MenuItem[]
     {
-        EditableList.MenuItems.Remove,
+        MenuItems.Remove,
     };
 
     #endregion

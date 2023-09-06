@@ -7,18 +7,23 @@
 <MudStack Class="courses" Style="width: 100%;">
     <SiteTitle>COURSES</SiteTitle>
 
-    <SimpleList Items=@(TestItems.CastToList<SimpleList.ItemData>())>
+    <SimpleList 
+        Name="Official Courses"
+        IsReadonly=@(!_isEdit)
+        MenuItemsRoot=@TestItemsRoot
+        Items=@(TestItems.CastToList<SimpleList.ItemData>())>
+        
         <CustomItemTemplate>
             @{
                 var item = context as CourseItemData;
                 <CourseItem
-                    Title=@item.Name 
+                    Title=@item.Name
                     Author=@item.Author />
             }
         </CustomItemTemplate>
     </SimpleList>
 
-    <EditableList 
+    <EditableList
         TreeItems=@_treeItems
         OnAddItem=@OnAddItem
         IsReadonly=@(!_isEdit)
@@ -45,7 +50,7 @@
     }
 
     private async Task<bool> OnAddItem(
-        EditableList.TreeItemData item, int index, EditableList.MenuItem menuItem)
+        EditableList.TreeItemData item, int index, MenuItem menuItem)
     {
         if (!await Auth.IsAdmin())
             return false;
@@ -69,18 +74,32 @@
         _treeItems = _courses?.Select(c => new EditableList.TreeItemData(c.Id, c.Name))?.ToList();
     }
 
-    private EditableList.MenuItem[] MenuItemsRoot = new EditableList.MenuItem[]
+    private MenuItem[] MenuItemsRoot = new MenuItem[]
     {
-        EditableList.MenuItems.AddChildAsLast with { Name = "Add Course", IdSecondary = "addCourse"},
-        EditableList.MenuItems.AddChildAsFirst with { Name = "Add Course at Start", IdSecondary = "addCourse" },
+        MenuItems.AddChildAsLast with { Name = "Add Course", IdSecondary = "addCourse"},
+        MenuItems.AddChildAsFirst with { Name = "Add Course at Start", IdSecondary = "addCourse" },
     };
 
     private List<CourseItemData> TestItems = new()
     {
-        new("Yuta Vocabulary", "Yuta Aoki"),
-        new("Yuta General", "Yuta Aoki"),
-        new("Misa Ammo Playlist", "Misa Ammo"),
+        new(id: "", name: "Yuta Vocabulary", author: "Yuta Aoki"),
+        new(id: "", name: "Yuta General", author: "Yuta Aoki"),
+        new(id: "", name: "Misa Ammo Playlist", author: "Misa Ammo"),
     };
 
-    public record CourseItemData(string Name, string Author, string Id = "") : SimpleList.ItemData(Name, Id);
+    private MenuItem[] TestItemsRoot = new MenuItem[]
+    {
+        MenuItems.AddChildAsLast with { Name = "Add Course", IdSecondary = "addCourse"},
+        MenuItems.AddChildAsFirst with { Name = "Add Course at Start", IdSecondary = "addCourse" },
+    };
+
+    public class CourseItemData : SimpleList.ItemData
+    {
+        public string Author { get; }
+
+        public CourseItemData(string id, string name, string author) : base(id, name)
+        {
+            Author = author;
+        }
+    }
 }

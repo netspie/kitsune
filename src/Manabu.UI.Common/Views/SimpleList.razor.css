@@ -1,0 +1,40 @@
+﻿.list {
+    display: flex;
+    flex-direction: column;
+}
+
+.list-item {
+    
+}
+
+.list-item:hover {
+    filter: brightness(0.75);
+}
+
+.toolbar {
+    display: flex;
+    margin-bottom: 10px;
+}
+
+.title {
+    font-weight: 100; 
+    font-size: 24px;
+    font-family: unica;
+    color: red;
+
+    width: 100%; 
+    text-align: start; 
+    padding-left: 10px;
+    text-transform: uppercase;
+}
+
+div ::deep .menu-btn {
+    background: rgb(244, 224, 224);
+    justify-self: end;
+    align-self: center;
+}
+
+div ::deep .mud-button-label {
+    font-family: unica;
+    color: orangered;
+}

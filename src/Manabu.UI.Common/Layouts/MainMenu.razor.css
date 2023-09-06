@@ -44,10 +44,15 @@ div ::deep .menu-btn {
     position: absolute;
     right: 0;
     top: 0;
-    transform: translateX(100%);
+    transform: translate(125%, 7%);
     border-radius: 0;
     width: 64px;
     height: 64px;
+}
+
+div ::deep .mud-icon-root {
+    width: 36px;
+    height: 36px;
 }
 
 div ::deep .display-none {
