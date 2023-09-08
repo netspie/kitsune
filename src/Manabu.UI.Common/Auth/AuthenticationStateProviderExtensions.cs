@@ -6,6 +6,9 @@ namespace Manabu.UI.Common.Auth;
 
 public static class AuthenticationStateProviderExtensions
 {
+    public const string SignInUrl = "MicrosoftIdentity/Account/SignIn";
+    public const string SignOutUrl = "MicrosoftIdentity/Account/SignOut";
+
     public static async Task<bool> IsSignedIn(this AuthenticationStateProvider auth)
     {
         var state = await auth.GetAuthenticationStateAsync();

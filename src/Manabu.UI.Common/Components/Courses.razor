@@ -7,7 +7,7 @@
 @if  (_courses is null) { return; }
 
 <MudStack Class="courses" Style="width: 100%;">
-    <SiteTitle>COURSES</SiteTitle>
+    <SiteTitle>@SiteTitle.Name</SiteTitle>
 
     <SimpleList 
         Name="Official Courses"
@@ -38,11 +38,15 @@
     private List<EditableList.TreeItemData> _treeItems;
     private List<CourseItemData> _items;
 
+    [Inject] public State.SiteTitle SiteTitle { get; set; }
+
     private CourseDTO[]? _courses;
     private List<List.ListItem>? _listItems;
 
     protected override async Task OnInitializedAsyncImpl()
     {
+        SiteTitle.Rename("COURSES");
+
         await RefreshViewModel();
     }
 

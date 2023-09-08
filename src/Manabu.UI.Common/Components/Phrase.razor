@@ -14,7 +14,7 @@
 @if (_phrase is null) { return; }
 
 <MudStack Class="phrase" Style="width: 100%;">
-    <SiteTitle>PHRASE</SiteTitle>
+    <SiteTitle>@SiteTitle.Name</SiteTitle>
 
     <MudBreadcrumbs Items=@_breadcrumbs Style="padding-left: 0; font-size: 12px" />
 
@@ -99,6 +99,7 @@
     private List<List<List.ListItem>>? _listItems;
 
     [Inject] public IMediaStorage<Audio> AudioStorage { get; set; }   
+    [Inject] public State.SiteTitle SiteTitle { get; set; }
 
     private async Task<Result> OnAudioUpload(IBrowserFile file)
     {
@@ -113,6 +114,8 @@
 
     protected override async Task OnInitializedAsyncImpl()
     {
+        SiteTitle.Rename("PHRASE");
+        
         await RefreshViewModel();
 
         if (_phrase is null)

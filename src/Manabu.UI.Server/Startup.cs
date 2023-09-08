@@ -43,6 +43,7 @@ public static class Startup
         services.AddScoped<IFlashcardResolver, JapaneseFlashcardResolver>();
 
         services.AddSingleton<FlashcardList>();
+        services.AddSingleton<SiteTitle>();
     }
 
     public static void AddRepositories(this IServiceCollection services, IWebHostEnvironment environment, Assembly assembly)

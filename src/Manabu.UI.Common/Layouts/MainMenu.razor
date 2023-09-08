@@ -1,4 +1,6 @@
-﻿<div class=@_vmenuDisplayCssClass>
+﻿@using Manabu.UI.Common.Components
+@using Microsoft.AspNetCore.Components.Authorization;
+<div class=@_vmenuDisplayCssClass>
     <MudOverlay Visible=@_menuOn OnClick=@OnOverlayClick DarkBackground="true" ZIndex="0"/>
 </div>
 
@@ -30,7 +32,11 @@
 </div>
 
 <div class="vmenu">
-    <MudIconButton OnClick=@OnMenuButtonClick Class="menu-btn" Icon=@Icons.Material.Outlined.Menu></MudIconButton>
+    <SiteTitle>@SiteTitle.Name</SiteTitle>
+    @if (!_menuOn)
+    {
+        <MudIconButton OnClick=@OnMenuButtonClick Class="menu-btn" Icon=@Icons.Material.Outlined.Menu></MudIconButton>
+    }
     <MudPaper Class=@($"vmenu-paper py-3 {_vmenuDisplayCssClass}") Width="150px" Elevation="0">
         <MudNavMenu Bordered="true" Style="display: flex;  flex-direction: column; align-items: start;">
             <MudLink Href="" Style="text-decoration: none; text-align: center; padding-left: 20px; padding-bottom: 15px; font-size:20px; font-weight: bold; font-family: gentle; color: darkorange !important;">KITSUNE</MudLink>
@@ -63,6 +69,21 @@
 
     private string _vmenuDisplayCssClass => _menuOn ? "" : "display-none";
 
+    [Inject] public AuthenticationStateProvider Auth { get; set; }
+    [Inject] public NavigationManager Navigation { get; set; }
+    [Inject] public State.SiteTitle SiteTitle { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        SiteTitle.Subscribe(() => InvokeAsync(StateHasChanged));
+
+        _buttons.Add(new("Courses", "/courses"));
+        if (await Auth.IsSignedIn() is false)
+            _buttons.Add(new("Sign In", AuthenticationStateProviderExtensions.SignInUrl));
+        else
+            _buttons.Add(new("Sign Out", AuthenticationStateProviderExtensions.SignInUrl));
+    }
+
     private Task OnMenuButtonClick(MouseEventArgs args)
     {
         _menuOn = !_menuOn;
@@ -77,17 +98,18 @@
 
     private List<Button> _buttons = new()
     {
-        new("Dashboard", "/dashboard"),
-        new("Courses", "/courses"),
-        new("Linguistics", "/linguistics"),
-        new("Media", "/media", new()
-        {
-            new("Courses", "/courses"),
-            new("Lessons", "/lessons"),
-            new("Manga", "/manga"),
-            new("Anime", "/anime"),
-        }),
-        new("Flashcards", "/flashcards"),
+        //new("Dashboard", "/dashboard"),
+
+        
+        //new("Linguistics", "/linguistics"),
+        //new("Media", "/media", new()
+        //{
+        //    new("Courses", "/courses"),
+        //    new("Lessons", "/lessons"),
+        //    new("Manga", "/manga"),
+        //    new("Anime", "/anime"),
+        //}),
+        //new("Flashcards", "/flashcards"),
     };
 
     public Task OnOverlayClick()

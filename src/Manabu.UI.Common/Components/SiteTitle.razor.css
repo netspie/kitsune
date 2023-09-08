@@ -4,6 +4,13 @@
     font-family: unica;
     color: orangered;
 
-    width: 100%; 
-    text-align: center; 
+    width: 100%;
+    text-align: center;
+    z-index: 99999;
+}
+
+@media only screen and (max-width: 600px) {
+    .title {
+        display: none;
+    }
 }

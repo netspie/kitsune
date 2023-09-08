@@ -5,24 +5,32 @@
 @inherits BaseElement
 
 <div class="list @(@class)" style=@style>
-    @if (!Name.IsNullOrEmpty() || (!MenuItemsRoot.IsNullOrEmpty() && !IsReadonly))
+    @{
+        bool showName = !Name.IsNullOrEmpty();
+        bool showMenu = !MenuItemsRoot.IsNullOrEmpty() && !IsReadonly;
+    }
+    @if (showName || showMenu)
     {
         <div class="toolbar">
-            <h3 class="title">@Name</h3>
+            @if (showName)
+            {
+                <h3 class="title">@Name</h3>
+            }
 
-            <MudMenu
-                Label="MENU"
-                Style=""
-                Class="menu-btn">
+            @if (showMenu)
+            {
+                <MudMenu Label="MENU"
+                         Style=""
+                         Class="menu-btn">
 
-                @foreach (var menuItem in MenuItemsRoot)
-                {
-                    <MudMenuItem 
-                        Style="font-family: unica;"
-                        OnClick=@(args => OnMenuItemClickInternal(args, null, menuItem))>@menuItem.Name</MudMenuItem>
-                }
+                    @foreach (var menuItem in MenuItemsRoot)
+                    {
+                        <MudMenuItem Style="font-family: unica;"
+                                     OnClick=@(args => OnMenuItemClickInternal(args, null, menuItem))>@menuItem.Name</MudMenuItem>
+                    }
 
-            </MudMenu>
+                </MudMenu>
+            }
         </div>
     }
 

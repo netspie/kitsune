@@ -9,7 +9,7 @@
 @if (_lesson is null) { return; }
 
 <MudStack Class="lesson" Style="width: 100%;">
-    <SiteTitle>LESSON</SiteTitle>
+    <SiteTitle>@SiteTitle.Name</SiteTitle>
 
     <MudBreadcrumbs Items=@_breadcrumbs Style="padding-left: 0; font-size: 12px" />
 
@@ -78,6 +78,8 @@
 @code {
     [Parameter] public string LessonId { get; set; }
 
+    [Inject] public State.SiteTitle SiteTitle { get; set; }
+
     private List<EditableList.TreeItemData> _conversationTreeItems;
 
     private List<BreadcrumbItem> _breadcrumbs = new();
@@ -87,6 +89,8 @@
 
     protected override async Task OnInitializedAsyncImpl()
     {
+        SiteTitle.Rename("LESSON");
+        
         var phraseItemDataList = new List<PhraseTreeItemData>();
 
         await RefreshViewModel();
