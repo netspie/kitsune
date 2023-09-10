@@ -62,6 +62,22 @@
                     @CustomItemTemplate(item)
                 </div>
             }
+
+            bool showItemMenu = !MenuItemsChildren.IsNullOrEmpty() && !IsReadonly;
+            @if (showItemMenu)
+            {
+                <MudMenu Label="MENU"
+                         Style=""
+                         Class="menu-btn">
+
+                    @foreach (var menuItem in MenuItemsChildren)
+                    {
+                        <MudMenuItem Style="font-family: unica;"
+                                     OnClick=@(args => OnMenuItemClickInternal(args, null, menuItem))>@menuItem.Name</MudMenuItem>
+                    }
+
+                </MudMenu>
+            }
         }
     }
 
