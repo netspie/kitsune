@@ -77,25 +77,8 @@
                                     
                                         @if (NumberPrefix)
                                         {
-                                            var itemIndexArr = GetIndex(item, new int[] {});
-                                            string index = itemIndexArr
-                                                .Reverse()
-                                                .Select(i => (i + 1).ToString())
-                                                .AggregateOrDefault((x, y) => 
-                                                    $"{x}.{y}");
+                                            string index = item.GetIndexStr();
                                             <strong>@index.&nbsp;&nbsp;</strong>
-
-                                            int[] GetIndex(TreeItemData item, int[] indexes)
-                                            {
-                                                var items = item.Parent?.TreeItems ?? TreeItems;
-                                                int itemIndex = items.IndexOf(item);
-
-                                                var current = indexes.Append(itemIndex).ToArray();
-                                                if (items == TreeItems)
-                                                    return current;
-
-                                                return GetIndex(item.Parent, current);
-                                            }
                                         }
 
                                         @item.Name
@@ -200,6 +183,20 @@
 
     private bool _isAdding;
     private MenuItem _selectedMenuItem;
+
+    protected override void OnInitialized()
+    {
+        AssignIndex(TreeItems);
+    }
+
+    private void AssignIndex(IEnumerable<TreeItemData> items)
+    {
+        items.ForEach((item, i) =>
+        {
+            item.Index = i;
+            AssignIndex(item.TreeItems);
+        });
+    }
 
     private void OnEditableItemBlur()
     {
@@ -322,6 +319,7 @@
         public bool IsExpanded { get; set; }
         public bool IsEditing { get; set; }
         public int Level { get; private set; }
+        public int Index { get; set; }
 
         public TreeItemData Parent { get; private set; }
 

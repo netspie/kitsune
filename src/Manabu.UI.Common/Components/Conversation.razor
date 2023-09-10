@@ -29,28 +29,33 @@
             OnEdit=@OnDescriptionEdit />
     </MudStack>
 
-    <SimpleList Name="Phrases"
+    <EditableList
+        Name="Conversations"
         IsReadonly=@(!_isEdit)
-        OnAddItem=@OnAddItem
-        MenuItemsRoot=@PhrasesMenuItemsRoot
+        NoIndents=true
+        TreeItems=@(_phrasesTreeItems.CastToList<EditableList.TreeItemData>())
         OnItemClick=@OnItemClick
-        Items=@(_phrasesTreeItems.CastToList<SimpleList.ItemData>())>
-        
+        OnAddItem=@OnAddItem
+        MenuItemsRoot=@PhrasesMenuItemsRoot 
+        MenuItemsForAll=@PhraseMenuItems 
+        NumberPrefix=true >
+    
         <CustomItemTemplate>
             @{
-               var phraseItem = context as PhraseTreeItemData;
-                
+                var phraseItem = context as PhraseTreeItemData;
+                string indexStr = context.GetIndexStr();
+
                 <PhraseItem 
-                    Id=@context.Id 
+                    Id=@context.Id
                     IsReadonly=@(!_isEdit)
-                    Content=@context.Name 
+                    Content=@($"- {context.Name}")
                     ShowSpeaker=@_isSpeakersShown
-                    SpeakerName=@phraseItem.SpeakerName 
+                    SpeakerName=@phraseItem.SpeakerName
                     OnPhraseSubmit=@OnPhraseSubmit
                     OnSpeakerSubmit=@OnSpeakerSubmit />
             }
         </CustomItemTemplate>
-    </SimpleList>
+    </EditableList>
 
     <MudSwitch @bind-Checked=@_isSpeakersShown Label="Show Speakers" Color="Color.Info" />
 
@@ -95,7 +100,7 @@
         ExecuteUpdateCommand(() => _conversation with { Description = text });
 
     private async Task<bool> OnAddItem(
-        SimpleList.ItemData item, int index, MenuItem menuItem)
+        EditableList.TreeItemData item, int index, MenuItem menuItem)
     {
         if (!_isAdmin)
             return false;
@@ -114,7 +119,7 @@
         ExecuteAdminViewAction(() => CommandExecutor.Execute(new UpdateConversationPhraseCommand(
             id, ConversationId: _conversation?.Id, Speaker: name)));
 
-    private async Task OnItemClick(SimpleList.ItemData item)
+    private async Task OnItemClick(EditableList.TreeItemData item)
     {
         Navigation.NavigateTo($"phrases/{item.Id}");
     }
@@ -160,7 +165,7 @@
         MenuItems.AddSibling with { Name = "Add Phrase", IdSecondary = "addPhrase"},
     };
 
-    class PhraseTreeItemData : SimpleList.ItemData
+    class PhraseTreeItemData : EditableList.TreeItemData
     {
         public PhraseTreeItemData(
             string id,

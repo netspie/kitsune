@@ -1,6 +1,6 @@
 ﻿@using Corelibs.Blazor.UIComponents.Common;
 
-<MudStack Row=true Style="background: rgb(234,200,200); padding: 0px; margin-bottom: 10px;">
+<MudStack Row=true Style="padding: 0px;">
     @if (!IsReadonly)
     {
         string width = SpeakerName.IsNullOrEmpty() || SpeakerName.Length < 5 ? "50px" : "fit-content";
