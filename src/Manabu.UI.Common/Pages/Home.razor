@@ -1,11 +1,39 @@
 ﻿@page "/"
 @page "/home"
+@using Microsoft.AspNetCore.Components.Authorization;
 
 <div class="main-hero">
     <h1 class="title">Kitsune Study</h1>
     <p class="description">
         Take charge of your learning by accessing a vast library of materials and refining your skills with personalized flashcards.</p>
-    <MudButton Style="background: orangered; color: white;" Variant="Variant.Filled" DisableElevation=true>Get Started</MudButton>
+    <MudButton OnClick=@OnGetStartedButtonClick Style="background: orangered; color: white;" Variant="Variant.Filled" DisableElevation=true>Get Started</MudButton>
 
     <Footer />
 </div>
+
+@code {
+    [Inject] public NavigationManager Navigation { get; set; }
+    [Inject] public AuthenticationStateProvider Auth { get; set; }
+
+    protected async Task OnGetStartedButtonClick()
+    {
+        if (await Auth.IsSignedIn() is false)
+        {
+            await Auth.SignAction(Navigation);
+            return;
+        }
+        
+        Navigation.NavigateTo("/courses");
+    }
+
+    private async Task RedirectIfNotSignedIn()
+    {
+        var relative = Navigation.ToBaseRelativePath(Navigation.Uri);
+        var state = await Auth.GetAuthenticationStateAsync();
+        if (!relative.IsEmpty() && await Auth.IsSignedIn() is false)
+        {
+            Navigation.NavigateTo("/", forceLoad: true);
+            return;
+        }
+    }
+}

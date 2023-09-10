@@ -52,16 +52,26 @@
 
     protected override async Task OnInitializedAsync()
     {
-        //var state = await Auth.GetAuthenticationStateAsync();
-        //if (await Auth.IsSignedIn() is false)
-        //{
-        //    Navigation.NavigateTo("/", forceLoad: true);
-        //    return;
-        //}
-
+        await RedirectIfNotSignedIn();
+        Navigation.LocationChanged += OnNavigationLocationChanged;
         BottomLeftMenuButtonGroups = await GetBottomLeftMenuButtonGroups();
     }
 
+    private async void OnNavigationLocationChanged(object sender, LocationChangedEventArgs args)
+    {
+        RedirectIfNotSignedIn();
+    }
+
+    private async Task RedirectIfNotSignedIn()
+    {
+        var relative = Navigation.ToBaseRelativePath(Navigation.Uri);
+        var state = await Auth.GetAuthenticationStateAsync();
+        if (!relative.IsEmpty() && await Auth.IsSignedIn() is false)
+        {
+            Navigation.NavigateTo("/", forceLoad: true);
+            return;
+        }
+    }
 
     private async Task OnMenuButtonClick(string id)
     {

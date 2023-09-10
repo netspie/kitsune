@@ -77,11 +77,15 @@
     {
         SiteTitle.Subscribe(() => InvokeAsync(StateHasChanged));
 
-        _buttons.Add(new("Courses", "/courses"));
         if (await Auth.IsSignedIn() is false)
+        {
             _buttons.Add(new("Sign In", AuthenticationStateProviderExtensions.SignInUrl));
+        }
         else
+        {
+            _buttons.Add(new("Courses", "/courses"));
             _buttons.Add(new("Sign Out", AuthenticationStateProviderExtensions.SignOutUrl));
+        }
     }
 
     private Task OnMenuButtonClick(MouseEventArgs args)
