@@ -13,5 +13,5 @@
 #### Features
 
 &nbsp;&nbsp;&nbsp;&nbsp; - Content exploration and editing  
-&nbsp;&nbsp;&nbsp;&nbsp; - Flashcard generation
-&nbsp;&nbsp;&nbsp;&nbsp; - Learning progress tracking
+&nbsp;&nbsp;&nbsp;&nbsp; - Flashcard generation  
+&nbsp;&nbsp;&nbsp;&nbsp; - Learning progress tracking  
