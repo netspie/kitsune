@@ -52,12 +52,12 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var state = await Auth.GetAuthenticationStateAsync();
-        if (await Auth.IsSignedIn() is false)
-        {
-            Navigation.NavigateTo("/", forceLoad: true);
-            return;
-        }
+        //var state = await Auth.GetAuthenticationStateAsync();
+        //if (await Auth.IsSignedIn() is false)
+        //{
+        //    Navigation.NavigateTo("/", forceLoad: true);
+        //    return;
+        //}
 
         BottomLeftMenuButtonGroups = await GetBottomLeftMenuButtonGroups();
     }

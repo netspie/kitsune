@@ -1,9 +1,11 @@
 ﻿@page "/"
 @page "/home"
-@layout HomeLayout
 
-<FullBg ImageUrl=@($@"{Config.BaseAssetsPath}/images/general/main-bg.png") />
+<div class="main-hero">
+    <h1 class="title">Kitsune Study</h1>
+    <p class="description">
+        Take charge of your learning by accessing a vast library of materials and refining your skills with personalized flashcards.</p>
+    <MudButton Style="background: orangered; color: white;" Variant="Variant.Filled" DisableElevation=true>Get Started</MudButton>
 
-<Landing 
-    Title="Hack Study"
-    Description="Learn Japanese However You Want!" />
+    <Footer />
+</div>

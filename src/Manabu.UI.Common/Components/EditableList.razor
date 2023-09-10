@@ -40,7 +40,7 @@
     @if (!TreeItems.IsNullOrEmpty())
     {
         <MudTreeView Items=@TreeItems.ToHashSet() Hover="true" Width="100%"
-                     Style="margin-left: 0; display: flex; flex-direction: column; gap: 10px;">
+                     Style=@($"margin-left: 0; display: flex; flex-direction: column; gap: {Gap}px;")>
             <ItemTemplate Context="item">
                 <MudTreeViewItem 
                     Items=@item.TreeItems.ToHashSet()

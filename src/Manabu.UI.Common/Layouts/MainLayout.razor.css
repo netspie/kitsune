@@ -1,6 +1,6 @@
 ﻿.main {
-    transition: padding-left 300ms ease;
     position: relative;
+    height: 100%;
 }
 
 .main-content {
@@ -12,7 +12,6 @@
     display:flex; 
     flex-direction: column; 
     align-items: start;
-
     position: relative;
 }
 

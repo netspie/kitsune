@@ -1,1 +1,39 @@
-﻿
+﻿.main-hero {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 100px;
+    gap: 25px;
+}
+
+.title {
+    font-weight: bold; 
+    font-size: 75px;
+    font-family: unica;
+    color: orangered;
+
+    width: 100%;
+    text-align: center;
+
+    text-transform: uppercase;
+    padding: 0;
+    margin: 0;
+}
+
+.description {
+    text-align: center;
+    font-size: 16px;
+    padding: 0;
+    margin: 0;
+    padding-left: 65px;
+    padding-right: 65px;
+    padding-bottom: 15px;
+}
+
+div ::deep .footer {
+    position: fixed;
+    bottom: 0;
+}
+    
