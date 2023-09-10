@@ -8,7 +8,7 @@
 
 @if (_lesson is null) { return; }
 
-<MudStack Class="lesson" Style="width: 100%;">
+<MudStack Class="main-section lesson" Style="width: 100%;">
     <SiteTitle>@SiteTitle.Name</SiteTitle>
 
     <MudBreadcrumbs Items=@_breadcrumbs Style="padding-left: 0; font-size: 12px" />
@@ -54,7 +54,8 @@
             OnEdit=@OnDescriptionEdit />
     </MudStack>
 
-    <EditableList 
+    <div style="margin-top: 10px;"></div>
+    <EditableList
         Name="Conversations"
         IsReadonly=@(!_isEdit)
         NoIndents=true
@@ -62,7 +63,8 @@
         OnItemClick=@OnItemClick
         OnAddItem=@OnAddItem
         MenuItemsRoot=@ConvMenuItemsRoot 
-        MenuItemsForAll=@ConvMenuItems />
+        MenuItemsForAll=@ConvMenuItems 
+        NumberPrefix=true />
 
     <GoFlashcardsMenu 
         RootItemId=@LessonId

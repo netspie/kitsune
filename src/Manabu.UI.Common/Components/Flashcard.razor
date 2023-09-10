@@ -8,49 +8,53 @@
 
 @if (_dto is null) { return; }
 
-<MudStack Style="position: absolute; left: 0; align-items: center; justify-content: space-evenly; height: 80vh; width: 100%;">
-    <MudText Style="position: absolute; right: 50px; top: 0px;">
-        <span>@(_i + 1)</span>
-        &nbsp;/&nbsp;
-        <span>@(_itemIds.Length)</span>
-    </MudText>
+<div>
+    <MudStack Class="flashcard" Style="position: absolute; left: 0; align-items: center; justify-content: space-evenly; height: 80vh; width: 100%; padding: 35px;
+    ">
+        <MudText Class="count-text">
+            <span>@(_i + 1)</span>
+            &nbsp;/&nbsp;
+            <span>@(_itemIds.Length)</span>
+        </MudText>
 
-    <MudStack Style="align-items: center;">
-        @foreach (var question in _dto.Questions)
-        {
-            <MudText Style="font-size: 16px;">@question.Text</MudText>
-        }
-    </MudStack>
-
-    <MudStack Style="align-items: center;">
-        @if (_showAnswer)
-        {
-            @foreach (var answerArr in _dto.Answers)
+        <MudStack Style="align-items: center;">
+            @foreach (var question in _dto.Questions)
             {
-                @foreach (var answer in answerArr)
+                <MudText Style="font-size: 16px; text-align: center;">@question.Text</MudText>
+            }
+        </MudStack>
+
+        <MudStack Style="align-items: center;">
+            @if (_showAnswer)
+            {
+                @foreach (var answerArr in _dto.Answers)
                 {
-                    @if (answer.Type == "audio")
+                    @foreach (var answer in answerArr)
                     {
-                        <audio controls style="padding-bottom: 10px;">
-                            <source src=@($"{AudioStorage.BaseReadPath}/{answer.Text}") type="audio/mpeg">
-                            Your browser does not support the audio element.
-                        </audio>
-                    }
-                    else
-                    {
-                        <MudText>@answer.Text</MudText>
+                        @if (answer.Type == "audio")
+                        {
+                            <audio controls style="padding-bottom: 10px;">
+                                <source src=@($"{AudioStorage.BaseReadPath}/{answer.Text}") type="audio/mpeg">
+                                Your browser does not support the audio element.
+                            </audio>
+                        }
+                        else
+                        {
+                            <MudText Style=" text-align: center;">@answer.Text</MudText>
+                        }
                     }
                 }
             }
-        }
-    </MudStack>
+        </MudStack>
 
-    <MudStack Row=true Style="justify-content: space-evenly; width: 50%;">
-        <MudButton Style="font-weight: bold;" OnClick=@OnPrevClick>Prev</MudButton>
-        <MudButton Style="font-weight: bold;" OnClick=@OnAnswerClick>Answer</MudButton>
-        <MudButton Style="font-weight: bold;" OnClick=@OnNextClick>Next</MudButton>
+        <MudStack Row=true Style="justify-content: space-evenly; width: 50%;">
+            <MudButton Style="font-weight: bold;" OnClick=@OnPrevClick>Prev</MudButton>
+            <MudButton Style="font-weight: bold;" OnClick=@OnAnswerClick>Answer</MudButton>
+            <MudButton Style="font-weight: bold;" OnClick=@OnNextClick>Next</MudButton>
+        </MudStack>
     </MudStack>
-</MudStack>
+</div>
+
 
 @code {
     [Parameter] public string ItemId { get; set; }
@@ -69,8 +73,11 @@
 
     private FlashcardDTO _dto;
 
+    [Inject] public State.SiteTitle SiteTitle { get; set; }
+
     protected override void OnInitialized()
     {
+        SiteTitle.Rename("");
         _itemIds = _flashcardListState.ItemIds.Shuffle().ToArray();
 
         var uri = Navigation.ToAbsoluteUri(Navigation.Uri);

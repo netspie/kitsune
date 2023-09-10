@@ -1,23 +1,39 @@
 ﻿@using Manabu.UseCases.FlashcardLists;
 
-<MudExpansionPanels DisableBorders="true" Elevation="0" 
-    Style="width: 300px;">
-    <MudExpansionPanel Text="Flashcards">
-        <MudSelect @ref=_typeSelect T="string" Label="Item" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
-            @foreach (var value in _itemValues)
-            {
-                <MudSelectItem T="string" Value="@value" />
-            }
-        </MudSelect>
-        <MudSelect @ref=_modeSelect T="string" Label="Mode" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
-            @foreach (var value in _modeValues)
-            {
-                <MudSelectItem T="string" Value="@value" />
-            }
-        </MudSelect>
-        <MudButton OnClick=@OnItemClick>Go</MudButton>
-    </MudExpansionPanel>
-</MudExpansionPanels>
+<div style="margin-top: 15px;">
+    @*<MudExpansionPanels DisableBorders="true" Elevation="0"
+                        Style="width: 300px; gap: 10px;">
+        <MudExpansionPanel Text="Flashcards">
+            
+        </MudExpansionPanel>
+    </MudExpansionPanels>*@
+
+    <MudButton Variant="Variant.Filled" DisableElevation=true OnClick="@(() => OpenDrawer(Anchor.End))">Flashcards</MudButton>
+
+    <MudDrawer @bind-Open="@open" Anchor="@anchor" Elevation="1" Variant="@DrawerVariant.Temporary" Width="300px"
+        Style="position:fixed;height: 100vh; top: 0; display: flex; justify-content: start;">
+        <MudDrawerHeader Style="flex-direction: column; gap: 5px;">
+            <MudText Typo="Typo.h6">Flashcards</MudText>
+            <MudDivider />
+        </MudDrawerHeader>
+        <MudStack Style="padding-left: 25px; padding-right: 25px;">
+            <MudText>Generate flashcards of desired type and mode</MudText>
+            <MudSelect @ref=_typeSelect T="string" Label="Item" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
+                @foreach (var value in _itemValues)
+                {
+                    <MudSelectItem T="string" Value="@value" />
+                }
+            </MudSelect>
+            <MudSelect @ref=_modeSelect T="string" Label="Mode" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
+                @foreach (var value in _modeValues)
+                {
+                    <MudSelectItem T="string" Value="@value" />
+                }
+            </MudSelect>
+            <MudButton Variant="Variant.Filled" DisableElevation=true OnClick=@OnItemClick>Go</MudButton>
+        </MudStack>
+    </MudDrawer>
+</div>
 
 @code {
     [Inject] public NavigationManager Navigation { get; set; }
@@ -33,6 +49,15 @@
 
     private MudSelect<string>? _typeSelect;
     private MudSelect<string>? _modeSelect;
+
+    bool open;
+    Anchor anchor;
+
+    void OpenDrawer(Anchor anchor)
+    {
+        open = true;
+        this.anchor = anchor;
+    }
 
     protected override void OnAfterRender(bool firstRender)
     {

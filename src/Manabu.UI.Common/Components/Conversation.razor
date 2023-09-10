@@ -10,7 +10,7 @@
 
 @if (_conversation is null) { return; }
 
-<MudStack Class="lesson" Style="width: 100%;">
+<MudStack Class="main-section lesson" Style="width: 100%;">
     <SiteTitle>@SiteTitle.Name</SiteTitle>
 
     <MudBreadcrumbs Items=@_breadcrumbs Style="padding-left: 0; font-size: 12px" />
@@ -29,19 +29,16 @@
             OnEdit=@OnDescriptionEdit />
     </MudStack>
 
-    <EditableList 
-        Name="Phrases"
+    <SimpleList Name="Phrases"
         IsReadonly=@(!_isEdit)
-        TreeItems=@_phrasesTreeItems
         OnAddItem=@OnAddItem
-        OnItemClick=@OnItemClick
         MenuItemsRoot=@PhrasesMenuItemsRoot
-        MenuItemsForAll=@PhraseMenuItems
-        NoIndents=true>
-       
+        OnItemClick=@OnItemClick
+        Items=@(_phrasesTreeItems.CastToList<SimpleList.ItemData>())>
+        
         <CustomItemTemplate>
             @{
-                var phraseItem = context as PhraseTreeItemData;
+               var phraseItem = context as PhraseTreeItemData;
                 
                 <PhraseItem 
                     Id=@context.Id 
@@ -53,8 +50,7 @@
                     OnSpeakerSubmit=@OnSpeakerSubmit />
             }
         </CustomItemTemplate>
-        
-    </EditableList>
+    </SimpleList>
 
     <MudSwitch @bind-Checked=@_isSpeakersShown Label="Show Speakers" Color="Color.Info" />
 
@@ -70,7 +66,7 @@
 
     [Inject] public State.SiteTitle SiteTitle { get; set; }
 
-    private List<EditableList.TreeItemData> _phrasesTreeItems;
+    private List<PhraseTreeItemData> _phrasesTreeItems;
 
     private List<BreadcrumbItem> _breadcrumbs = new();
 
@@ -99,7 +95,7 @@
         ExecuteUpdateCommand(() => _conversation with { Description = text });
 
     private async Task<bool> OnAddItem(
-        EditableList.TreeItemData item, int index, MenuItem menuItem)
+        SimpleList.ItemData item, int index, MenuItem menuItem)
     {
         if (!_isAdmin)
             return false;
@@ -118,7 +114,7 @@
         ExecuteAdminViewAction(() => CommandExecutor.Execute(new UpdateConversationPhraseCommand(
             id, ConversationId: _conversation?.Id, Speaker: name)));
 
-    private async Task OnItemClick(EditableList.TreeItemData item)
+    private async Task OnItemClick(SimpleList.ItemData item)
     {
         Navigation.NavigateTo($"phrases/{item.Id}");
     }
@@ -145,7 +141,7 @@
         _conversation = response?.Content;
 
         _phrasesTreeItems = _conversation?.Phrases?.SelectOrDefault((p, i) =>
-            new PhraseTreeItemData(p.Id, p.Original, "phrase", p.Speaker) as EditableList.TreeItemData).ToList();
+            new PhraseTreeItemData(p.Id, p.Original, p.Speaker)).ToList();
     }
 
     private string GetDescription() =>
@@ -164,15 +160,13 @@
         MenuItems.AddSibling with { Name = "Add Phrase", IdSecondary = "addPhrase"},
     };
 
-    class PhraseTreeItemData : EditableList.TreeItemData
+    class PhraseTreeItemData : SimpleList.ItemData
     {
         public PhraseTreeItemData(
             string id,
             string phrase,
-            string type,
             string speakerName) : base(id, phrase)
         {
-            Type = type;
             SpeakerName = speakerName;
         }
 

@@ -1,6 +1,6 @@
 ﻿@using Corelibs.Blazor.UIComponents.Common;
 
-<MudStack Row=true>
+<MudStack Row=true Style="background: rgb(234,200,200); padding: 0px; margin-bottom: 10px;">
     @if (!IsReadonly)
     {
         string width = SpeakerName.IsNullOrEmpty() || SpeakerName.Length < 5 ? "50px" : "fit-content";
@@ -8,7 +8,7 @@
 
             <TextField Label="Speaker"
                        Value=@SpeakerName
-                       OnEdit=@OnSpeakerSet/>
+                       OnEdit=@OnSpeakerSet />
         </div>
     }
     else if (ShowSpeaker)

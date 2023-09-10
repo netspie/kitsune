@@ -23,7 +23,23 @@
     src: url(../fonts/GentlemanRegular.ttf);
 }
 
+@font-face {
+    font-family: lora;
+    src: url(../fonts/Lora/Lora.ttf);
+}
 
 body {
-    font-family: ubuntu;
+    font-family: lora;
+    background: white;
+
+}
+
+.main-section {
+    gap: 15px;
+}
+
+@media only screen and (max-width: 600px) {
+    .main-section {
+        margin-top: 60px;
+    }
 }

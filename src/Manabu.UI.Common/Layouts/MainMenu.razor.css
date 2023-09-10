@@ -4,7 +4,7 @@
     top: 0; 
     width: 100%;
 
-    background: rgb(244, 248, 254);
+    background: white;
 }
 
 div ::deep .hmenu-paper {
@@ -37,9 +37,7 @@ div ::deep .hmenu-toolbar {
 div ::deep .vmenu-paper {
     border-radius: 0;
     height: 100vh;
-    border-color: orangered;
-    border-right-width: 8px; 
-
+    background: white;
 }
 
 div ::deep .menu-btn {

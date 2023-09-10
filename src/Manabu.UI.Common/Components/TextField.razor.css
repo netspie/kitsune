@@ -1,0 +1,12 @@
+﻿div ::deep 
+    .mud-input-control
+    .mud-input-control-input-container > 
+    .mud-input-label-inputcontrol {
+    font-weight: bold;
+    font-family: unica;
+    text-transform: uppercase;
+    color: rgb(50, 50, 50);
+}
+
+div ::deep .mud-input-root {
+}

@@ -8,22 +8,28 @@
 
 @if (_course is null) { return; }
 
-<MudStack Class="course"  Style="width: 100%;">
+<MudStack Class="main-section course" Style="width: 100%;">
     <SiteTitle>@SiteTitle.Name</SiteTitle>
     <MudBreadcrumbs Items=@_breadcrumbs Style="padding-left: 0; font-size: 12px" />
 
-    <MudStack>
+    <MudStack Style="color: white;">
         <TextField 
             Label="Name"
             IsReadonly=@(!_isEdit)
             Value=@_course.Name 
             OnEdit=@OnNameEdit />
 
+
         <TextField 
             Label="Description"
             IsReadonly=@(!_isEdit)
-            Value=@GetDescription() 
+            Value=@GetDescription()
             OnEdit=@OnDescriptionEdit />
+
+    </MudStack>
+
+    <MudStack Style="color: white;">
+
 
     </MudStack>
 
@@ -36,7 +42,9 @@
             OnItemClick=OnItemClick
             MenuItemsRoot=@MenuItemsRoot
             MenuItemsPerType=@MenuItemsPerType 
-            OnRemoveItem=@OnRemoveFromModuleItems/>
+            OnRemoveItem=@OnRemoveFromModuleItems
+            NoIndents=true
+            NumberPrefix=true/>
     </MudPaper>
 
     @if (_isEdit)

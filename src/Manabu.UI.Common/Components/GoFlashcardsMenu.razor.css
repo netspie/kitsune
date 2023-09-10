@@ -1,0 +1,5 @@
+﻿div ::deep .mud-expand-panel .mud-expand-panel-header {
+    flex-direction: row-reverse;
+    padding: 0;
+    gap: 10px;
+}

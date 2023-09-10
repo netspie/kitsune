@@ -1,26 +1,27 @@
 ﻿@using Corelibs.Blazor.UIComponents.Common;
 
-@if (IsEditing)
-{
-    <MudTextField 
-        @bind-Value=@_dynamicText
-        Label=@Label
-        Variant="Variant.Text"
-        OnBlur=@OnEditableItemBlur
-        TextChanged=OnTextFieldValueChanged
-        AutoFocus=true />
-}
-else
-{
-    <MudField
-        @onclick=OnClickItem
-        Label=@Label
-        Variant="Variant.Text" 
-        DisableUnderLine=true
-        Style="font-weight: bold">
-        @Value
-    </MudField>
-}
+<div>
+
+    @if (IsEditing)
+    {
+        <MudTextField @bind-Value=@_dynamicText
+                      Label=@Label
+                      Variant="Variant.Text"
+                      OnBlur=@OnEditableItemBlur
+                      TextChanged=OnTextFieldValueChanged
+                      AutoFocus=true />
+    }
+    else
+    {
+        <MudField @onclick=OnClickItem
+                  Label=@Label
+                  Variant="Variant.Text"
+                  DisableUnderLine=true
+                  Style="font-weight: bold">
+            @Value
+        </MudField>
+    }
+</div>
 
 @code {
     public delegate Task<bool> OnEditDelegate(string text);

@@ -5,7 +5,7 @@
 
 <MudStack id=@_itemId>
     @{
-        int paddingLeft = NoIndents ? 0 : 30;
+        int paddingLeft = NoIndents ? 0 : 0;
     }
     @if (!Name.IsNullOrEmpty() || !MenuItemsRoot.IsNullOrEmpty())
     {
@@ -20,7 +20,7 @@
                 align-items: center;
                 justify-content: space-between;")>
             
-            <MudText Typo=@Typo.h5 Style="text-transform: uppercase; justify-self: start; flex-grow: 1; flex-shrink: 1; font-weight: bold;">@Name</MudText>
+            <MudText Typo=@Typo.h5 Style="text-transform: uppercase; justify-self: start; flex-grow: 1; flex-shrink: 1; font-weight: bold; font-family: unica;">@Name</MudText>
 
             @if (!MenuItemsRoot.IsNullOrEmpty() && !IsReadonly)
             {
@@ -39,8 +39,8 @@
 
     @if (!TreeItems.IsNullOrEmpty())
     {
-        <MudTreeView Items=@TreeItems.ToHashSet() Hover="true" Width="100%" 
-                     Style="margin-left: 0;">
+        <MudTreeView Items=@TreeItems.ToHashSet() Hover="true" Width="100%"
+                     Style="margin-left: 0; ">
             <ItemTemplate Context="item">
                 <MudTreeViewItem 
                     Items=@item.TreeItems.ToHashSet()
@@ -56,7 +56,6 @@
                             @if (_isAdding && item.IsEditing)
                             {
                                 <TextField 
-                                    Label="Original"
                                     IsEditing=true
                                     Value=@item.Name
                                     OnBlur=@OnEditableItemBlur
@@ -74,7 +73,33 @@
                                 }
                                 else
                                 {
-                                    <MudText Style="justify-self: start;">@item.Name</MudText>
+                                    <MudText Style="justify-self: start;">
+                                    
+                                        @if (NumberPrefix)
+                                        {
+                                            var itemIndexArr = GetIndex(item, new int[] {});
+                                            string index = itemIndexArr
+                                                .Reverse()
+                                                .Select(i => (i + 1).ToString())
+                                                .AggregateOrDefault((x, y) => 
+                                                    $"{x}.{y}");
+                                            <strong>@index.&nbsp;&nbsp;</strong>
+
+                                            int[] GetIndex(TreeItemData item, int[] indexes)
+                                            {
+                                                var items = item.Parent?.TreeItems ?? TreeItems;
+                                                int itemIndex = items.IndexOf(item);
+
+                                                var current = indexes.Append(itemIndex).ToArray();
+                                                if (items == TreeItems)
+                                                    return current;
+
+                                                return GetIndex(item.Parent, current);
+                                            }
+                                        }
+
+                                        @item.Name
+                                    </MudText>
                                 }
                             }
                             @{
@@ -168,6 +193,10 @@
 
     [Parameter] public bool IsReadonly { get; set; }
     [Parameter] public bool NoIndents { get; set; }
+
+    [Parameter] public int Gap { get; set; }
+
+    [Parameter] public bool NumberPrefix { get; set; }
 
     private bool _isAdding;
     private MenuItem _selectedMenuItem;
