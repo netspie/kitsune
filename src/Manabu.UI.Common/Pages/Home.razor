@@ -5,7 +5,8 @@
 <div class="main-hero">
     <h1 class="title">Kitsune Study</h1>
     <p class="description">
-        Take charge of your learning by accessing a vast library of materials and refining your skills with personalized flashcards.</p>
+        Take charge of your <strong>Japanese Language Learning</strong> process by accessing a vast library of materials and refining your skills with personalized <strong>Flashcards</strong>.
+    </p>
     <MudButton OnClick=@OnGetStartedButtonClick Style="background: orangered; color: white;" Variant="Variant.Filled" DisableElevation=true>Get Started</MudButton>
     <MudImage Src=@($"{Config.BaseAssetsPath}/images/fox-sleeping.png") Height=100 />
     <Footer />
@@ -14,6 +15,13 @@
 @code {
     [Inject] public NavigationManager Navigation { get; set; }
     [Inject] public AuthenticationStateProvider Auth { get; set; }
+
+    [Inject] public State.SiteTitle SiteTitle { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        SiteTitle.Rename("");
+    }
 
     protected async Task OnGetStartedButtonClick()
     {
