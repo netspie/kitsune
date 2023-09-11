@@ -12,11 +12,11 @@
 
 #### High Level Features
 
-- Content exploration and editing  
-- Flashcard generation  
-- Learning progress tracking  
+- Create, edit and explore learning content - courses, lessons, conversations, phrases, vocabulary and various media
+- Turn anything into a flashcard list in desired, customizable form - for reading, listening, speaking, writing practice
+- Track progress of learned material, adjust for own needs
 
-#### Domain Goals
+#### Goals
 
 For a japanese language learners - address the following problems (just some among many):  
   
@@ -66,3 +66,31 @@ For a japanese language learners - address the following problems (just some amo
 - Choose rehearse mode - reading, listening, speaking, writing
 - Choose flashcard list count limit for single session
 - Rehearse
+
+## Materials Structure Concepts
+- Official Materials:
+  - Courses
+  - Lessons
+  - Conversations and Situations
+  - Themes, Categories
+- Linguistics
+  - Scripts / Characters
+    - Kana
+      - Hiragana
+      - Katakana
+    - Kanji
+      - Kanji Characters
+      - Kanji Radicals
+  - Words
+    - 
+  - Phrase
+ 
+  - Word Meaning
+  - Word Inflection
+  - Character
+    - Hiragana Character
+    - Katakana Character
+    - Kanji Character
+    - Radical Character
+- Media
+  
