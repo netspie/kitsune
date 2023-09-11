@@ -8,3 +8,9 @@
     padding: 15px;
     align-items: center;
 }
+
+.link {
+    font-family: lora; 
+    font-weight: bold;
+    font-size: 12px;
+}

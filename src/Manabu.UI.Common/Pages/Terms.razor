@@ -1,0 +1,33 @@
+﻿@page "/terms"
+@using Manabu.UI.Common.Components
+
+<MudStack Style="width:100%">
+    <SiteTitle>@SiteTitle.Name</SiteTitle>
+    <MudStack Style="padding-top: 25px;">
+        <MudStack>
+            <h3 style="font-weight: bold;">§ 1. General Provisions</h3>
+            <MudStack Style="padding-left: 25px;">
+                <MudText>
+                    1. The Terms of Service provide the terms and conditions of use of the Website and the Kitsune Study System, 
+                    including conditions for providing services by electronic means, terms of executing and terminating the Contracts, and complaints procedure.
+                </MudText>
+                <MudText>
+                    2. Using the Website and the Services available through the Website (including access to the Kitsune Study System) requires reading and accepting these Terms of Service.
+                </MudText>
+                <MudText>
+                    3. The Service Provider operates as an independent, sole proprietorship based in Poland, email: contact.kitsunestudy@gmail.com.
+                </MudText>
+
+            </MudStack>
+        </MudStack>
+    </MudStack>
+</MudStack>
+
+@code {
+    [Inject] public State.SiteTitle SiteTitle { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        SiteTitle.Rename("TERMS OF SERVICE");
+    }
+}

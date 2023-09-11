@@ -1,8 +1,5 @@
 ﻿@using Manabu.UI.Common.Components
 @using Microsoft.AspNetCore.Components.Authorization;
-<div class=@_vmenuDisplayCssClass>
-    <MudOverlay Visible=@_menuOn OnClick=@OnOverlayClick DarkBackground="true" ZIndex="0"/>
-</div>
 
 <div class="hmenu">
     <MudPaper Class="hmenu-paper">
@@ -29,6 +26,10 @@
             }
         </MudToolBar>
     </MudPaper>
+</div>
+
+<div class=@_vmenuDisplayCssClass>
+    <MudOverlay Visible=@_menuOn OnClick=@OnOverlayClick DarkBackground="true" ZIndex="0" />
 </div>
 
 <div class="vmenu">
@@ -86,6 +87,8 @@
             _buttons.Add(new("Courses", "/courses"));
             _buttons.Add(new("Sign Out", AuthenticationStateProviderExtensions.SignOutUrl));
         }
+
+        _buttons.Add(new("Contact", "/contact"));
     }
 
     private Task OnMenuButtonClick(MouseEventArgs args)

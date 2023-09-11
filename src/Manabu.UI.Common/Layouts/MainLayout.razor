@@ -65,11 +65,26 @@
     private async Task RedirectIfNotSignedIn()
     {
         var relative = Navigation.ToBaseRelativePath(Navigation.Uri);
+        if (relative.IsEmpty())
+            return;
+        
         var state = await Auth.GetAuthenticationStateAsync();
-        if (!relative.IsEmpty() && await Auth.IsSignedIn() is false)
+        if (!IsPathPublic(relative) && await Auth.IsSignedIn() is false)
         {
             Navigation.NavigateTo("/", forceLoad: true);
             return;
+        }
+
+        bool IsPathPublic(string path)
+        {
+            if (relative == "terms" ||
+                relative == "privacy" ||
+                relative == "contact")
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 
