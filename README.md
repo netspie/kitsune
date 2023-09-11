@@ -67,30 +67,57 @@ For a japanese language learners - address the following problems (just some amo
 - Choose flashcard list count limit for single session
 - Rehearse
 
-## Materials Structure Concepts
-- Official Materials:
-  - Courses
-  - Lessons
-  - Conversations and Situations
-  - Themes, Categories
-- Linguistics
-  - Scripts / Characters
-    - Kana
-      - Hiragana
-      - Katakana
-    - Kanji
-      - Kanji Characters
-      - Kanji Radicals
+## Materials Structure
+
+- Official Courses
+  - Lessons - **Done**
+    - Conversations
+    - Phrases
+    - Situations
+    - Articles
+    - Vocabulary
+    - Grammar points
+- Writing Scripts
+  - Kana
+    - Hiragana 
+    - Katakana
+  - Kanji
+    - Kanji Characters
+    - Radicals
   - Words
-    - 
-  - Phrase
- 
-  - Word Meaning
-  - Word Inflection
+- JLPT Categorization
+  - N5, N4, N3..
+- Vocabulary
+  - By Linguistics
+    - Verbs, Nouns, Adjectives, Particles
+      - Word Dictionary Writings
+        - Word Meanings
+        - Word Inflections
+        - Word Compounds
+        - 
+  - By Theme
+    - Colors, Numbers, Animals, Names and tons more..
+  - Similar words
+    - By similar but not exactly the same writing, sound, ex. 怖い - 可愛い
+    - By the same kana writing, sound, but different pitches, ex. 洗車 - 戦車 or 橋 - 箸
+    - By same writing, sounds, almost the same meanings but just little bit niuanced, ex. 思い -　想い
+- Writing type preference
+  - Usually kana (hiragana) alone
+  - Usually kanji (and kana of course, depending on a word)
+  - Katakana (not just foreign words, but also normal words but to make them look different, or titles)
   - Character
     - Hiragana Character
     - Katakana Character
     - Kanji Character
     - Radical Character
+- Phrases
+  - Popular phrases
+  - Situations
+  - Level of difficulty (simple/beginner, advanced..)
+  - Levels of politeness (rude, informal, formal, humble/honorific)
 - Media
-  
+  - Anime, manga, songs, articles, arts, stories, TV dramas
+- Genders - vocabulary or phrases used depending on a person's gender
+- Age jargons - vocabulary or phrases used depending on a person's age
+- Keigo - rude, informal, formal, humble/honorific
+- Dialects - Kanto, Kansai, Kyushuu and more..
