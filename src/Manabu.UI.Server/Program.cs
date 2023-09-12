@@ -21,6 +21,7 @@ builder.Services.Configure<CookiePolicyOptions>(options =>
     options.Secure = CookieSecurePolicy.Always;
 });
 
+var useLocalIp = Environment.GetEnvironmentVariable("Hackstudy_UseLocalIP") is not null ? true : false;
 builder.Services.Configure<OpenIdConnectOptions>(
     OpenIdConnectDefaults.AuthenticationScheme, options =>
     {
@@ -32,15 +33,15 @@ builder.Services.Configure<OpenIdConnectOptions>(
         options.Events.OnRedirectToIdentityProvider = async context =>
         {
             if (builder.Environment.IsProduction())
-                context.ProtocolMessage.RedirectUri = "https://hackstudy.online/signin-oidc";
-            else
+                context.ProtocolMessage.RedirectUri = "https://kitsunestudy.net/signin-oidc";
+            else if (useLocalIp)
                 context.ProtocolMessage.RedirectUri = $"{GetLocalAddress()}/signin-oidc";
         };
         options.Events.OnRedirectToIdentityProviderForSignOut = async context =>
         {
             if (builder.Environment.IsProduction())
-                context.ProtocolMessage.PostLogoutRedirectUri = "https://hackstudy.online/";
-            else
+                context.ProtocolMessage.PostLogoutRedirectUri = "https://kitsunestudy.net/";
+            else if(useLocalIp)
                 context.ProtocolMessage.PostLogoutRedirectUri = GetLocalAddress();
         };
     });
