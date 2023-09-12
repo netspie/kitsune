@@ -22,14 +22,23 @@ public class GetCoursesQueryHandler : IQueryHandler<GetCoursesQuery, Result<GetC
         if (!result.ValidateSuccessAndValues())
             return result.Fail();
 
-        var dtos = courses.Select(c => new CourseDTO(c.Id.Value, c.Name)).ToArray();
-        return result.With(new GetCoursesQueryResponse(dtos));
+        var courseDtos = courses.Where(c => !c.IsArchived).Select(c => new CourseDTO(c.Id.Value, c.Name)).ToArray();
+        var courseArchivedDtos = courses.Where(c => c.IsArchived).Select(c => new CourseDTO(c.Id.Value, c.Name)).ToArray();
+
+        return result.With(new GetCoursesQueryResponse(
+                new CoursesDTO(
+                    courseDtos, 
+                    courseArchivedDtos)));
     }
 }
 
 public record GetCoursesQuery() : IQuery<Result<GetCoursesQueryResponse>>;
 
-public record GetCoursesQueryResponse(CourseDTO[] Courses);
+public record GetCoursesQueryResponse(CoursesDTO Content);
+
+public record CoursesDTO(
+    CourseDTO[] Courses,
+    CourseDTO[] CoursesArchived);
 
 public record CourseDTO(
     string Id,

@@ -18,6 +18,7 @@ public class Course : Entity<CourseId>, IAggregateRoot<CourseId>
     public List<LessonId> LessonsRemoved { get; set; }
     public List<Module> ModulesRemoved { get; set; }
     public bool IsOfficial { get; set; }
+    public bool IsArchived { get; set; }
 
     public Course(
         string name,
@@ -85,6 +86,11 @@ public class Course : Entity<CourseId>, IAggregateRoot<CourseId>
         Modules[0].LessonIds.Add(lesson);
         return true;
     }
+
+    public bool HasContent() =>
+        !Modules.IsNullOrEmpty() ||
+        !LessonsRemoved.IsNullOrEmpty() ||
+        !ModulesRemoved.IsNullOrEmpty();
 
     public record Module(string Name, List<LessonId> LessonIds);
 }

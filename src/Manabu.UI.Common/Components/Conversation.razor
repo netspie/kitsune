@@ -16,7 +16,7 @@
     <MudBreadcrumbs Items=@_breadcrumbs Style="padding-left: 0; font-size: 12px" />
 
     <MudStack>
-        <TextField 
+        <TextField
             Label="Name"
             IsReadonly=@(!_isEdit)
             Value=@_conversation.Name 
@@ -30,7 +30,7 @@
     </MudStack>
 
     <EditableList
-        Name="Conversations"
+        Name="Phrases"
         IsReadonly=@(!_isEdit)
         NoIndents=true
         TreeItems=@(_phrasesTreeItems.CastToList<EditableList.TreeItemData>())

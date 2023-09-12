@@ -4,7 +4,7 @@
 
 @inherits CoreComponent
 
-@if  (_courses is null) { return; }
+@if  (_dto is null) { return; }
 
 <MudStack Class="main-section courses" Style="width: 100%;">
     <SiteTitle>@SiteTitle.Name</SiteTitle>
@@ -13,12 +13,12 @@
         Name="Official Courses"
         IsReadonly=@(!_isEdit)
         NoIndents=true
-        TreeItems=@(_treeItems.CastToList<EditableList.TreeItemData>())
-        OnItemClick=@OnItemClick
-        OnAddItem=@OnAddItem
+        TreeItems=@(_coursesListItems.CastToList<EditableList.TreeItemData>())
+        OnItemClick=@OnCourseItemClick
+        OnAddItem=@OnAddCourseItem
+        OnRemoveItem=@OnRemoveCourseItem
         MenuItemsRoot=@CoursesMenuItemsRoot 
         MenuItemsForAll=@CourseMenuItems 
-        NumberPrefix=true 
         Gap=10>
     
         <CustomItemTemplate>
@@ -32,27 +32,41 @@
 
     </EditableList>
 
+    @if (_isEdit)
+    {
+        <EditableList
+            Name="Archived Courses"
+            IsReadonly=@(!_isEdit)
+            NoIndents=true
+            TreeItems=@(_coursesArchivedListItems.CastToList<EditableList.TreeItemData>())
+            OnItemClick=@OnCourseItemClick
+            MenuItemsForAll=@ArchivedCourseMenuItems />
+    }
+
     @if (_isAdmin)
     {
         <MudSwitch @bind-Checked=@_isEdit Label="Edit Mode" Color="Color.Info" />
     }
+
 </MudStack>
 
 @code {
-    private List<CourseItemData> _treeItems;
-
     [Inject] public State.SiteTitle SiteTitle { get; set; }
 
-    private CourseDTO[]? _courses;
+    private CoursesDTO? _dto;
+
+    private List<CourseItemData> _coursesListItems;
+    private List<CourseItemData> _coursesArchivedListItems;
 
     protected override async Task OnInitializedAsyncImpl()
     {
         SiteTitle.Rename("COURSES");
-
         await RefreshViewModel();
     }
 
-    private async Task<bool> OnAddItem(
+    #region Courses
+
+    private async Task<bool> OnAddCourseItem(
         EditableList.TreeItemData item, int index, MenuItem menuItem)
     {
         if (!await Auth.IsAdmin())
@@ -64,7 +78,11 @@
         return true;
     }
 
-    private async Task OnItemClick(EditableList.TreeItemData item)
+    private async Task OnRemoveCourseItem(EditableList.TreeItemData item, MenuItem menuItem) =>
+        await ExecuteAdminViewAction(() => CommandExecutor.Execute(
+            new RemoveCourseCommand(item.Id)));
+
+    private async Task OnCourseItemClick(EditableList.TreeItemData item)
     {
         Navigation.NavigateTo($"courses/{item.Id}");
     }
@@ -74,24 +92,38 @@
         return new CourseItemData("", "New Course", "");
     }
 
-    protected override async Task RefreshViewModel()
-    {
-        var response = await QueryExecutor.Execute<GetCoursesQuery, GetCoursesQueryResponse>();
-
-        _courses = response?.Courses;
-        _treeItems = _courses?.Select(c => new CourseItemData(c.Id, c.Name, ""))?.ToList();
-    }
-
     private MenuItem[] CoursesMenuItemsRoot = new MenuItem[]
     {
-        MenuItems.AddChildAsLast with { Name = "Add Course", IdSecondary = "addCourse"},
-        MenuItems.AddChildAsFirst with { Name = "Add Course at Start", IdSecondary = "addCourse" },
+        MenuItems.AddChildAsLast,
+        MenuItems.AddChildAsFirst
     };
 
     private MenuItem[] CourseMenuItems = new MenuItem[]
     {
-        MenuItems.AddSibling with { Name = "Add Course", IdSecondary = "addCourse"},
+        MenuItems.AddSibling,
+        MenuItems.Remove
     };
+
+    #endregion 
+
+    #region Archived Courses
+
+    private MenuItem[] ArchivedCourseMenuItems = new MenuItem[]
+    {
+        MenuItems.AddSibling with { Name = "Restore" },
+    };
+
+    #endregion
+
+    protected override async Task RefreshViewModel()
+    {
+        var response = await QueryExecutor.Execute<GetCoursesQuery, GetCoursesQueryResponse>();
+
+        _dto = response.Content;
+
+        _coursesListItems = _dto.Courses?.Select(c => new CourseItemData(c.Id, c.Name, ""))?.ToList();
+        _coursesArchivedListItems = _dto.CoursesArchived?.Select(c => new CourseItemData(c.Id, c.Name, ""))?.ToList();
+    }
 
     public class CourseItemData : EditableList.TreeItemData
     {

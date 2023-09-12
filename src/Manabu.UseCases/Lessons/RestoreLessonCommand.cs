@@ -5,7 +5,7 @@ using Manabu.Entities.Courses;
 using Manabu.Entities.Lessons;
 using Mediator;
 
-namespace Manabu.UseCases.Courses;
+namespace Manabu.UseCases.Lessons;
 
 public class RestoreLessonCommandHandler : ICommandHandler<RestoreLessonCommand, Result>
 {
