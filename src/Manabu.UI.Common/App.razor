@@ -2,7 +2,7 @@
 @using Microsoft.AspNetCore.Components.Authorization
 
 <CascadingAuthenticationState>
-    <Router AppAssembly=@typeof(App).Assembly AdditionalAssemblies=@AdditionalAssemblies>
+    <Router AppAssembly=@typeof(App).Assembly>
         <Found Context="routeData">
             <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
             <FocusOnNavigate RouteData="@routeData" Selector="h1" />
@@ -18,9 +18,4 @@
 
 @code {
     [Inject] public AuthenticationStateProvider Auth { get; set; }
-
-    private Assembly[] AdditionalAssemblies { get; } = new[]
-    {
-        typeof(Corelibs.Blazor.UIComponents.Dropdowns.Dropdown).Assembly
-    };
 }

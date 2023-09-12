@@ -1,12 +1,12 @@
 ﻿@using Microsoft.AspNetCore.Components.Authorization;
 @using Manabu.UseCases.Users;
-@inherits BaseLayout
+@inherits LayoutComponentBase
 
 <MudThemeProvider Theme=@MyCustomTheme />
 <MudDialogProvider/>
 <MudSnackbarProvider/>
 
-<main class="main" style=@_paddingLeftCssAttribute>
+<main class="main">
     
     @*<TopAndSideMenu
         OnSideMenuSizeChanged=@OnMenuSizeChanged
@@ -54,7 +54,6 @@
     {
         await RedirectIfNotSignedIn();
         Navigation.LocationChanged += OnNavigationLocationChanged;
-        BottomLeftMenuButtonGroups = await GetBottomLeftMenuButtonGroups();
     }
 
     private async void OnNavigationLocationChanged(object sender, LocationChangedEventArgs args)
@@ -79,7 +78,9 @@
         {
             if (relative == "terms" ||
                 relative == "privacy" ||
-                relative == "contact")
+                relative == "contact" ||
+                relative == AuthenticationStateProviderExtensions.SignInUrl ||
+                relative == AuthenticationStateProviderExtensions.SignOutUrl)
             {
                 return true;
             }
@@ -96,38 +97,5 @@
         }
         else
             Navigation.NavigateTo(id);
-    }
-
-    private SideMenu.ButtonGroup[] SideMenuButtonGroups =
-    {
-        new("General", new SideMenu.Button[]
-        {
-            new("dashboard", "Dashboard", $"{Config.BaseAssetsPath}/images/icons/nav/home.png"),
-            new("courses", "Courses", $"{Config.BaseAssetsPath}/images/icons/basic/news.png"),
-            new("lessons", "Lessons", $"{Config.BaseAssetsPath}/images/icons/basic/news.png"),
-            new("scripts", "Scripts", $"{Config.BaseAssetsPath}/images/icons/basic/time.png"),
-            new("vocabulary", "Vocabulary", $"{Config.BaseAssetsPath}/images/icons/basic/time.png"),
-            new("jlpt", "JLPT", $"{Config.BaseAssetsPath}/images/icons/basic/time.png"),
-            new("media", "Media", $"{Config.BaseAssetsPath}/images/icons/basic/time.png"),
-            new("keigo", "Keigo", $"{Config.BaseAssetsPath}/images/icons/basic/time.png"),
-            new("dialects", "Dialects", $"{Config.BaseAssetsPath}/images/icons/basic/time.png"),
-        })
-    };
-
-    private HorizontalMenu.ButtonGroup[] TopMenuButtonGroups =
-    {
-        new(new HorizontalMenu.Button[]
-        {
-            //new("profile", "Profile", $"{Config.BaseAssetsPath}/images/icons/edu/head-settings.png"),
-        })
-    };
-
-    private SideMenu.ButtonGroup[] BottomLeftMenuButtonGroups { get; set; }
-
-    private async Task<SideMenu.ButtonGroup[]> GetBottomLeftMenuButtonGroups()
-    {
-        var res = new List<SideMenu.Button>();
-        res.Add(new("login", await Auth.GetLabel(), IconUrl: $"{Config.BaseAssetsPath}/images/icons/basic/exit.png"));
-        return new SideMenu.ButtonGroup[] { new("Account", res.ToArray()) };
     }
 }

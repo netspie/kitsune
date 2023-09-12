@@ -18,7 +18,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Corelibs.Blazor.UIComponents\src\Corelibs.Blazor.UIComponents\Corelibs.Blazor.UIComponents.csproj" />
     <ProjectReference Include="..\Manabu.Infrastructure\Manabu.Infrastructure.csproj" />
   </ItemGroup>
 
