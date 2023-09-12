@@ -2,7 +2,7 @@
     @if (!IsReadonly)
     {
         string width = SpeakerName.IsNullOrEmpty() || SpeakerName.Length < 5 ? "50px" : "fit-content";
-        <div style=@($"flex-grow: 0; width: {width}")>
+        <div style=@($"flex-grow: 0; width: {width}") @onclick:stopPropagation="true" @onclick:preventDefault="true">
 
             <TextField Label="Speaker"
                        Value=@SpeakerName
