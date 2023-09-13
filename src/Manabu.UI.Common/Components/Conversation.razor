@@ -115,7 +115,7 @@
         {
             var result = await CutCopyPhraseOperation.Paste(async data =>
                 await ExecuteAdminViewAction(() => CommandExecutor.Execute(
-                    new MovePhraseCommand(data.PhraseIds, data.CurrentConversationId, ConversationId, (item?.Index ?? 0) + 1))));
+                    new MovePhraseCommand(data.PhraseIds, data.CurrentConversationId, ConversationId, item is null ? int.MaxValue : item.Index + 1))));
 
             if (result)
                 _phrasesTreeView.TreeItems.Remove(item);

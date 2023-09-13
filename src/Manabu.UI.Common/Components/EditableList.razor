@@ -388,7 +388,11 @@
         else if (menuItem.Id == MenuItems.Cut.Id && item is null &&
             !_selectedTreeItems.IsNullOrEmpty())
         {
-            await UIComponent.InvokeBool(OnCutItem, _selectedTreeItems.ToArray())();
+            var selectedItems = _selectedTreeItems.ToArray();
+            if (HaveSameParents(_selectedTreeItems, out var items))
+                selectedItems = _selectedTreeItems.OrderBy(i => items.IndexOf(i)).ToArray();
+
+            await UIComponent.InvokeBool(OnCutItem, selectedItems)();
             await DiscardAction();
             return true;
         }
@@ -406,6 +410,18 @@
         await InvokeAsync(StateHasChanged);
 
         return true;
+    }
+
+    private bool HaveSameParents(IEnumerable<TreeItemData> items, out List<TreeItemData> siblingItems)
+    {
+        siblingItems = null;
+        if (items == null || !items.Any())
+            return false;
+
+        var firstItemParent = items.First().Parent;
+        siblingItems = firstItemParent?.TreeItems ?? TreeItems;
+
+        return items.All(item => item.Parent == firstItemParent);
     }
 
     private void OnItemSelected(TreeItemData item, bool selected)
