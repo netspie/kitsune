@@ -13,4 +13,7 @@ public static class MenuItems
 
     public static readonly MenuItem MoveUp = new MenuItem("moveUp", "Move Up");
     public static readonly MenuItem MoveDown = new MenuItem("moveDown", "Move Down");
+
+    public static readonly MenuItem Cut = new MenuItem("cut", "Cut");
+    public static readonly MenuItem Paste = new MenuItem("paste", "Paste");
 }

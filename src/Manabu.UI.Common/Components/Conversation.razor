@@ -1,6 +1,7 @@
 ﻿@using Corelibs.Basic.Blocks;
 @using Corelibs.Basic.Reflection;
 @using Corelibs.Basic.Collections;
+@using Manabu.UI.Common.Operations;
 @using Manabu.UseCases.Conversations;
 @using Manabu.UseCases.Lessons;
 @using Manabu.UseCases.Phrases;
@@ -37,8 +38,8 @@
         OnItemClick=@OnItemClick
         OnAddItem=@OnAddItem
         OnMenuItemClick=@OnPhraseMenuItemClick
-        MenuItemsRoot=@PhrasesMenuItemsRoot 
-        MenuItemsForAll=@PhraseMenuItems 
+        MenuItemsRoot=@(PhrasesMenuItemsRoot.ToArray())
+        MenuItemsForAll=@(PhraseMenuItems.ToArray())
         NumberPrefix=true >
     
         <CustomItemTemplate>
@@ -71,6 +72,7 @@
     [Parameter] public string ConversationId { get; set; }
 
     [Inject] public State.SiteTitle SiteTitle { get; set; }
+    [Inject] public CutCopyPhraseOperation CutCopyPhraseOperation { get; set; }
 
     private List<PhraseTreeItemData> _phrasesTreeItems;
 
@@ -93,9 +95,56 @@
         //_breadcrumbs.Add(new(_conversation.Name, href: _conversation.Id));
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+            return;
+
+        if (await CutCopyPhraseOperation.IsOngoing())
+        {
+            PhraseMenuItems.Add(MenuItems.Paste);
+            PhrasesMenuItemsRoot.Add(MenuItems.Paste);
+        }
+    }
+
     public async Task OnPhraseMenuItemClick(EditableList.TreeItemData item, MenuItem menuItem)
     {
+        if (menuItem.Id == MenuItems.Cut.Id)
+        {
+            PhraseMenuItems.Add(MenuItems.Paste);
+            PhrasesMenuItemsRoot.Add(MenuItems.Paste);
+            await CutCopyPhraseOperation.Cut(item.Id, ConversationId);
+        }
+        else if (menuItem.Id == MenuItems.Paste.Id)
+            await CutCopyPhraseOperation.Paste(ConversationId, async data =>
+                await ExecuteAdminViewAction(() => CommandExecutor.Execute(
+                    new MovePhraseCommand(data.PhraseId, data.CurrentConversationId, ConversationId, (item?.Index ?? 0) + 1))));
 
+        await InvokeAsync(StateHasChanged);
+
+        //if (menuItem.Id == MenuItems.Cut.Id)
+        //{
+        //    EditState.EditOperation = new CutPasteOperation()
+        //    {
+        //        CurrentConversationId = ConversationId,
+        //        PhraseId = item.Id
+        //    };
+
+        //    PhraseMenuItems.Add(MenuItems.Paste);
+        //    PhrasesMenuItemsRoot.Add(MenuItems.Paste);
+        //    await InvokeAsync(StateHasChanged);
+        //}
+        //else if (menuItem.Id == MenuItems.Paste.Id)
+        //{
+        //    if (EditState.EditOperation is not CutPasteOperation op)
+        //        return;
+
+        //    EditState.EditOperation = null;
+
+        //    await ExecuteAdminViewAction(() => CommandExecutor.Execute(
+        //        new MovePhraseCommand(
+        //            op.PhraseId, op.CurrentConversationId, ConversationId, item.Index + 1)));
+        //}
     }
 
     private Task<bool> OnNameEdit(string text) =>
@@ -159,16 +208,16 @@
             _conversation.Description :
             "No Description";
 
-    private MenuItem[] PhrasesMenuItemsRoot = new MenuItem[]
+    private List<MenuItem> PhrasesMenuItemsRoot = new()
     {
         MenuItems.AddChildAsLast with { Name = "Add Phrase", IdSecondary = "addPhrase"},
         MenuItems.AddChildAsFirst with { Name = "Add Phrase at Start", IdSecondary = "addPhrase" },
     };
 
-    private MenuItem[] PhraseMenuItems = new MenuItem[]
+    private List<MenuItem> PhraseMenuItems = new()
     {
         MenuItems.AddSibling with { Name = "Add Phrase", IdSecondary = "addPhrase"},
-        MenuItems.Move
+        MenuItems.Cut,
     };
 
     class PhraseTreeItemData : EditableList.TreeItemData

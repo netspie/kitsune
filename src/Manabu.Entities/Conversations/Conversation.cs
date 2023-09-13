@@ -28,7 +28,8 @@ public class Conversation : Entity<ConversationId>, IAggregateRoot<ConversationI
         Owner = owner;
     }
 
-    public void AddPhrase(PhraseId phrase, 
+    public void AddPhrase(
+        PhraseId phrase, 
         int index = int.MaxValue)
     {
         Phrases ??= new();
@@ -45,12 +46,12 @@ public class Conversation : Entity<ConversationId>, IAggregateRoot<ConversationI
         return true;
     }
 
-    public bool MovePhrase(PhraseId phrase, Conversation newConversation)
+    public bool MovePhrase(PhraseId phrase, Conversation newConversation, int index = int.MaxValue)
     {
         if (!Phrases.RemoveIf(p => p.Phrase == phrase))
             return false;
 
-        newConversation.AddPhrase(phrase);
+        newConversation.AddPhrase(phrase, index);
 
         return true;
     }

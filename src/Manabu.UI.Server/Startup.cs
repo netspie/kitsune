@@ -1,4 +1,6 @@
-﻿using Corelibs.Basic.Repository;
+﻿using Blazored.LocalStorage;
+using Corelibs.Basic.Reflection;
+using Corelibs.Basic.Repository;
 using Corelibs.Basic.Storage;
 using Corelibs.Basic.UseCases;
 using Corelibs.MongoDB;
@@ -6,7 +8,11 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using Manabu.Entities.Audios;
 using Manabu.Infrastructure.CQRS.Flashcards;
+using Manabu.UI.Common;
+using Manabu.UI.Common.Extensions;
+using Manabu.UI.Common.Operations;
 using Manabu.UI.Common.State;
+using Manabu.UI.Common.Storage;
 using Manabu.UI.Server.Data;
 using Manabu.UseCases.Flashcards;
 using Mediator;
@@ -19,8 +25,11 @@ public static class Startup
 {
     public static void InitializeApp(this IServiceCollection services, IWebHostEnvironment environment)
     {
+        var commonUIAssembly = typeof(App).Assembly;
         var entitiesAssembly = typeof(Entities.Users.User).Assembly;
         var useCasesAssembly = typeof(UseCases.Users.CreateUserCommand).Assembly;
+
+        services.AddBlazoredLocalStorage();
 
         services.AddScoped<IAccessorAsync<ClaimsPrincipal>, ClaimsPrincipalAccessor>();
         
@@ -42,8 +51,10 @@ public static class Startup
 
         services.AddScoped<IFlashcardResolver, JapaneseFlashcardResolver>();
 
-        services.AddSingleton<FlashcardList>();
-        services.AddSingleton<SiteTitle>();
+        services.AddTypes(commonUIAssembly.GetTypesInFolder("State"), ServiceLifetime.Scoped);
+
+        services.AddScoped<IStorage, BlazoredJsonLocalStorage>();
+        services.AddScoped<CutCopyPhraseOperation>();
     }
 
     public static void AddRepositories(this IServiceCollection services, IWebHostEnvironment environment, Assembly assembly)

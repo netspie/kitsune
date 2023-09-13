@@ -37,7 +37,7 @@ public class Phrase : Entity<PhraseId>, IAggregateRoot<PhraseId>
 
     public bool Move(ConversationId from, ConversationId to)
     {
-        if (!Conversations.Contains(to))
+        if (Conversations.Contains(to))
             return false;
 
         if (!Conversations.Remove(from))

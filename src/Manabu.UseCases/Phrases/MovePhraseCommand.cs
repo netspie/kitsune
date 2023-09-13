@@ -31,7 +31,7 @@ public class MovePhraseCommandHandler : ICommandHandler<MovePhraseCommand, Resul
         if (!result.ValidateSuccessAndValues())
             return result.Fail();
 
-        if (!conversationCurrent.MovePhrase(phrase.Id, conversationNew))
+        if (!conversationCurrent.MovePhrase(phrase.Id, conversationNew, command.Index))
             return result.Fail();
 
         if (!phrase.Move(conversationCurrent.Id, conversationNew.Id))
@@ -47,6 +47,7 @@ public class MovePhraseCommandHandler : ICommandHandler<MovePhraseCommand, Resul
 public record MovePhraseCommand(
     string PhraseId,
     string CurrentConversationId,
-    string NewConversationId) : ICommand<Result>;
+    string NewConversationId,
+    int Index = int.MaxValue) : ICommand<Result>;
 
 public class MovePhraseCommandValidator : AbstractValidator<MovePhraseCommand> {}
