@@ -11,7 +11,7 @@
 
 @if (_conversation is null) { return; }
 
-<MudStack Class="main-section lesson" Style="width: 100%;">
+<div class="main-section lesson" style="width: 100%;">
     <SiteTitle>@SiteTitle.Name</SiteTitle>
 
     <MudBreadcrumbs Items=@_breadcrumbs Style="padding-left: 0; font-size: 12px" />
@@ -31,12 +31,14 @@
     </MudStack>
 
     <EditableList
+        @ref=@_phrasesTreeView
         Name="Phrases"
         IsReadonly=@(!_isEdit)
         NoIndents=true
         TreeItems=@(_phrasesTreeItems.CastToList<EditableList.TreeItemData>())
         OnItemClick=@OnItemClick
         OnAddItem=@OnAddItem
+        OnCutItem=@OnPhraseItemCut
         OnMenuItemClick=@OnPhraseMenuItemClick
         MenuItemsRoot=@(PhrasesMenuItemsRoot.ToArray())
         MenuItemsForAll=@(PhraseMenuItems.ToArray())
@@ -45,7 +47,7 @@
         <CustomItemTemplate>
             @{
                 var phraseItem = context as PhraseTreeItemData;
-                string indexStr = context.GetIndexStr();
+                string indexStr = context.GetIndexStr(_phrasesTreeView.TreeItems);
 
                 <PhraseItem 
                     Id=@context.Id
@@ -65,8 +67,7 @@
     {
         <MudSwitch @bind-Checked=@_isEdit Label="Edit Mode" Color="Color.Info" />
     }
-
-</MudStack>
+</div>
 
 @code {
     [Parameter] public string ConversationId { get; set; }
@@ -74,6 +75,7 @@
     [Inject] public State.SiteTitle SiteTitle { get; set; }
     [Inject] public CutCopyPhraseOperation CutCopyPhraseOperation { get; set; }
 
+    private EditableList? _phrasesTreeView;
     private List<PhraseTreeItemData> _phrasesTreeItems;
 
     private List<BreadcrumbItem> _breadcrumbs = new();
@@ -109,42 +111,26 @@
 
     public async Task OnPhraseMenuItemClick(EditableList.TreeItemData item, MenuItem menuItem)
     {
-        if (menuItem.Id == MenuItems.Cut.Id)
+        if (menuItem.Id == MenuItems.Paste.Id)
         {
-            PhraseMenuItems.Add(MenuItems.Paste);
-            PhrasesMenuItemsRoot.Add(MenuItems.Paste);
-            await CutCopyPhraseOperation.Cut(item.Id, ConversationId);
-        }
-        else if (menuItem.Id == MenuItems.Paste.Id)
-            await CutCopyPhraseOperation.Paste(ConversationId, async data =>
+            var result = await CutCopyPhraseOperation.Paste(async data =>
                 await ExecuteAdminViewAction(() => CommandExecutor.Execute(
-                    new MovePhraseCommand(data.PhraseId, data.CurrentConversationId, ConversationId, (item?.Index ?? 0) + 1))));
+                    new MovePhraseCommand(data.PhraseIds, data.CurrentConversationId, ConversationId, (item?.Index ?? 0) + 1))));
+
+            if (result)
+                _phrasesTreeView.TreeItems.Remove(item);
+        }
 
         await InvokeAsync(StateHasChanged);
+    }
 
-        //if (menuItem.Id == MenuItems.Cut.Id)
-        //{
-        //    EditState.EditOperation = new CutPasteOperation()
-        //    {
-        //        CurrentConversationId = ConversationId,
-        //        PhraseId = item.Id
-        //    };
+    private async Task OnPhraseItemCut(EditableList.TreeItemData[] items)
+    {
+        PhraseMenuItems.Add(MenuItems.Paste);
+        PhrasesMenuItemsRoot.Add(MenuItems.Paste);
 
-        //    PhraseMenuItems.Add(MenuItems.Paste);
-        //    PhrasesMenuItemsRoot.Add(MenuItems.Paste);
-        //    await InvokeAsync(StateHasChanged);
-        //}
-        //else if (menuItem.Id == MenuItems.Paste.Id)
-        //{
-        //    if (EditState.EditOperation is not CutPasteOperation op)
-        //        return;
-
-        //    EditState.EditOperation = null;
-
-        //    await ExecuteAdminViewAction(() => CommandExecutor.Execute(
-        //        new MovePhraseCommand(
-        //            op.PhraseId, op.CurrentConversationId, ConversationId, item.Index + 1)));
-        //}
+        var phraseIds = items.Select(i => i.Id).ToArray();
+        await CutCopyPhraseOperation.Cut(phraseIds, ConversationId);
     }
 
     private Task<bool> OnNameEdit(string text) =>
@@ -212,6 +198,8 @@
     {
         MenuItems.AddChildAsLast with { Name = "Add Phrase", IdSecondary = "addPhrase"},
         MenuItems.AddChildAsFirst with { Name = "Add Phrase at Start", IdSecondary = "addPhrase" },
+        MenuItems.Select,
+        MenuItems.Cut
     };
 
     private List<MenuItem> PhraseMenuItems = new()

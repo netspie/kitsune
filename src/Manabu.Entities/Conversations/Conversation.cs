@@ -46,12 +46,15 @@ public class Conversation : Entity<ConversationId>, IAggregateRoot<ConversationI
         return true;
     }
 
-    public bool MovePhrase(PhraseId phrase, Conversation newConversation, int index = int.MaxValue)
+    public bool MovePhrases(IEnumerable<PhraseId> phrases, Conversation newConversation, int index = int.MaxValue)
     {
-        if (!Phrases.RemoveIf(p => p.Phrase == phrase))
-            return false;
+        foreach (var phrase in phrases)
+        {
+            if (!Phrases.RemoveIf(p => p.Phrase == phrase))
+                return false;
 
-        newConversation.AddPhrase(phrase, index);
+            newConversation.AddPhrase(phrase, index);
+        }
 
         return true;
     }

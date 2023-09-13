@@ -1,1 +1,8 @@
-﻿
+﻿div ::deep .mud-expand-panel-content {
+    padding: 0;
+}
+
+div ::deep .mud-button-root.mud-icon-button.mud-ripple.mud-ripple-icon {
+    padding: 0;
+    margin: 0;
+}

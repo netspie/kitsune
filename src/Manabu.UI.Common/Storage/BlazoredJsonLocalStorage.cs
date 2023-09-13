@@ -14,19 +14,19 @@ public class BlazoredJsonLocalStorage : IStorage
 
     public async Task Save<T>(T @object)
     {
-        var key = typeof(T).GetType().Name;
+        var key = typeof(T).Name;
         await _localStorage.SetItemAsync(key, @object);
     }
 
     public async Task<T> Get<T>()
     {
-        var key = typeof(T).GetType().Name;
+        var key = typeof(T).Name;
         return await _localStorage.GetItemAsync<T>(key);
     }
 
     public async Task Delete<T>()
     {
-        var key = typeof(T).GetType().Name;
+        var key = typeof(T).Name;
         await _localStorage.RemoveItemAsync(key);
     }
 }

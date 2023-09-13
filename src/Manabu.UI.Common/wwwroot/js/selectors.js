@@ -22,5 +22,15 @@ function EditableList_removeMenuIconPadding(parentId) {
     elements.forEach(function (el) {
         el.style.paddingTop = 0;
         el.style.paddingBottom = 0;
+        el.style.background = "none";
+
+        el.style.transition = "color 0.3s"; // Add smooth transition for color change
+        el.addEventListener("mouseover", function () {
+            el.style.color = "black"; // Change color to black on hover
+        });
+        el.addEventListener("mouseout", function () {
+            el.style.color = ""; // Revert to default color on mouseout
+        });
     });
 }
+    

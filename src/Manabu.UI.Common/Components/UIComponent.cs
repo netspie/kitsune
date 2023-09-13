@@ -19,7 +19,16 @@ public abstract class UIComponent : ComponentBase
         };
     }
 
-    public static Func<Task<bool>> InvokeBool(Delegate del, params object[] args)
+    public static Func<Task<bool>> InvokeBool(Delegate del, object arg1, object arg2, object arg3) =>
+        InvokeBool(del, new object[] { arg1, arg2, arg3 });
+
+    public static Func<Task<bool>> InvokeBool(Delegate del, object arg1, object arg2) =>
+        InvokeBool(del, new object[] { arg1, arg2 });
+
+    public static Func<Task<bool>> InvokeBool(Delegate del, object arg1) =>
+        InvokeBool(del, new object[] { arg1 });
+
+    private static Func<Task<bool>> InvokeBool(Delegate del, object[] args)
     {
         return () =>
         {

@@ -5,3 +5,22 @@
 div ::deep .body-content:hover {
     background-color: none;
 }
+
+div ::deep .mud-expand-panel-header {
+    height: 0;
+    min-height: 0;
+    max-height: 0;
+    display: none;
+}
+
+div ::deep .mud-treeview-item-content {
+}
+
+div ::deep .mud-input-control.mud-input-control-boolean-input.mud-treeview-item-checkbox {
+    align-self: end;
+    padding-bottom: 5px;
+}
+
+div ::deep mud-button-root.mud-icon-button.mud-ripple.mud-ripple-icon {
+    align-self: center;
+}

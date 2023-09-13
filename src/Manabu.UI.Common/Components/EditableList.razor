@@ -1,142 +1,213 @@
 ﻿@using Corelibs.Basic.Maths;
 @using Microsoft.JSInterop;
+@using System.Reflection;
 @inject IJSRuntime JSRuntime
 
-<MudStack id=@_itemId>
-    @{
-        int paddingLeft = NoIndents ? 0 : 0;
-    }
-    @if (!Name.IsNullOrEmpty() || !MenuItemsRoot.IsNullOrEmpty())
-    {
-        <div style=@($@"
-                padding-left: {paddingLeft}px;
-                font-weight: bold;
-                display: flex;
-                flex-direction: row;
-                flex-wrap: nowrap;
-                align-items: center;
-                width: 100%;
-                align-items: center;
-                justify-content: space-between;")>
+<div class="edit-list" style=" margin-top: 25px;">
+    <MudStack id=@_itemId>
+        @{
+            int paddingLeft = NoIndents ? 0 : 0;
+        }
+        @if (!Name.IsNullOrEmpty() || !MenuItemsRoot.IsNullOrEmpty())
+        {
+            <div style=@($@"
+                    padding-left: {paddingLeft}px;
+                    font-weight: bold;
+                    display: flex;
+                    flex-direction: row;
+                    flex-wrap: nowrap;
+                    align-items: center;
+                    width: 100%;
+                    align-items: center;
+                    justify-content: space-between;")>
             
-            <MudText Typo=@Typo.h5 Style="text-transform: uppercase; justify-self: start; flex-grow: 1; flex-shrink: 1; font-weight: bold; font-family: unica;">@Name</MudText>
+                <MudText Typo=@Typo.h5 Style="text-transform: uppercase; justify-self: start; flex-grow: 1; flex-shrink: 1; font-weight: bold; font-family: unica;">@Name</MudText>
 
-            @if (!MenuItemsRoot.IsNullOrEmpty() && !IsReadonly)
-            {
-                <div style="justify-self: end;">
-                    <MudMenu Icon="@Icons.Material.Filled.MoreHoriz"
-                        Style="">
-                        @foreach (var menuItem in MenuItemsRoot)
-                        {
-                            <MudMenuItem OnClick=@(args => OnMenuItemClickInternal(args, null, menuItem))>@menuItem.Name</MudMenuItem>
-                        }
-                    </MudMenu>
-                </div>
-            }
-        </div>
-    }
-
-    @if (!TreeItems.IsNullOrEmpty())
-    {
-        <MudTreeView Items=@TreeItems.ToHashSet() Hover="true" Width="100%"
-                     Style=@($"margin-left: 0; display: flex; flex-direction: column; gap: {Gap}px;")>
-            <ItemTemplate Context="item">
-                <MudTreeViewItem 
-                    Items=@item.TreeItems.ToHashSet()
-                    Expanded=@item.IsExpanded
-                    ExpandedChanged=@(v => @item.IsExpanded = v)
-                    CanExpand=false
-                    Style="height: fit-content; margin-left: 0; padding-left: 0; left: 0; background: none; cursor: pointer;"
-                    ExpandedIconColor=@Color.Transparent
-                    OnClick=@(args => OnItemClickInternal(item))>
-
-                    <BodyContent> 
-                        <div style="display: grid; grid-template-columns: 1fr auto; align-items: center; width: 100%">
-                            @if (_isAdding && item.IsEditing)
+                <div style="justify-self: end; display: flex; align-items: center; gap: 5px;">
+                   @* <MudTooltip Text="Edit">
+                        <MudIconButton Icon="@Icons.Material.Outlined.Edit" aria-label="edit" OnClick=@(() => _topMenuPanel.ToggleExpansion()) />
+                    </MudTooltip>*@
+                    @if (IsActionOn)
+                    {
+                        <MudTooltip Text="Discard">
+                            <MudIconButton Icon="@Icons.Material.Outlined.Close" aria-label="discard" OnClick=@DiscardAction />
+                        </MudTooltip>
+                    }
+                    @if (!MenuItemsRoot.IsNullOrEmpty() && !IsReadonly)
+                    {
+                        <MudMenu Icon="@Icons.Material.Filled.MoreHoriz"
+                            Style="">
+                            @foreach (var menuItem in MenuItemsRoot)
                             {
-                                <TextField 
-                                    IsEditing=true
-                                    Value=@item.Name
-                                    OnBlur=@OnEditableItemBlur
-                                    OnEdit=@(text => 
-                                    {
-                                        item.Name = text;
-                                        return OnTextFieldValueChanged(item);
-                                    }) />
+                                <MudMenuItem OnClick=@(args => OnMenuItemClickInternal(args, null, menuItem))>@menuItem.Name</MudMenuItem>
                             }
-                            else
-                            {
-                                if (CustomItemTemplate is not null)
+                        </MudMenu>
+                    }
+                </div>
+
+            </div>
+        }
+
+        @*<MudExpansionPanels DisableBorders="true" Elevation="0">
+            <MudExpansionPanel @ref=_topMenuPanel Text="Panel One">
+                <MudStack Row=true Style="width:100%; overflow-y: auto;">
+                    @TopMenuButtons
+
+
+                    <MudTooltip Text="Add Phrase">
+                        <MudIconButton Icon="@Icons.Material.Outlined.AddBox" aria-label="delete" />
+                    </MudTooltip>
+                    <MudDivider Vertical="true" FlexItem="true" />
+                    <MudTooltip Text="Multiselect">
+                        <MudIconButton Icon="@Icons.Material.Outlined.SelectAll" aria-label="delete" />
+                    </MudTooltip>
+                    <MudTooltip Text="Edit">
+                        <MudIconButton Icon="@Icons.Material.Outlined.Edit" aria-label="delete" />
+                    </MudTooltip>
+                    <MudTooltip Text="Cut">
+                        <MudIconButton Icon="@Icons.Material.Outlined.ContentCut" aria-label="delete" />
+                    </MudTooltip>
+                    <MudTooltip Text="Copy All">
+                        <MudIconButton Icon="@Icons.Material.Outlined.CopyAll" aria-label="delete" />
+                    </MudTooltip>
+                    <MudTooltip Text="Paste">
+                        <MudIconButton Icon="@Icons.Material.Outlined.ContentPaste" aria-label="delete" />
+                    </MudTooltip>
+                    <MudTooltip Text="Settings">
+                        <MudIconButton Icon="@Icons.Material.Outlined.Settings" aria-label="delete" />
+                    </MudTooltip>
+                    <MudTooltip Text="Display Settings">
+                        <MudIconButton Icon="@Icons.Material.Outlined.Create" aria-label="delete" />
+                    </MudTooltip>
+                    <MudTooltip Text="Display Settings">
+                        <MudIconButton Icon="@Icons.Material.Outlined.Add" aria-label="delete" />
+                    </MudTooltip>
+                    <MudTooltip Text="Display Settings">
+                        <MudIconButton Icon="@Icons.Material.Outlined.AddCard" aria-label="delete" />
+                    </MudTooltip>
+                    <MudTooltip Text="Display Settings">
+                        <MudIconButton Icon="@Icons.Material.Outlined.AddHomeWork" aria-label="delete" />
+                    </MudTooltip>
+                    <MudTooltip Text="Display Settings">
+                        <MudIconButton Icon="@Icons.Material.Outlined.AddTask" aria-label="delete" />
+                    </MudTooltip>
+                    <MudTooltip Text="Display Settings">
+                        <MudIconButton Icon="@Icons.Material.Outlined.AddComment" aria-label="delete" />
+                    </MudTooltip>
+                    <MudTooltip Text="Display Settings">
+                        <MudIconButton Icon="@Icons.Material.Outlined.PostAdd" aria-label="delete" />
+                    </MudTooltip>
+                </MudStack>
+            </MudExpansionPanel>
+        </MudExpansionPanels>*@
+
+        @if (!TreeItems.IsNullOrEmpty())
+        {
+            <MudTreeView 
+                MultiSelection=@_multiSelection
+                @ref=_treeView
+                Items=@TreeItems.ToHashSet() Hover="true" Width="100%"
+                Style=@($"margin-left: 0; display: flex; flex-direction: column; gap: {Gap}px;")>
+
+                <ItemTemplate Context="item">
+                    <MudTreeViewItem
+                        Items=@item.TreeItems.ToHashSet()
+                        Expanded=@item.IsExpanded
+                        ExpandedChanged=@(v => @item.IsExpanded = v)
+                        CanExpand=false
+                        Style="height: fit-content; margin-left: 0; padding-left: 0; left: 0; background: none; cursor: pointer;"
+                        ExpandedIconColor=@Color.Transparent
+                        SelectedChanged=@(selected => OnItemSelected(item, selected))
+                        OnClick=@(args => OnItemClickInternal(item))>
+
+                        <BodyContent> 
+                            <div style="display: grid; grid-template-columns: 1fr auto; align-items: center; width: 100%">
+                                @if (_isAdding && item.IsEditing)
                                 {
-                                    @CustomItemTemplate(item)
+                                    <TextField 
+                                        IsEditing=true
+                                        Value=@item.Name
+                                        OnBlur=@OnEditableItemBlur
+                                        OnEdit=@(text => 
+                                        {
+                                            item.Name = text;
+                                            return OnTextFieldValueChanged(item);
+                                        }) />
                                 }
                                 else
                                 {
-                                    <MudText Style="justify-self: start;">
+                                    if (CustomItemTemplate is not null)
+                                    {
+                                        @CustomItemTemplate(item)
+                                    }
+                                    else
+                                    {
+                                        <MudText Style="justify-self: start;">
                                     
-                                        @if (NumberPrefix)
-                                        {
-                                            string index = item.GetIndexStr();
-                                            <strong>@index.&nbsp;&nbsp;</strong>
-                                        }
-
-                                        @item.Name
-                                    </MudText>
-                                }
-                            }
-                            @{
-                                var items = item.Parent?.TreeItems ?? TreeItems;
-                                int itemIndex = items.IndexOf(item);
-
-                                bool hasItemsPerLevel =
-                                    !MenuItemsPerLevel.IsNullOrEmpty() &&
-                                    MenuItemsPerLevel.Length > item.Level &&
-                                    !MenuItemsPerLevel[item.Level].IsNullOrEmpty();
-
-                                bool hasMenuItemsPerType =
-                                    !@item.Type.IsNullOrEmpty() &&
-                                    !MenuItemsPerType.IsNullOrEmpty() &&
-                                    MenuItemsPerType.ContainsKey(@item.Type) &&
-                                    !MenuItemsPerType[@item.Type].IsNullOrEmpty();
-
-                                bool hasMenuItemsForAll = !MenuItemsForAll.IsNullOrEmpty();
-
-                                if (!IsReadonly && (hasItemsPerLevel || hasMenuItemsForAll || hasMenuItemsPerType))
-                                {
-                                    var menuItems = MenuItemsForAll ?? Array.Empty<MenuItem>();
-                                    menuItems = !hasMenuItemsPerType ? menuItems : menuItems.Concat(MenuItemsPerType[@item.Type]).ToArray();
-                                    menuItems = !hasItemsPerLevel ? menuItems : menuItems.Concat(MenuItemsPerLevel[item.Level]).ToArray();
-
-                                    <div style="justify-self: end;">
-                                        <MudMenu Icon="@Icons.Material.Filled.MoreHoriz">
-                                            @foreach (var menuItem in menuItems)
+                                            @if (NumberPrefix)
                                             {
-                                                if (menuItem.Id == MenuItems.MoveUp.Id &&
-                                                    itemIndex == 0)
-                                                    continue;
-
-                                                if (menuItem.Id == MenuItems.MoveDown.Id &&
-                                                    itemIndex >= items.Count - 1)
-                                                    continue;
-                                                
-                                                <MudMenuItem OnClick=@(args => OnMenuItemClickInternal(args, item, menuItem))>@menuItem.Name</MudMenuItem>
+                                                string index = item.GetIndexStr(TreeItems);
+                                                <strong>@index.&nbsp;&nbsp;</strong>
                                             }
-                                        </MudMenu>
-                                    </div>
-                                }
-                            }
-                        </div>
-                    </BodyContent>
-                </MudTreeViewItem>
-            </ItemTemplate>
-        </MudTreeView>
-    }
-    else
-    {
-        <MudText Style=@($"color: gray; font-style: italic; padding-left: {paddingLeft}px")>No Items</MudText>
-    }
 
-</MudStack>
+                                            @item.Name
+                                        </MudText>
+                                    }
+                                }
+                                @{
+                                    var items = item.Parent?.TreeItems ?? TreeItems;
+                                    int itemIndex = items.IndexOf(item);
+
+                                    bool hasItemsPerLevel =
+                                        !MenuItemsPerLevel.IsNullOrEmpty() &&
+                                        MenuItemsPerLevel.Length > item.Level &&
+                                        !MenuItemsPerLevel[item.Level].IsNullOrEmpty();
+
+                                    bool hasMenuItemsPerType =
+                                        !@item.Type.IsNullOrEmpty() &&
+                                        !MenuItemsPerType.IsNullOrEmpty() &&
+                                        MenuItemsPerType.ContainsKey(@item.Type) &&
+                                        !MenuItemsPerType[@item.Type].IsNullOrEmpty();
+
+                                    bool hasMenuItemsForAll = !MenuItemsForAll.IsNullOrEmpty();
+
+                                    if (!IsReadonly && (hasItemsPerLevel || hasMenuItemsForAll || hasMenuItemsPerType))
+                                    {
+                                        var menuItems = MenuItemsForAll ?? Array.Empty<MenuItem>();
+                                        menuItems = !hasMenuItemsPerType ? menuItems : menuItems.Concat(MenuItemsPerType[@item.Type]).ToArray();
+                                        menuItems = !hasItemsPerLevel ? menuItems : menuItems.Concat(MenuItemsPerLevel[item.Level]).ToArray();
+
+                                        <div style="justify-self: end;">
+                                            <MudMenu Icon="@Icons.Material.Filled.MoreHoriz">
+                                                @foreach (var menuItem in menuItems)
+                                                {
+                                                    if (menuItem.Id == MenuItems.MoveUp.Id &&
+                                                        itemIndex == 0)
+                                                        continue;
+
+                                                    if (menuItem.Id == MenuItems.MoveDown.Id &&
+                                                        itemIndex >= items.Count - 1)
+                                                        continue;
+                                                
+                                                    <MudMenuItem OnClick=@(args => OnMenuItemClickInternal(args, item, menuItem))>@menuItem.Name</MudMenuItem>
+                                                }
+                                            </MudMenu>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        </BodyContent>
+                    </MudTreeViewItem>
+                </ItemTemplate>
+            </MudTreeView>
+        }
+        else
+        {
+            <MudText Style=@($"color: gray; font-style: italic; padding-left: {paddingLeft}px")>No Items</MudText>
+        }
+
+    </MudStack>
+</div>
 
 @code {
     private readonly string _itemId = Guid.NewGuid().ToString();
@@ -154,9 +225,11 @@
     public delegate Task<bool> OnMoveDelegate(TreeItemData item, int index, MenuItem menuItem);
     public delegate Task OnClickDelegate(TreeItemData item);
     public delegate Task OnItemActionDelegate(TreeItemData item, MenuItem menuItem);
+    public delegate Task OnCutItemDelegate(TreeItemData[] items);
     public delegate TreeItemData CreateCustomItemDataDelegate(TreeItemData parent);
 
     [Parameter] public RenderFragment<TreeItemData> CustomItemTemplate { get; set; }
+    [Parameter] public RenderFragment TopMenuButtons { get; set; }
     [Parameter] public CreateCustomItemDataDelegate CreateCustomItemData { get; set; }
 
     [Parameter] public string Name { get; set; }
@@ -164,6 +237,7 @@
     [Parameter] public OnRemoveDelegate OnRemoveItem { get; set; }
     [Parameter] public OnMoveDelegate OnMoveItem { get; set; }
     [Parameter] public OnClickDelegate OnItemClick { get; set; }
+    [Parameter] public OnCutItemDelegate OnCutItem { get; set; }
     [Parameter] public OnItemActionDelegate OnMenuItemClick { get; set; }
 
     [Parameter] public MenuItem[] MenuItemsRoot { get; set; }
@@ -172,6 +246,7 @@
     [Parameter] public Dictionary<string, MenuItem[]> MenuItemsPerType { get; set; }
 
     [Parameter] public List<TreeItemData> TreeItems { get; set; }
+    private HashSet<TreeItemData> _selectedTreeItems { get; set; }
 
     [Parameter] public bool IsReadonly { get; set; }
     [Parameter] public bool NoIndents { get; set; }
@@ -182,6 +257,10 @@
 
     private bool _isAdding;
     private MenuItem _selectedMenuItem;
+    private MudExpansionPanel _topMenuPanel;
+    private MudTreeView<TreeItemData> _treeView;
+
+    private bool _multiSelection;
 
     protected override void OnInitialized()
     {
@@ -256,8 +335,8 @@
                     new TreeItemData("New Item..", isEditing: true, parent: item?.Parent);
 
                 newItem.IsEditing = true;
-
                 treeItems.Insert(i, newItem);
+                AssignIndex(TreeItems);
             }
             else
             {
@@ -272,6 +351,7 @@
 
                 int i = menuItem.Id == MenuItems.AddChildAsFirst.Id ? 0 : treeItems.Count;
                 treeItems.Insert(i, newItem);
+                AssignIndex(TreeItems);
             }
         }
         else 
@@ -283,6 +363,8 @@
             treeItems.Remove(item);
             if (!await UIComponent.InvokeBool(OnRemoveItem, item, menuItem)())
                 treeItems.Insert(i, item);
+
+            AssignIndex(TreeItems);
         }
         else 
         if (menuItem.Id == MenuItems.MoveUp.Id ||
@@ -299,6 +381,23 @@
                 if (!await UIComponent.InvokeBool(OnMoveItem, item, newIndex, menuItem)())
                     treeItems.Swap(index, newIndex);
         }
+        else if (menuItem.Id == MenuItems.Select.Id)
+        {
+            _multiSelection = true;
+        }
+        else if (menuItem.Id == MenuItems.Cut.Id && item is null &&
+            !_selectedTreeItems.IsNullOrEmpty())
+        {
+            await UIComponent.InvokeBool(OnCutItem, _selectedTreeItems.ToArray())();
+            await DiscardAction();
+            return true;
+        }
+        else if (menuItem.Id == MenuItems.Cut.Id && item is not null)
+        {
+            await UIComponent.InvokeBool(OnCutItem, new[] { item })();
+            await DiscardAction();
+            return true;
+        }
         else
         {
             await UIComponent.InvokeBool(OnMenuItemClick, item, menuItem)();
@@ -308,6 +407,32 @@
 
         return true;
     }
+
+    private void OnItemSelected(TreeItemData item, bool selected)
+    {
+        _selectedTreeItems ??= new();
+
+        if (selected)
+            _selectedTreeItems.Add(item);
+        else
+            _selectedTreeItems.Remove(item);
+    }
+
+    private Task DiscardAction()
+    {
+        var selectedValues = _treeView
+            .GetType()
+            .GetField("_selectedValues", BindingFlags.NonPublic | BindingFlags.Instance)
+            .GetValue(_treeView) as IEnumerable<MudTreeViewItem<TreeItemData>>;
+
+        selectedValues.ToList().ForEachReversed(v => v.Selected = false);
+
+        _multiSelection = false;
+        _selectedTreeItems?.Clear();
+        return InvokeAsync(StateHasChanged);
+    }
+
+    public bool IsActionOn => _multiSelection;
 
     public class TreeItemData
     {
@@ -360,10 +485,11 @@
             TreeItems.ForEach(i => i.Init(this, Level + 1));
         }
 
-        private void Init(TreeItemData parent, int level)
+        public void Init(TreeItemData parent, int level)
         {
             Parent = parent;
             Level = level;
+            Index = Parent is null ? 0 : Parent.TreeItems.IndexOf(this);
         }
 
         public static implicit operator TreeItemData(string name) => new(name);

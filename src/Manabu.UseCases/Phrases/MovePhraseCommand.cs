@@ -25,27 +25,31 @@ public class MovePhraseCommandHandler : ICommandHandler<MovePhraseCommand, Resul
     {
         var result = Result.Success();
 
-        var phrase = await _phraseRepository.Get(new PhraseId(command.PhraseId), result);
+        var phrasesIds = command.PhraseIds.Select(id => new PhraseId(id)).ToList();
+        var phrases = (await _phraseRepository.Get(phrasesIds, result)).OrderBy(p => phrasesIds.IndexOf(p.Id)).ToArray();
         var conversationCurrent = await _conversationRepository.Get(new ConversationId(command.CurrentConversationId), result);
         var conversationNew = await _conversationRepository.Get(new ConversationId(command.NewConversationId), result);
         if (!result.ValidateSuccessAndValues())
             return result.Fail();
 
-        if (!conversationCurrent.MovePhrase(phrase.Id, conversationNew, command.Index))
+        if (!conversationCurrent.MovePhrases(phrasesIds, conversationNew, command.Index))
             return result.Fail();
 
-        if (!phrase.Move(conversationCurrent.Id, conversationNew.Id))
-            return result.Fail();
+        foreach (var phrase in phrases)
+        {
+            if (!phrase.Move(conversationCurrent.Id, conversationNew.Id))
+                return result.Fail();
+        }
 
         result += await _conversationRepository.Save(conversationCurrent, conversationNew);
-        result += await _phraseRepository.Save(phrase);
+        result += await _phraseRepository.Save(phrases);
 
         return result;
     }
 }
 
 public record MovePhraseCommand(
-    string PhraseId,
+    string[] PhraseIds,
     string CurrentConversationId,
     string NewConversationId,
     int Index = int.MaxValue) : ICommand<Result>;
