@@ -9,6 +9,8 @@ public static class MenuItems
 
     public static readonly MenuItem Remove = new MenuItem("remove", "Remove");
 
+    public static readonly MenuItem Move = new MenuItem("move", "Move");
+
     public static readonly MenuItem MoveUp = new MenuItem("moveUp", "Move Up");
     public static readonly MenuItem MoveDown = new MenuItem("moveDown", "Move Down");
 }

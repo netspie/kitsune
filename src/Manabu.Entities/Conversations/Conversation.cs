@@ -1,9 +1,9 @@
-﻿using Corelibs.Basic.DDD;
+﻿using Corelibs.Basic.Collections;
+using Corelibs.Basic.DDD;
+using Manabu.Entities.Lessons;
 using Manabu.Entities.Phrases;
 using Manabu.Entities.Users;
-using Manabu.Entities.Lessons;
-using Corelibs.Basic.Collections;
-using Microsoft.VisualBasic;
+using System;
 
 namespace Manabu.Entities.Conversations;
 
@@ -42,6 +42,16 @@ public class Conversation : Entity<ConversationId>, IAggregateRoot<ConversationI
             return false;
         
         Phrases[foundIndex] = phraseData with { Speaker = speaker };
+        return true;
+    }
+
+    public bool MovePhrase(PhraseId phrase, Conversation newConversation)
+    {
+        if (!Phrases.RemoveIf(p => p.Phrase == phrase))
+            return false;
+
+        newConversation.AddPhrase(phrase);
+
         return true;
     }
 

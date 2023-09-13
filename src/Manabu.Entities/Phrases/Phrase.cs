@@ -34,6 +34,19 @@ public class Phrase : Entity<PhraseId>, IAggregateRoot<PhraseId>
         Audios ??= new();
         Audios.Add(audio);
     }
+
+    public bool Move(ConversationId from, ConversationId to)
+    {
+        if (!Conversations.Contains(to))
+            return false;
+
+        if (!Conversations.Remove(from))
+            return false;
+
+        Conversations.Add(to);
+
+        return true;
+    }
 }
 
 public class PhraseId : EntityId { public PhraseId(string value) : base(value) { } }

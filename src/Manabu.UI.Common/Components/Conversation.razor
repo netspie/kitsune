@@ -36,6 +36,7 @@
         TreeItems=@(_phrasesTreeItems.CastToList<EditableList.TreeItemData>())
         OnItemClick=@OnItemClick
         OnAddItem=@OnAddItem
+        OnMenuItemClick=@OnPhraseMenuItemClick
         MenuItemsRoot=@PhrasesMenuItemsRoot 
         MenuItemsForAll=@PhraseMenuItems 
         NumberPrefix=true >
@@ -90,6 +91,11 @@
         //_breadcrumbs.Add(new(_conversation.Courses[0].Name, href: $"/courses/{_conversation.Courses[0].Id}"));
         //_breadcrumbs.Add(new("Conversations", "", disabled: true));
         //_breadcrumbs.Add(new(_conversation.Name, href: _conversation.Id));
+    }
+
+    public async Task OnPhraseMenuItemClick(EditableList.TreeItemData item, MenuItem menuItem)
+    {
+
     }
 
     private Task<bool> OnNameEdit(string text) =>
@@ -162,6 +168,7 @@
     private MenuItem[] PhraseMenuItems = new MenuItem[]
     {
         MenuItems.AddSibling with { Name = "Add Phrase", IdSecondary = "addPhrase"},
+        MenuItems.Move
     };
 
     class PhraseTreeItemData : EditableList.TreeItemData
