@@ -47,8 +47,8 @@ public static class Startup
 
         services.AddRepositories(environment, entitiesAssembly);
         services.AddSingleton<IMediaStorage<Audio>>(sp => new LocalMediaStorage<Audio>(
-            "../Manabu.UI.Common/wwwroot/media/audio", "_content/Manabu.UI.Common/media/audio"));
-
+            $"/media/audio", $"/media/audio"));
+        
         services.AddScoped<IFlashcardResolver, JapaneseFlashcardResolver>();
 
         services.AddTypes(commonUIAssembly.GetTypesInFolder("State"), ServiceLifetime.Scoped);

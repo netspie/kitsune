@@ -6,6 +6,8 @@ using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Manabu.UI.Server;
 using MudBlazor.Services;
 using Corelibs.Basic.Corelibs.Basic.Net;
+using Microsoft.Extensions.FileProviders;
+using Manabu.UI.Server.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -63,6 +65,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseCookiePolicy();
 app.UseStaticFiles();
+app.UseStaticFilesEx("media");
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
