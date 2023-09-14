@@ -29,16 +29,27 @@ public abstract class CoreComponent : Microsoft.AspNetCore.Components.ComponentB
 
     protected bool IsEdit => _isAdmin && _isEdit;
 
-    protected override async Task OnInitializedAsync()
+    protected sealed override async Task OnInitializedAsync()
     {
         _isAdmin = await Auth.IsAdmin();
-        _isEdit = await IsEditModeStored();
 
         await RefreshViewModel();
         await OnInitializedAsyncImpl();
     }
 
     protected virtual Task OnInitializedAsyncImpl() => Task.CompletedTask;
+    protected virtual Task OnAfterRenderAsyncImpl(bool firstRender) => Task.CompletedTask;
+
+    protected sealed override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            _isEdit = await IsEditModeStored();
+
+        await OnAfterRenderAsyncImpl(firstRender);
+
+        if (firstRender)
+            await InvokeAsync(StateHasChanged);
+    }
 
     protected async Task<bool> ExecuteAdminViewAction(Func<Task<Result>> action)
     {

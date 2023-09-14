@@ -4,6 +4,7 @@ using Manabu.Entities.Lessons;
 using Manabu.Entities.Phrases;
 using Manabu.Entities.Users;
 using System;
+using System.Reflection;
 
 namespace Manabu.Entities.Conversations;
 
@@ -55,6 +56,20 @@ public class Conversation : Entity<ConversationId>, IAggregateRoot<ConversationI
 
             newConversation.AddPhrase(phrase, index);
         }
+
+        return true;
+    }
+
+    public bool ReorderPhrase(PhraseId phrase, int index)
+    {
+        var phraseData = Phrases.FirstOrDefault(p => p.Phrase == phrase);
+        if (phraseData is null) 
+            return false;
+
+        if (!Phrases.Remove(phraseData))
+            return false;
+
+        Phrases.InsertClamped(phraseData, index);
 
         return true;
     }

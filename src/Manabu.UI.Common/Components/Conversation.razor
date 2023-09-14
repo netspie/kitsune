@@ -38,6 +38,7 @@
         TreeItems=@(_phrasesTreeItems.CastToList<EditableList.TreeItemData>())
         OnItemClick=@OnItemClick
         OnAddItem=@OnAddItem
+        OnMoveItem=@OnMovePhraseItem
         OnCutItem=@OnPhraseItemCut
         OnMenuItemClick=@OnPhraseMenuItemClick
         MenuItemsRoot=@(PhrasesMenuItemsRoot.ToArray())
@@ -97,7 +98,7 @@
         //_breadcrumbs.Add(new(_conversation.Name, href: _conversation.Id));
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override async Task OnAfterRenderAsyncImpl(bool firstRender)
     {
         if (!firstRender)
             return;
@@ -132,6 +133,10 @@
         var phraseIds = items.Select(i => i.Id).ToArray();
         await CutCopyPhraseOperation.Cut(phraseIds, ConversationId);
     }
+
+    private async Task<bool> OnMovePhraseItem(EditableList.TreeItemData item, int index, MenuItem menuItem) =>
+        await ExecuteAdminViewAction(() => CommandExecutor.Execute(
+            new ReorderConversationPhraseCommand(ConversationId, item.Id, index)));
 
     private Task<bool> OnNameEdit(string text) =>
         ExecuteUpdateCommand(() => _conversation with { Name = text });
@@ -205,6 +210,8 @@
     private List<MenuItem> PhraseMenuItems = new()
     {
         MenuItems.AddSibling with { Name = "Add Phrase", IdSecondary = "addPhrase"},
+        MenuItems.MoveDown,
+        MenuItems.MoveUp,
         MenuItems.Cut,
     };
 
