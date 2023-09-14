@@ -3,12 +3,12 @@
 @using Microsoft.AspNetCore.Components.Authorization;
 
 <div class="main-hero">
+    <MudImage Src=@($"{Config.BaseAssetsPath}/images/icons8-fox-96.png") Height=100 Style="margin-top: 10px;" />
     <h2 class="title noselect">Kitsune Study</h2>
     <p class="description">
         Learn <strong>Japanese</strong> the way you want with <strong>ease</strong> and <strong>fun</strong>!
     </p>
     <MudButton OnClick=@OnGetStartedButtonClick Style="background: orangered; color: white;" Variant="Variant.Filled" DisableElevation=true>Get Started</MudButton>
-    <MudImage Src=@($"{Config.BaseAssetsPath}/images/fox-sleeping.png") Height=100 />
     <Footer />
 </div>
 
