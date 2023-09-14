@@ -22,7 +22,7 @@
     }
     <EditableList 
         Name="Test"
-        IsReadonly=@(!_isEdit)
+        IsReadonly=@(!IsEdit)
         TreeItems=@_conversationTreeItems
         OnAddItem=@OnAddItem
         MenuItemsRoot=@ConvMenuItemsRoot
@@ -32,7 +32,7 @@
         <CustomItemTemplate>
             <PhraseItem 
                 Id=@context.Id 
-                IsReadonly=@(!_isEdit)
+                IsReadonly=@(!IsEdit)
                 Content=@context.Name 
                 AllSpeakers=@speakers
                 SpeakerName=@speakers[0] />
@@ -43,20 +43,20 @@
     <MudStack>
         <TextField 
             Label="Name"
-            IsReadonly=@(!_isEdit)
+            IsReadonly=@(!IsEdit)
             Value=@_lesson.Name 
             OnEdit=@OnNameEdit />
 
         <TextField 
             Label="Description"
-            IsReadonly=@(!_isEdit)
+            IsReadonly=@(!IsEdit)
             Value=@GetDescription() 
             OnEdit=@OnDescriptionEdit />
     </MudStack>
 
     <EditableList
         Name="Conversations"
-        IsReadonly=@(!_isEdit)
+        IsReadonly=@(!IsEdit)
         NoIndents=true
         TreeItems=@_conversationTreeItems 
         OnItemClick=@OnItemClick

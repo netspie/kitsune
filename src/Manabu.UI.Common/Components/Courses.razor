@@ -11,7 +11,7 @@
 
     <EditableList
         Name="Official Courses"
-        IsReadonly=@(!_isEdit)
+        IsReadonly=@(!IsEdit)
         NoIndents=true
         TreeItems=@(_coursesListItems.CastToList<EditableList.TreeItemData>())
         OnItemClick=@OnCourseItemClick
@@ -32,11 +32,11 @@
 
     </EditableList>
 
-    @if (_isEdit)
+    @if (IsEdit)
     {
         <EditableList
             Name="Archived Courses"
-            IsReadonly=@(!_isEdit)
+            IsReadonly=@(!IsEdit)
             NoIndents=true
             TreeItems=@(_coursesArchivedListItems.CastToList<EditableList.TreeItemData>())
             OnItemClick=@OnCourseItemClick

@@ -15,14 +15,14 @@
     <MudStack Style="color: white;">
         <TextField 
             Label="Name"
-            IsReadonly=@(!_isEdit)
+            IsReadonly=@(!IsEdit)
             Value=@_course.Name 
             OnEdit=@OnNameEdit />
 
 
         <TextField 
             Label="Description"
-            IsReadonly=@(!_isEdit)
+            IsReadonly=@(!IsEdit)
             Value=@GetDescription()
             OnEdit=@OnDescriptionEdit />
 
@@ -36,7 +36,7 @@
     <MudPaper Class="py-4" Elevation="0">
         <EditableList 
             Name="Lessons"
-            IsReadonly=@(!_isEdit)
+            IsReadonly=@(!IsEdit)
             TreeItems=@_lessonsTreeItems 
             OnAddItem=@OnAddItem 
             OnItemClick=OnItemClick
@@ -47,7 +47,7 @@
             NumberPrefix=true/>
     </MudPaper>
 
-    @if (_isEdit)
+    @if (IsEdit)
     {
         <MudPaper Class="py-4" Elevation="0">
             <EditableList Name="Lessons Removed"

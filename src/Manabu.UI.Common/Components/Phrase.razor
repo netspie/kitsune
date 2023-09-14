@@ -20,13 +20,13 @@
 
     <TextField 
         Label="Original"
-        IsReadonly=@(!_isEdit)
+        IsReadonly=@(!IsEdit)
         Value=@_phrase.Original 
         OnEdit=@OnOriginalEdit />
 
     <EditableList
         Name="Translations"
-        IsReadonly=@(!_isEdit)
+        IsReadonly=@(!IsEdit)
         TreeItems=@_translationTreeItems
         OnAddItem=@OnAddTranslation
         OnRemoveItem=@OnRemoveTranslation
@@ -35,20 +35,20 @@
         MenuItemsForAll=@TranslationMenuItems
         NoIndents=true />
 
-    @if (_isEdit || !_contextTreeItems.IsNullOrEmpty())
+    @if (IsEdit || !_contextTreeItems.IsNullOrEmpty())
     {
         <EditableList
             Name="Contexts"
-            IsReadonly=@(!_isEdit)
+            IsReadonly=@(!IsEdit)
             TreeItems=@_contextTreeItems
             NoIndents=true />
     }
 
-    @if (_isEdit || !_audioTreeItems.IsNullOrEmpty())
+    @if (IsEdit || !_audioTreeItems.IsNullOrEmpty())
     {
         <EditableList
             Name="Audios"
-            IsReadonly=@(!_isEdit)
+            IsReadonly=@(!IsEdit)
             TreeItems=@_audioTreeItems
             MenuItemsForAll=@AudioMenuItems
             OnRemoveItem=@OnRemoveAudio
@@ -63,17 +63,17 @@
 
         </EditableList>
 
-        @if (_isEdit)
+        @if (IsEdit)
         {
             <FileUpload OnUpload=@OnAudioUpload />
         }
     }
 
-    @if (_isEdit || !_wordTreeItems.IsNullOrEmpty())
+    @if (IsEdit || !_wordTreeItems.IsNullOrEmpty())
     {
         <EditableList
             Name="Words"
-            IsReadonly=@(!_isEdit)
+            IsReadonly=@(!IsEdit)
             TreeItems=@_wordTreeItems
             NoIndents=true />
     }

@@ -19,13 +19,13 @@
     <MudStack>
         <TextField
             Label="Name"
-            IsReadonly=@(!_isEdit)
+            IsReadonly=@(!IsEdit)
             Value=@_conversation.Name 
             OnEdit=@OnNameEdit />
 
         <TextField 
             Label="Description"
-            IsReadonly=@(!_isEdit)
+            IsReadonly=@(!IsEdit)
             Value=@GetDescription() 
             OnEdit=@OnDescriptionEdit />
     </MudStack>
@@ -33,7 +33,7 @@
     <EditableList
         @ref=@_phrasesTreeView
         Name="Phrases"
-        IsReadonly=@(!_isEdit)
+        IsReadonly=@(!IsEdit)
         NoIndents=true
         TreeItems=@(_phrasesTreeItems.CastToList<EditableList.TreeItemData>())
         OnItemClick=@OnItemClick
@@ -51,7 +51,7 @@
 
                 <PhraseItem 
                     Id=@context.Id
-                    IsReadonly=@(!_isEdit)
+                    IsReadonly=@(!IsEdit)
                     Content=@($"- {context.Name}")
                     ShowSpeaker=@_isSpeakersShown
                     SpeakerName=@phraseItem.SpeakerName

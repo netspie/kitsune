@@ -1,11 +1,9 @@
 ﻿using Corelibs.Basic.Blocks;
 using Corelibs.Basic.UseCases;
-using Manabu.Entities.Phrases;
 using Manabu.UI.Common.Auth;
-using Manabu.UseCases.Phrases;
+using Manabu.UI.Common.Storage;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
-using static MudBlazor.CategoryTypes;
 
 namespace Manabu.UI.Common.Components;
 
@@ -15,13 +13,26 @@ public abstract class CoreComponent : Microsoft.AspNetCore.Components.ComponentB
     [Inject] public ICommandExecutor CommandExecutor { get; set; }
     [Inject] public NavigationManager Navigation { get; set; }
     [Inject] public AuthenticationStateProvider Auth { get; set; }
+    [Inject] public IStorage Storage { get; set; }
+    
+    protected bool _isAdmin { get; private set; }
 
-    protected bool _isAdmin;
-    protected bool _isEdit;
+    private bool _isEditValue;
+
+    protected bool _isEdit { 
+        get => _isEditValue; 
+        set {
+            _isEditValue = value;
+            SetEditModeStored(value);
+        }
+    }
+
+    protected bool IsEdit => _isAdmin && _isEdit;
 
     protected override async Task OnInitializedAsync()
     {
         _isAdmin = await Auth.IsAdmin();
+        _isEdit = await IsEditModeStored();
 
         await RefreshViewModel();
         await OnInitializedAsyncImpl();
@@ -50,4 +61,22 @@ public abstract class CoreComponent : Microsoft.AspNetCore.Components.ComponentB
     }
 
     protected virtual Task RefreshViewModel() { return Task.CompletedTask; }
+
+    private async Task<bool> IsEditModeStored()
+    {
+        var stored = await Storage.Get<EditModeEnabled>();
+        return stored is not null ? stored.Value : false;
+    }
+    protected async Task SetEditModeStored(bool value)
+    {
+        await Storage.Save(new EditModeEnabled
+        {
+            Value = value
+        });
+    }
+
+    class EditModeEnabled
+    {
+        public bool Value { get; set; }
+    }
 }
