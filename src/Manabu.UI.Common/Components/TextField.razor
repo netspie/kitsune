@@ -1,12 +1,14 @@
-﻿<div>
+﻿@inject ISnackbar Snackbar
 
+<div>
     @if (IsEditing)
     {
-        <MudTextField @bind-Value=@_dynamicText
+        <MudTextField T="string"
                       Label=@Label
                       Variant="Variant.Text"
                       OnBlur=@OnEditableItemBlur
-                      TextChanged=OnTextFieldValueChanged
+                      Value=@_dynamicText
+                      ValueChanged=@OnTextFieldValueChanged
                       AutoFocus=true />
     }
     else
@@ -38,15 +40,25 @@
     protected override void OnInitialized()
     {
         Value ??= "";
-        _dynamicText = Value.Trim();
+        Value = Value.Trim();
+        _dynamicText = Value;
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        //if (_textField is not null)
+        //_textField.Value = Value.Trim();
     }
 
     private async Task OnTextFieldValueChanged(string value)
     {
-        var trimmed = value.Trim();
+        _dynamicText = value;
+
+        var trimmed = _dynamicText.Trim();
         if (trimmed == Value)
             return;
 
+        Value = _dynamicText;
         IsEditing = false;
         if (!await UIComponent.InvokeBool(OnEdit, trimmed)())
         {
@@ -54,7 +66,12 @@
             return;
         }
 
-        Value = value;
+        Snackbar.Add("Modified successfully", Severity.Normal, opts =>
+        {
+            opts.VisibleStateDuration = 2000;
+        });
+
+        Value = _dynamicText;
     }
 
     private void OnEditableItemBlur(FocusEventArgs args)
