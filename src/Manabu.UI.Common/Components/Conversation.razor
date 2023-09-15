@@ -2,6 +2,7 @@
 @using Corelibs.Basic.Reflection;
 @using Corelibs.Basic.Collections;
 @using Manabu.UI.Common.Operations;
+@using Manabu.UI.Common.State;
 @using Manabu.UseCases.Conversations;
 @using Manabu.UseCases.Lessons;
 @using Manabu.UseCases.Phrases;
@@ -54,7 +55,7 @@
                     Id=@context.Id
                     IsReadonly=@(!IsEdit)
                     Content=@(context.Name)
-                    ShowSpeaker=@_isSpeakersShown
+                    ShowSpeaker=@IsSpeakersShown.Value
                     SpeakerName=@phraseItem.SpeakerName
                     SpeakerTranslation=@phraseItem.SpeakerTranslation
                     OnPhraseSubmit=@OnPhraseSubmit
@@ -64,7 +65,13 @@
         </CustomItemTemplate>
     </EditableList>
 
-    <MudSwitch @bind-Checked=@_isSpeakersShown Label="Show Speakers" Color="Color.Info" />
+    @{
+        var haveNoSpeakers = _phrasesTreeItems.All(p => p.SpeakerName.IsNullOrEmpty() && p.SpeakerTranslation.IsNullOrEmpty());
+        if (!haveNoSpeakers)
+        {
+            <MudSwitch @bind-Checked=@IsSpeakersShown.Value Label="Show Speakers" Color="Color.Info" />
+        }
+    }
 
     @if (_isAdmin)
     {
@@ -77,6 +84,7 @@
 
     [Inject] public State.SiteTitle SiteTitle { get; set; }
     [Inject] public CutCopyPhraseOperation CutCopyPhraseOperation { get; set; }
+    [Inject] public IsSpeakersShown IsSpeakersShown { get; set; }
 
     private EditableList? _phrasesTreeView;
     private List<PhraseTreeItemData> _phrasesTreeItems;
@@ -85,7 +93,6 @@
 
     private ConversationDetailsDTO? _conversation;
 
-    private bool _isSpeakersShown = true;
     private const char PhraseTrailingMark = '-';
 
     protected override async Task OnInitializedAsyncImpl()

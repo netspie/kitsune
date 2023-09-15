@@ -1,4 +1,7 @@
 ﻿using Blazored.LocalStorage;
+using Corelibs.Basic.Collections;
+using MongoDB.Bson;
+using MongoDB.Bson.IO;
 
 namespace Manabu.UI.Common.Storage;
 
@@ -18,10 +21,30 @@ public class BlazoredJsonLocalStorage : IStorage
         await _localStorage.SetItemAsync(key, @object);
     }
 
+    public async Task Save(object @object, Type type)
+    {
+        if (@object is null)
+            return;
+
+        var key = type.Name;
+        var json = Newtonsoft.Json.JsonConvert.SerializeObject(@object);
+        await _localStorage.SetItemAsStringAsync(key, json);
+    }
+
     public async Task<T> Get<T>()
     {
         var key = typeof(T).Name;
         return await _localStorage.GetItemAsync<T>(key);
+    }
+
+    public async Task<object> Get(Type type)
+    {
+        var key = type.Name;
+        var json = await _localStorage.GetItemAsStringAsync(key);
+        if (json.IsNullOrEmpty())
+            return null;
+
+        return Newtonsoft.Json.JsonConvert.DeserializeObject(json, type);
     }
 
     public async Task Delete<T>()

@@ -1,9 +1,11 @@
 ﻿using Corelibs.Basic.Blocks;
+using Corelibs.Basic.Collections;
 using Corelibs.Basic.UseCases;
 using Manabu.UI.Common.Auth;
 using Manabu.UI.Common.Storage;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using System.Reflection;
 
 namespace Manabu.UI.Common.Components;
 
@@ -43,7 +45,25 @@ public abstract class CoreComponent : Microsoft.AspNetCore.Components.ComponentB
     protected sealed override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
+        {
             _isEdit = await IsEditModeStored();
+
+            var properties = GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            var stateItemProperties = properties.Where(p =>
+                    p.PropertyType.BaseType != null &&
+                    p.PropertyType.BaseType.IsGenericType &&
+                    p.PropertyType.BaseType.GetGenericTypeDefinition() == typeof(StateItem<>))
+                .ToArray();
+
+            var stateItemTasks = stateItemProperties
+                .Select(p => p.GetValue(this))
+                .Where(p => p is not null)
+                .Cast<IStateItem>()
+                .Select(p => p.Init())
+                .ToArray();
+
+            await Task.WhenAll(stateItemTasks);
+        }
 
         await OnAfterRenderAsyncImpl(firstRender);
 
