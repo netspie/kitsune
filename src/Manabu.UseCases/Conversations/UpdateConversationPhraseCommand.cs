@@ -29,11 +29,19 @@ public class UpdateConversationPhraseCommandHandler : ICommandHandler<UpdateConv
         if (!result.ValidateSuccessAndValues())
             return result.Fail();
 
-        if (command.Speaker is not null)
+        if (command.Speaker is not null || command.SpeakerTranslation is not null)
         {
             var conversation = await _conversationRepository.Get(new ConversationId(command.ConversationId), result);
-            if (conversation.ChangeSpeaker(command.Speaker, phrase.Id, command.PhraseIndex))
-                await _conversationRepository.Save(conversation, result);
+
+            if (command.Speaker is not null)
+                if (!conversation.ChangeSpeaker(command.Speaker, phrase.Id, command.PhraseIndex))
+                    return result.Fail();
+
+            if (command.SpeakerTranslation is not null)
+                if (!conversation.ChangeSpeakerTranslation(command.SpeakerTranslation, phrase.Id, command.PhraseIndex))
+                    return result.Fail();
+
+            await _conversationRepository.Save(conversation, result);
         }
 
         if (!command.Original.IsNullOrEmpty())
@@ -51,6 +59,7 @@ public record UpdateConversationPhraseCommand(
     string ConversationId,
     string? Original = null,
     int PhraseIndex = -1,
-    string? Speaker = null) : ICommand<Result>;
+    string? Speaker = null,
+    string? SpeakerTranslation = null) : ICommand<Result>;
 
 public class UpdateConversationPhraseCommandValidator : AbstractValidator<UpdateConversationPhraseCommand> {}

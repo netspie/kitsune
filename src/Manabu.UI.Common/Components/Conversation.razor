@@ -53,10 +53,12 @@
                 <PhraseItem 
                     Id=@context.Id
                     IsReadonly=@(!IsEdit)
-                    Content=@($"- {context.Name}")
+                    Content=@(context.Name)
                     ShowSpeaker=@_isSpeakersShown
                     SpeakerName=@phraseItem.SpeakerName
+                    SpeakerTranslation=@phraseItem.SpeakerTranslation
                     OnPhraseSubmit=@OnPhraseSubmit
+                    OnSpeakerTranslationSubmit=@OnSpeakerTranslationSubmit
                     OnSpeakerSubmit=@OnSpeakerSubmit />
             }
         </CustomItemTemplate>
@@ -84,6 +86,7 @@
     private ConversationDetailsDTO? _conversation;
 
     private bool _isSpeakersShown = true;
+    private const char PhraseTrailingMark = '-';
 
     protected override async Task OnInitializedAsyncImpl()
     {
@@ -164,6 +167,10 @@
         ExecuteAdminViewAction(() => CommandExecutor.Execute(new UpdateConversationPhraseCommand(
             id, ConversationId: _conversation?.Id, Speaker: name)));
 
+    private Task<bool> OnSpeakerTranslationSubmit(string id, string name) =>
+        ExecuteAdminViewAction(() => CommandExecutor.Execute(new UpdateConversationPhraseCommand(
+        id, ConversationId: _conversation?.Id, SpeakerTranslation: name)));
+
     private async Task OnItemClick(EditableList.TreeItemData item)
     {
         Navigation.NavigateTo($"phrases/{item.Id}");
@@ -191,7 +198,7 @@
         _conversation = response?.Content;
 
         _phrasesTreeItems = _conversation?.Phrases?.SelectOrDefault((p, i) =>
-            new PhraseTreeItemData(p.Id, p.Original, p.Speaker)).ToList();
+            new PhraseTreeItemData(p.Id, p.Original, p.Speaker, p.SpeakerTranslation)).ToList();
     }
 
     private string GetDescription() =>
@@ -220,11 +227,14 @@
         public PhraseTreeItemData(
             string id,
             string phrase,
-            string speakerName) : base(id, phrase)
+            string speakerName,
+            string speakerTranslation) : base(id, phrase)
         {
             SpeakerName = speakerName;
+            SpeakerTranslation = speakerTranslation;
         }
 
         public string SpeakerName { get; }
+        public string SpeakerTranslation { get; }
     }
 }

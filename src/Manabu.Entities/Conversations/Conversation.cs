@@ -34,7 +34,7 @@ public class Conversation : Entity<ConversationId>, IAggregateRoot<ConversationI
         int index = int.MaxValue)
     {
         Phrases ??= new();
-        Phrases.InsertClamped(new("", phrase), index);
+        Phrases.InsertClamped(new("", "", phrase), index);
     }
 
     public bool ChangeSpeaker(string speaker, PhraseId phrase, int index = -1)
@@ -44,6 +44,16 @@ public class Conversation : Entity<ConversationId>, IAggregateRoot<ConversationI
             return false;
         
         Phrases[foundIndex] = phraseData with { Speaker = speaker };
+        return true;
+    }
+
+    public bool ChangeSpeakerTranslation(string speakerTranslation, PhraseId phrase, int index = -1)
+    {
+        var phraseData = Phrases.Get(p => p.Phrase == phrase, index, out var foundIndex);
+        if (phraseData is null || speakerTranslation is null || speakerTranslation == phraseData.SpeakerTranslation)
+            return false;
+
+        Phrases[foundIndex] = phraseData with { SpeakerTranslation = speakerTranslation };
         return true;
     }
 
@@ -74,7 +84,7 @@ public class Conversation : Entity<ConversationId>, IAggregateRoot<ConversationI
         return true;
     }
 
-    public record PhraseData(string Speaker, PhraseId Phrase);
+    public record PhraseData(string Speaker, string SpeakerTranslation, PhraseId Phrase);
 }
 
 public class ConversationId : EntityId { public ConversationId(string value) : base(value) {} }

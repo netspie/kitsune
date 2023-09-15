@@ -51,7 +51,15 @@ public class GetConversationQueryHandler : IQueryHandler<GetConversationQuery, R
                         .ToArray(),
                     phrases
                         .OrderBy(p => phrasesIds.IndexOf(p.Id))
-                        .Select((p, i) => new PhraseDTO(p.Id.Value, p.Original, Speaker: conversation.Phrases.FirstOrDefault(p2 => p2.Phrase == p.Id)?.Speaker))
+                        .Select((p, i) =>
+                        {
+                            var phraseData = conversation.Phrases.FirstOrDefault(p2 => p2.Phrase == p.Id);
+                            return new PhraseDTO(
+                                p.Id.Value,
+                                p.Original,
+                                Speaker: phraseData?.Speaker,
+                                SpeakerTranslation: phraseData?.SpeakerTranslation);
+                         })
                         .ToArray())));
     }
 }
@@ -75,4 +83,5 @@ public record LessonDTO(
 public record PhraseDTO(
     string Id,
     string Original,
-    string? Speaker = null);
+    string? Speaker = null,
+    string? SpeakerTranslation = null);

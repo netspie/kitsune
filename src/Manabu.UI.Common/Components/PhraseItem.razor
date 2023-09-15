@@ -29,40 +29,55 @@
         }
     }
 
-    @if (IsReadonly)
+    @if (!IsReadonly)
     {
-        if (NoLabels)
+        string width = SpeakerTranslation.IsNullOrEmpty() || SpeakerTranslation.Length < 5 ? "140px" : "fit-content";
+        <div style=@($"flex-grow: 0; width: {width}") @onclick:stopPropagation="true" @onclick:preventDefault="true">
+
+            <TextField Label="Speaker Translation"
+                       Value=@SpeakerTranslation
+                       OnEdit=@OnSpeakerTranslationSet/>
+        </div>
+    }
+
+    <div @onclick:stopPropagation="true" @onclick:preventDefault="true">
+        @if (IsReadonly)
         {
-            <MudText>@Content</MudText>
+            if (NoLabels)
+            {
+                <MudText>@Content</MudText>
+            }
+            else
+            {
+                <MudField Label=@("Phrase")
+                          Variant="Variant.Text"
+                          DisableUnderLine=true
+                          Style="font-weight: bold; flex-grow: 0;">
+                    @Content
+                </MudField>
+            }
         }
         else
         {
-            <MudField Label=@("Phrase")
-                      Variant="Variant.Text"
-                      DisableUnderLine=true
-                      Style="font-weight: bold; flex-grow: 0;">
-                @Content
-            </MudField>
+            <TextField IsReadonly=@IsReadonly
+                       Label=@("Phrase")
+                       Value=@Content
+                       OnEdit=@OnSubmitPhraseInternal />
         }
-    }
-    else
-    {
-        <TextField IsReadonly=@IsReadonly
-                   Label=@("Phrase")
-                   Value=@Content
-                   OnEdit=@OnSubmitPhraseInternal />
-    }
+    </div>
 
 </MudStack>
 
 @code {
     public delegate Task<bool> OnPhraseSubmitDelegate(string id, string text);
     public delegate Task<bool> OnSpeakerSubmitDelegate(string id, string name);
+    public delegate Task<bool> OnSpeakerTranslationSubmitDelegate(string id, string name);
 
     [Parameter] public bool IsReadonly { get; set; }
 
     [Parameter] public string Id { get; set; }
     [Parameter] public string SpeakerName { get; set; }
+    [Parameter] public string SpeakerTranslation { get; set; }
     [Parameter] public string Content { get; set; }
 
     [Parameter] public bool ShowSpeaker { get; set; } = true;
@@ -71,11 +86,18 @@
 
     [Parameter] public OnPhraseSubmitDelegate OnPhraseSubmit { get; set; }
     [Parameter] public OnSpeakerSubmitDelegate OnSpeakerSubmit { get; set; }
+    [Parameter] public OnSpeakerTranslationSubmitDelegate OnSpeakerTranslationSubmit { get; set; }
 
     private Task<bool> OnSpeakerSet(string name)
     {
         SpeakerName = name;
         return UIComponent.InvokeBool(OnSpeakerSubmit, Id, name)();
+    }
+
+    private Task<bool> OnSpeakerTranslationSet(string name)
+    {
+        SpeakerTranslation = name;
+        return UIComponent.InvokeBool(OnSpeakerTranslationSubmit, Id, name)();
     }
 
     private async Task<bool> OnSubmitPhraseInternal(string value)
