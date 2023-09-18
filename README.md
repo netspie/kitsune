@@ -18,7 +18,7 @@
 
 #### Goals
 
-For a japanese language learners - address the following problems (just some among many):  
+For japanese language learners - address the following problems (just some among many):  
   
 - Writing notes from videos, courses, articles, lectures - which takes effort and time.  
 - Material fatigue - lack of innovation of learning process and revisions, which leads to procrastination.  
