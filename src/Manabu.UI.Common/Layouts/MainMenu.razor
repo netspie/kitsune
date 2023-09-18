@@ -78,6 +78,7 @@
     {
         SiteTitle.Subscribe(() => InvokeAsync(StateHasChanged));
 
+        _buttons.Add(new("Courses", "/courses"));
         if (await Auth.IsSignedIn() is false)
         {
             _buttons.Add(new("Contact", "/contact"));
@@ -85,7 +86,6 @@
         }
         else
         {
-            _buttons.Add(new("Courses", "/courses"));
             _buttons.Add(new("Contact", "/contact"));
             _buttons.Add(new("Sign Out", AuthenticationStateProviderExtensions.SignOutUrl));
         }

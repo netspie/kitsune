@@ -15,6 +15,10 @@
     position: relative;
 }
 
+.main-content-free {
+    margin-top: 75px; 
+}
+
 @media only screen and (max-width: 1500px) {
     .main-content {
         padding-left: 310px;

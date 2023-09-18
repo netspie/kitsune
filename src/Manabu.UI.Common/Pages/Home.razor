@@ -3,23 +3,83 @@
 @using Microsoft.AspNetCore.Components.Authorization;
 
 <div class="main-hero">
-    <MudImage Src=@($"{Config.BaseAssetsPath}/images/icons8-fox-96.png") Height=100 Style="margin-top: 10px;" />
-    <h2 class="title noselect">Kitsune Study</h2>
-    <p class="description">
-        Learn <strong>Japanese</strong> the way you want with <strong>ease</strong> and <strong>fun</strong>!
-    </p>
-    <MudButton OnClick=@OnGetStartedButtonClick Style="background: orangered; color: white;" Variant="Variant.Filled" DisableElevation=true>
-        @if (_isSignedIn)
-        {
-            <span>Learn</span>
-        }
-        else
-        {
-            <span>Get Started</span>
-        }
-    </MudButton>
-    <Footer />
+    <div class="grid">
+        <div class="grid-left">
+            <MudImage Src=@($"{Config.BaseAssetsPath}/images/icons8-fox-96.png") Height=100 Style="margin-top: 10px;" />
+            <h2 class="title noselect">Kitsune Study</h2>
+            <div class="description-block">
+                <p class="description">
+                    Learn <strong>Japanese</strong> the way you want with <strong>ease</strong> and <strong>fun</strong>!
+                </p>
+                @*<p class="description">Never forget!</p>
+                <p class="description">Learn from your most beloved songs, dramas, anime and many others!</p>
+                <p class="description">Turn anything into flashcard!</p>
+                <p class="description">Review anytime you want!</p>
+                <p class="description">Learn by reading, listening, speaking and writing!</p>*@
+            </div>
+            <MudButton OnClick=@OnGetStartedButtonClick Style="background: orangered; color: white;" Variant="Variant.Filled" DisableElevation=true>
+                @if (_isSignedIn)
+                {
+                    <span>Learn</span>
+                }
+                else
+                {
+                    <span>Get Started</span>
+                }
+            </MudButton>
+        </div>
+      
+        <div class="news">
+            <div id="mlb2-7803309" class="ml-form-embedContainer ml-subscribe-form ml-subscribe-form-7803309">
+              <div class="ml-form-align-center ">
+                <div class="ml-form-embedWrapper embedForm">
+                  <div class="ml-form-embedBody ml-form-embedBodyDefault row-form" style="">
+                    <div class="ml-form-embedContent" style="">
+                        <h4>NEWSLETTER</h4>
+                        <p>If you want stay up to date with the news on the progress of the application, please subscribe here!</p>
+                    </div>
+                    <form class="ml-block-form" action="https://assets.mailerlite.com/jsonp/601110/forms/99601388068145013/subscribe" data-code="" method="post" target="_blank">
+                      <div class="ml-form-formContent">
+                          <div class="ml-form-fieldRow ml-last-item">
+                            <div class="ml-field-group ml-field-email ml-validate-email ml-validate-required">
+                              <!-- input -->
+                              <input aria-label="email" aria-required="true" type="email" class="form-control" data-inputmask="" name="fields[email]" placeholder="Email" autocomplete="email">
+                            </div>
+                          </div>
+                      </div>
+                      <!-- /Privacy policy -->
+                      <input type="hidden" name="ml-submit" value="1">
+                      <div class="ml-form-embedSubmit">
+                          <button type="submit" class="primary">Subscribe</button>
+                        <button disabled="disabled" style="display: none;" type="button" class="loading">
+                          <div class="ml-form-embedSubmitLoad"></div>
+                          <span class="sr-only">Loading...</span>
+                        </button>
+                      </div>
+
+                        <!-- Privacy policy -->
+                        <div class="ml-form-embedPermissions" style="">
+                            <div class="ml-form-embedPermissionsContent default privacy-policy">
+                                <p style="">You can unsubscribe anytime. Review our <span><a href="http://kitsunestudy.net/privacy" target="_blank">Privacy Policy</a></span>.</p>
+                            </div>
+                        </div>
+                      <input type="hidden" name="anticsrf" value="true">
+                    </form>
+                  </div>
+                  <div class="ml-form-successBody row-success" style="display: none">
+                    <div class="ml-form-successContent">
+                        <h4>Thank you!</h4>
+                          <p>You have successfully joined our subscriber list.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+        <Footer />
+    </div>
 </div>
+   
 
 @code {
     [Inject] public NavigationManager Navigation { get; set; }

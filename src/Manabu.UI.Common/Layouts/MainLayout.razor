@@ -18,7 +18,7 @@
         BottomLeftMenuButtonGroups=@BottomLeftMenuButtonGroups 
         OnButtonClick=@OnMenuButtonClick/>*@
 
-    <div class="main-content">
+    <div class=@(_layoutFree ? "main-content-free" : "main-content")>
         @Body
     </div>
 
@@ -50,15 +50,25 @@
     [Inject] public NavigationManager Navigation { get; set; }
     [Inject] public ICommandExecutor CommandExecutor { get; set; }
 
+    private bool _layoutFree;
+
     protected override async Task OnInitializedAsync()
     {
-        await RedirectIfNotSignedIn();
+        var relative = Navigation.ToBaseRelativePath(Navigation.Uri);
+        if (relative.IsEmpty())
+            _layoutFree = true;
+
+        //await RedirectIfNotSignedIn();
         Navigation.LocationChanged += OnNavigationLocationChanged;
     }
 
     private async void OnNavigationLocationChanged(object sender, LocationChangedEventArgs args)
     {
-        RedirectIfNotSignedIn();
+        //RedirectIfNotSignedIn();
+        var relative = Navigation.ToBaseRelativePath(Navigation.Uri);
+        _layoutFree = relative.IsEmpty();
+
+        InvokeAsync(StateHasChanged);
     }
 
     private async Task RedirectIfNotSignedIn()
