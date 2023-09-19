@@ -13,9 +13,10 @@
     {
         @if (!SpeakerName.IsNullOrEmpty())
         {
+            var speakerName = ShowTranslation ? SpeakerTranslation : SpeakerName;
             if (NoLabels)
             {
-                <MudText>@SpeakerName:</MudText>
+                <MudText>@speakerName:</MudText>
             }
             else
             {
@@ -23,7 +24,7 @@
                           Variant="Variant.Text"
                           DisableUnderLine=true
                           Style="font-weight: bold; flex-grow: 0;">
-                    @SpeakerName:
+                    @speakerName:
                 </MudField>
             }
         }
@@ -81,6 +82,7 @@
     [Parameter] public string Content { get; set; }
 
     [Parameter] public bool ShowSpeaker { get; set; } = true;
+    [Parameter] public bool ShowTranslation { get; set; }
 
     [Parameter] public bool NoLabels { get; set; } = true;
 

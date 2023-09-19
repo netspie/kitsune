@@ -5,6 +5,7 @@ using Manabu.Entities.Conversations;
 using Manabu.Entities.Courses;
 using Manabu.Entities.Lessons;
 using Manabu.Entities.Phrases;
+using Manabu.Entities.Shared;
 using Mediator;
 
 namespace Manabu.UseCases.Conversations;
@@ -36,6 +37,8 @@ public class GetConversationQueryHandler : IQueryHandler<GetConversationQuery, R
         if (!result.ValidateSuccessAndValues())
             return result.Fail();
 
+        var phrasesMode = new ItemMode(query.PhrasesMode);
+
         var phrasesIds = conversation.Phrases.SelectOrDefault(p => p.Phrase).ToList();
         var phrases = await _phraseRepository.Get(phrasesIds, result);
         var lessons = await _lessonRepository.Get(conversation.Lessons ?? new(), result);
@@ -54,9 +57,10 @@ public class GetConversationQueryHandler : IQueryHandler<GetConversationQuery, R
                         .Select((p, i) =>
                         {
                             var phraseData = conversation.Phrases.FirstOrDefault(p2 => p2.Phrase == p.Id);
+                            var phraseText = phrasesMode == ItemMode.Translation ? p.Translations[0] : p.Original;
                             return new PhraseDTO(
                                 p.Id.Value,
-                                p.Original,
+                                phraseText,
                                 Speaker: phraseData?.Speaker,
                                 SpeakerTranslation: phraseData?.SpeakerTranslation);
                          })
@@ -65,7 +69,8 @@ public class GetConversationQueryHandler : IQueryHandler<GetConversationQuery, R
 }
 
 public record GetConversationQuery(
-    string ConversationId) : IQuery<Result<GetConversationQueryResponse>>;
+    string ConversationId,
+    string PhrasesMode = null) : IQuery<Result<GetConversationQueryResponse>>;
 
 public record GetConversationQueryResponse(ConversationDetailsDTO Content);
 

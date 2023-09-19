@@ -1,5 +1,4 @@
 ﻿using Corelibs.Basic.Blocks;
-using Corelibs.Basic.Collections;
 using Corelibs.Basic.UseCases;
 using Manabu.UI.Common.Auth;
 using Manabu.UI.Common.Storage;
@@ -9,7 +8,7 @@ using System.Reflection;
 
 namespace Manabu.UI.Common.Components;
 
-public abstract class CoreComponent : Microsoft.AspNetCore.Components.ComponentBase
+public abstract class CoreComponent : ComponentBase
 {
     [Inject] public IQueryExecutor QueryExecutor { get; set; }
     [Inject] public ICommandExecutor CommandExecutor { get; set; }
@@ -20,6 +19,7 @@ public abstract class CoreComponent : Microsoft.AspNetCore.Components.ComponentB
     protected bool _isAdmin { get; private set; }
 
     private bool _isEditValue;
+    protected event Func<bool, Task> OnEditModeChange;
 
     protected bool _isEdit { 
         get => _isEditValue; 
@@ -104,6 +104,9 @@ public abstract class CoreComponent : Microsoft.AspNetCore.Components.ComponentB
         {
             Value = value
         });
+
+        if (OnEditModeChange is not null)
+            await OnEditModeChange?.Invoke(value);
     }
 
     class EditModeEnabled

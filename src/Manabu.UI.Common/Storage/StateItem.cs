@@ -6,6 +6,8 @@ public abstract class StateItem<T> : IStateItem
 {
     private readonly IStorage _storage;
 
+    public event Func<T, Task> OnValueChanged;
+
     protected StateItem(IStorage storage)
     {
         _storage = storage;
@@ -29,6 +31,9 @@ public abstract class StateItem<T> : IStateItem
             return;
 
         await _storage.Save(this, GetType());
+
+        if (OnValueChanged is not null)
+            await OnValueChanged?.Invoke(_value);
     }
 
     public async Task Init()

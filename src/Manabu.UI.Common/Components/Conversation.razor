@@ -1,6 +1,7 @@
 ﻿@using Corelibs.Basic.Blocks;
 @using Corelibs.Basic.Reflection;
 @using Corelibs.Basic.Collections;
+@using Manabu.Entities.Shared;
 @using Manabu.UI.Common.Operations;
 @using Manabu.UI.Common.State;
 @using Manabu.UseCases.Conversations;
@@ -9,6 +10,7 @@
 @using Microsoft.AspNetCore.Components.Authorization;
 
 @inherits CoreComponent
+@implements IDisposable
 
 @if (_conversation is null) { return; }
 
@@ -58,6 +60,7 @@
                     ShowSpeaker=@IsSpeakersShown.Value
                     SpeakerName=@phraseItem.SpeakerName
                     SpeakerTranslation=@phraseItem.SpeakerTranslation
+                    ShowTranslation=@IsTranslationShown.Value
                     OnPhraseSubmit=@OnPhraseSubmit
                     OnSpeakerTranslationSubmit=@OnSpeakerTranslationSubmit
                     OnSpeakerSubmit=@OnSpeakerSubmit />
@@ -65,6 +68,7 @@
         </CustomItemTemplate>
     </EditableList>
 
+    <MudSwitch @bind-Checked=@IsTranslationShown.Value Label="Show Translations" Color="Color.Info"/>
     @{
         var haveNoSpeakers = _phrasesTreeItems.All(p => p.SpeakerName.IsNullOrEmpty() && p.SpeakerTranslation.IsNullOrEmpty());
         if (!haveNoSpeakers)
@@ -75,7 +79,7 @@
 
     @if (_isAdmin)
     {
-        <MudSwitch @bind-Checked=@_isEdit Label="Edit Mode" Color="Color.Info" />
+        <MudSwitch @bind-Checked=@_isEdit Label="Edit Mode" Color="Color.Warning" />
     }
 </div>
 
@@ -85,6 +89,7 @@
     [Inject] public State.SiteTitle SiteTitle { get; set; }
     [Inject] public CutCopyPhraseOperation CutCopyPhraseOperation { get; set; }
     [Inject] public IsSpeakersShown IsSpeakersShown { get; set; }
+    [Inject] public IsTranslationShown IsTranslationShown { get; set; }
 
     private EditableList? _phrasesTreeView;
     private List<PhraseTreeItemData> _phrasesTreeItems;
@@ -98,6 +103,8 @@
     protected override async Task OnInitializedAsyncImpl()
     {
         SiteTitle.Rename("CONVERSATION");
+        IsTranslationShown.OnValueChanged += OnTranslationShownValueChanged;
+        OnEditModeChange += OnEditModeValueChanged;
 
         if (_conversation is null)
             return;
@@ -107,6 +114,15 @@
         //_breadcrumbs.Add(new("Conversations", "", disabled: true));
         //_breadcrumbs.Add(new(_conversation.Name, href: _conversation.Id));
     }
+
+    public void Dispose()
+    {
+        IsTranslationShown.OnValueChanged -= OnTranslationShownValueChanged;
+        OnEditModeChange -= OnEditModeValueChanged;
+    }
+
+    private async Task OnTranslationShownValueChanged(bool value) => await RefreshView();
+    private async Task OnEditModeValueChanged(bool value) => await RefreshView();
 
     protected override async Task OnAfterRenderAsyncImpl(bool firstRender)
     {
@@ -199,8 +215,10 @@
 
     protected override async Task RefreshViewModel()
     {
+        var phrasesMode = IsTranslationShown.Value && !IsEdit ? ItemMode.Translation.Value : null;
+
         var response = await QueryExecutor.Execute<GetConversationQuery, GetConversationQueryResponse>(
-            new GetConversationQuery(ConversationId));
+            new GetConversationQuery(ConversationId, phrasesMode));
 
         _conversation = response?.Content;
 
