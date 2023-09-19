@@ -6,11 +6,15 @@
 
     width: 100%;
     text-align: center;
-    z-index: 99999;
+    z-index: -1;
 }
 
 @media only screen and (max-width: 600px) {
     .title {
+        display: none;
+    }
+
+    h3 ::deep .mud-divider {
         display: none;
     }
 }
