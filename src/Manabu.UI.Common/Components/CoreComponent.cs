@@ -16,6 +16,7 @@ public abstract class CoreComponent : ComponentBase
     [Inject] public AuthenticationStateProvider Auth { get; set; }
     [Inject] public IStorage Storage { get; set; }
     
+    protected bool _isSignedIn { get; private set; }
     protected bool _isAdmin { get; private set; }
 
     private bool _isEditValue;
@@ -33,7 +34,9 @@ public abstract class CoreComponent : ComponentBase
 
     protected sealed override async Task OnInitializedAsync()
     {
-        _isAdmin = await Auth.IsAdmin();
+        _isSignedIn = await Auth.IsSignedIn();
+        if (_isSignedIn)
+            _isAdmin = await Auth.IsAdmin();
 
         await RefreshViewModel();
         await OnInitializedAsyncImpl();

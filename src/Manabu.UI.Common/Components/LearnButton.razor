@@ -1,0 +1,27 @@
+﻿
+<div>
+    @if (!IsAlreadyAdded)
+    {
+        <MudButton Variant="Variant.Filled" DisableElevation=true OnClick=@OnClickInternal>Add To Learn</MudButton>
+    }
+    else
+    {
+        <div style="display: flex; align-items: center; width: 100%; ">
+            <MudIcon Icon="@Icons.Material.Outlined.Done" Style="align-self: start; padding-left: 10px; margin-right: 10px; color: green;" />
+            <MudText Style="color: green;">Learned</MudText>
+        </div>
+    }
+</div>
+
+@code {
+    public delegate Task OnClickDelegate(string itemId);
+
+    [Parameter] public string ItemId { get; set; }
+    [Parameter] public OnClickDelegate OnClick { get; set; }
+    [Parameter] public bool IsAlreadyAdded { get; set; }
+
+    public async Task OnClickInternal()
+    {
+        await UIComponent.InvokeBool(OnClick, ItemId)();
+    }
+}

@@ -12,7 +12,7 @@
     <SiteTitle>@SiteTitle.Name</SiteTitle>
 
     <MudBreadcrumbs Items=@_breadcrumbs Style="padding-left: 0; font-size: 12px" />
-
+    
     @*@{
         var speakers = new[]
         {
@@ -27,7 +27,6 @@
         OnAddItem=@OnAddItem
         MenuItemsRoot=@ConvMenuItemsRoot
         NoIndents=true>
-       
 
         <CustomItemTemplate>
             <PhraseItem 
@@ -39,6 +38,11 @@
         </CustomItemTemplate>
         
     </EditableList>*@
+
+    @if (_isSignedIn)
+    {
+        <LearnButton ItemId=@LessonId />
+    }
 
     <MudStack>
         <TextField 

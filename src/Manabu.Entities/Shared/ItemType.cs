@@ -13,4 +13,15 @@ public record ItemType(string Value)
     public static readonly ItemType Kanji = new("kanji");
     public static readonly ItemType Context = new("context");
     public static readonly ItemType Audio = new("audio");
+
+    public bool IsContainerItem() =>
+        this == Conversation ||
+        this == Lesson;
+
+    public bool IsLearningItem() =>
+        this == Phrase ||
+        this == WordMeaning ||
+        this == WordFormation ||
+        this == Kana ||
+        this == Kanji;
 }

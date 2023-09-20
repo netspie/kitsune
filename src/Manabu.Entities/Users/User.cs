@@ -1,10 +1,13 @@
 ﻿using Corelibs.Basic.DDD;
+using Manabu.Entities.RehearseSettings;
 
 namespace Manabu.Entities.Users;
 
 public class User : Entity<UserId>, IAggregateRoot<UserId>
 {
     public const string DefaultCollectionName = "users";
+
+    public RehearseSetting RehearseSetting { get; set; }
 
     public User(
         UserId userId) : base(userId)
