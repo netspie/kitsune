@@ -1,4 +1,5 @@
 ﻿using Corelibs.Basic.DDD;
+using Manabu.Entities.Shared;
 
 namespace Manabu.Entities.Audios;
 
@@ -14,4 +15,4 @@ public class Audio : Entity<AudioId>, IAggregateRoot<AudioId>
     }
 }
 
-public class AudioId : EntityId { public AudioId(string value) : base(value) {} }
+public class AudioId : LearningItemId { public AudioId(string value) : base(value) {} }

@@ -1,4 +1,5 @@
 ﻿using Corelibs.Basic.DDD;
+using Manabu.Entities.Shared;
 using Manabu.Entities.WordLexemes;
 using Manabu.Entities.WordMeanings;
 
@@ -33,7 +34,7 @@ public class Word : Entity<WordId>, IAggregateRoot<WordId>
     }
 }
 
-public class WordId : EntityId { public WordId(string value) : base(value) {} }
+public class WordId : LearningItemId { public WordId(string value) : base(value) {} }
 
 public record PartOfSpeech(string value)
 {
@@ -48,4 +49,3 @@ public record InflectionType(string value)
     public static readonly InflectionType Present = new("present");
     public static readonly InflectionType Past = new("past");
 }
-

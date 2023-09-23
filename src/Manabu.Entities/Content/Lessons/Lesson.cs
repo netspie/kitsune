@@ -4,6 +4,7 @@ using Manabu.Entities.Conversations;
 using Manabu.Entities.Courses;
 using Manabu.Entities.Infos;
 using Manabu.Entities.Phrases;
+using Manabu.Entities.Shared;
 using Manabu.Entities.Users;
 
 namespace Manabu.Entities.Lessons;
@@ -47,4 +48,4 @@ public class Lesson : Entity<LessonId>, IAggregateRoot<LessonId>
             Courses.Count <= 1 ? true : Courses.Remove(course);
 }
 
-public class LessonId : EntityId { public LessonId(string value) : base(value) { } }
+public class LessonId : LearningItemId { public LessonId(string value) : base(value) { } }

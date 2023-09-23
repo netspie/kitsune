@@ -1,4 +1,5 @@
 ﻿using Corelibs.Basic.DDD;
+using Manabu.Entities.Shared;
 
 namespace Manabu.Entities.WordMeanings;
 
@@ -28,4 +29,4 @@ public class WordMeaning : Entity<WordMeaningId>, IAggregateRoot<WordMeaningId>
     }
 }
 
-public class WordMeaningId : EntityId { public WordMeaningId(string value) : base(value) {} }
+public class WordMeaningId : LearningItemId { public WordMeaningId(string value) : base(value) {} }

@@ -1,9 +1,8 @@
 ﻿using Corelibs.Basic.DDD;
 using Manabu.Entities.Flashcards;
+using Manabu.Entities.Shared;
 
 namespace Manabu.Entities.FlashcardLists;
-
-public class FlashcardListId : EntityId { public FlashcardListId(string value) : base(value) {} }
 
 public class FlashcardList : Entity<FlashcardListId>, IAggregateRoot<FlashcardListId>
 {
@@ -22,3 +21,5 @@ public class FlashcardList : Entity<FlashcardListId>, IAggregateRoot<FlashcardLi
         Flashcards = flashcards;
     }
 }
+
+public class FlashcardListId : LearningItemId { public FlashcardListId(string value) : base(value) { } }

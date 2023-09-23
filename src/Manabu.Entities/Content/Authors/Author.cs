@@ -1,5 +1,6 @@
 ﻿using Corelibs.Basic.DDD;
 using Manabu.Entities.Courses;
+using Manabu.Entities.Shared;
 
 namespace Manabu.Entities.Authors;
 
@@ -26,4 +27,4 @@ public class Author : Entity<AuthorId>, IAggregateRoot<AuthorId>
     }
 }
 
-public class AuthorId : EntityId { public AuthorId(string value) : base(value) {} }
+public class AuthorId : LearningItemId { public AuthorId(string value) : base(value) {} }

@@ -2,9 +2,8 @@
 using Corelibs.Basic.DDD;
 using Manabu.Entities.Lessons;
 using Manabu.Entities.Phrases;
+using Manabu.Entities.Shared;
 using Manabu.Entities.Users;
-using System;
-using System.Reflection;
 
 namespace Manabu.Entities.Conversations;
 
@@ -87,4 +86,4 @@ public class Conversation : Entity<ConversationId>, IAggregateRoot<ConversationI
     public record PhraseData(string Speaker, string SpeakerTranslation, PhraseId Phrase);
 }
 
-public class ConversationId : EntityId { public ConversationId(string value) : base(value) {} }
+public class ConversationId : LearningItemId { public ConversationId(string value) : base(value) {} }

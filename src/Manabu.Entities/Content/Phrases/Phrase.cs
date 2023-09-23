@@ -1,6 +1,7 @@
 ﻿using Corelibs.Basic.DDD;
 using Manabu.Entities.Audios;
 using Manabu.Entities.Conversations;
+using Manabu.Entities.Shared;
 using Manabu.Entities.Users;
 using Manabu.Entities.WordMeanings;
 
@@ -49,4 +50,4 @@ public class Phrase : Entity<PhraseId>, IAggregateRoot<PhraseId>
     }
 }
 
-public class PhraseId : EntityId { public PhraseId(string value) : base(value) { } }
+public class PhraseId : LearningItemId { public PhraseId(string value) : base(value) { } }

@@ -2,6 +2,7 @@
 using Corelibs.Basic.DDD;
 using Manabu.Entities.Authors;
 using Manabu.Entities.Lessons;
+using Manabu.Entities.Shared;
 using Manabu.Entities.Users;
 
 namespace Manabu.Entities.Courses;
@@ -95,4 +96,4 @@ public class Course : Entity<CourseId>, IAggregateRoot<CourseId>
     public record Module(string Name, List<LessonId> LessonIds);
 }
 
-public class CourseId : EntityId { public CourseId(string value) : base(value) {} }
+public class CourseId : LearningItemId { public CourseId(string value) : base(value) {} }

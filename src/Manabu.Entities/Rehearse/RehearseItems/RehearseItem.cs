@@ -1,5 +1,6 @@
 ﻿using Corelibs.Basic.Collections;
 using Corelibs.Basic.DDD;
+using Corelibs.Basic.Encryption;
 using Manabu.Entities.Users;
 using System.Security.Cryptography;
 using System.Text;
@@ -55,18 +56,7 @@ public class RehearseItemId : EntityId
     {
     }
 
-    public RehearseItemId(string userId, string itemId) : base(GenerateGuidHash(userId, itemId))
+    public RehearseItemId(string userId, string itemId) : base(EncryptionFunctions.GenerateGuidHash(userId, itemId))
     {
-    }
-
-    public static string GenerateGuidHash(string userId, string itemId)
-    {
-        string combinedValue = $"{userId}{itemId}";
-
-        using (SHA256 sha256 = SHA256.Create())
-        {
-            byte[] hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(combinedValue));
-            return new Guid(hashBytes).ToString();
-        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Corelibs.Basic.DDD;
+using Manabu.Entities.Shared;
 using Manabu.Entities.Words;
 
 namespace Manabu.Entities.WordLexemes;
@@ -29,7 +30,7 @@ public class WordLexeme : Entity<WordLexemeId>, IAggregateRoot<WordLexemeId>
     }
 }
 
-public class WordLexemeId : EntityId { public WordLexemeId(string value) : base(value) { } }
+public class WordLexemeId : LearningItemId { public WordLexemeId(string value) : base(value) { } }
 
 public record WordInflectionPair(
     string Name,
