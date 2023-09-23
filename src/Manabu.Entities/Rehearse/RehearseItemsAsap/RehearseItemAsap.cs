@@ -1,6 +1,6 @@
 ﻿using Corelibs.Basic.DDD;
 using Manabu.Entities.Content.Users;
-using Manabu.Entities.Flashcards;
+using Manabu.Entities.Shared;
 
 namespace Manabu.Entities.Rehearse.RehearseItems;
 

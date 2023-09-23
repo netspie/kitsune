@@ -6,7 +6,7 @@ using Manabu.Entities.Content.Courses;
 using Manabu.Entities.Content.FlashcardLists;
 using Manabu.Entities.Content.Lessons;
 using Manabu.Entities.Content.Phrases;
-using Manabu.Entities.Flashcards;
+using Manabu.Entities.Shared;
 using Mediator;
 
 namespace Manabu.UseCases.Content.FlashcardLists;
@@ -53,7 +53,7 @@ public class GetFlashcardListQueryHandler : IQueryHandler<GetFlashcardListQuery,
     }
 
     public static async Task<PhraseId[]> GetPhrases(
-        string itemId, 
+        string itemId,
         LearningObjectType itemType,
         IRepository<Lesson, LessonId> lessonRepository,
         IRepository<Conversation, ConversationId> conversationRepository)

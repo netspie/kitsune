@@ -29,4 +29,4 @@ public class WordMeaning : Entity<WordMeaningId>, IAggregateRoot<WordMeaningId>
     }
 }
 
-public class WordMeaningId : LearningItemId { public WordMeaningId(string value) : base(value) {} }
+public class WordMeaningId : LearningObjectId { public WordMeaningId(string value) : base(value) {} }

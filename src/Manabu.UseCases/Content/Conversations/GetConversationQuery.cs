@@ -5,7 +5,6 @@ using Manabu.Entities.Content.Conversations;
 using Manabu.Entities.Content.Courses;
 using Manabu.Entities.Content.Lessons;
 using Manabu.Entities.Content.Phrases;
-using Manabu.Entities.Flashcards;
 using Manabu.Entities.Shared;
 using Mediator;
 

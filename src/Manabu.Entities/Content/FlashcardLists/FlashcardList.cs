@@ -22,4 +22,4 @@ public class FlashcardList : Entity<FlashcardListId>, IAggregateRoot<FlashcardLi
     }
 }
 
-public class FlashcardListId : LearningItemId { public FlashcardListId(string value) : base(value) { } }
+public class FlashcardListId : LearningObjectId { public FlashcardListId(string value) : base(value) { } }

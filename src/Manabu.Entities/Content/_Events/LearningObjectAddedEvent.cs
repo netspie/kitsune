@@ -1,4 +1,4 @@
-﻿using Manabu.Entities.Flashcards;
+﻿using Manabu.Entities.Shared;
 using Mediator;
 
 namespace Manabu.Entities.Content.Events;

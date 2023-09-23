@@ -15,4 +15,4 @@ public class Audio : Entity<AudioId>, IAggregateRoot<AudioId>
     }
 }
 
-public class AudioId : LearningItemId { public AudioId(string value) : base(value) {} }
+public class AudioId : LearningObjectId { public AudioId(string value) : base(value) {} }

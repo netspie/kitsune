@@ -1,16 +1,15 @@
 ﻿using Corelibs.Basic.Auth;
 using Corelibs.Basic.Blocks;
 using Corelibs.Basic.Repository;
-using Corelibs.Basic.UseCases;
 using FluentValidation;
 using Manabu.Entities.Content.Conversations;
 using Manabu.Entities.Content.Events;
 using Manabu.Entities.Content.Lessons;
 using Manabu.Entities.Content.Phrases;
 using Manabu.Entities.Content.Users;
-using Manabu.Entities.Flashcards;
 using Manabu.Entities.Rehearse.RehearseContainers;
 using Manabu.Entities.Rehearse.RehearseItems;
+using Manabu.Entities.Shared;
 using Manabu.UseCases.Content.FlashcardLists;
 using Mediator;
 using System.Reflection;
@@ -56,7 +55,7 @@ public class AddLearningItemForRehearseCommandHandler : ICommandHandler<AddLearn
 
         await _publisher.Publish(new LearningObjectAddedEvent());
 
-        var itemType = new LearningObjectType(command.ItemType);
+        var itemType = new LearningObjectType(command.LearningObjectType);
         if (itemType.IsContainerItem())
         {
             if (itemType == LearningContainerType.Lesson)
@@ -65,7 +64,7 @@ public class AddLearningItemForRehearseCommandHandler : ICommandHandler<AddLearn
                 itemIds.AddRange(phrases.Select(p => p.Value).ToArray());
 
                 var rehearseContainerId = new RehearseContainerId(userId.Value, command.ItemId);
-                var rehearseContainer = new RehearseContainer(rehearseContainerId, userId, command.ItemId, command.ItemType);
+                var rehearseContainer = new RehearseContainer(rehearseContainerId, userId, new LearningObjectId(command.ItemId), new LearningObjectType(command.LearningObjectType));
                 await _rehearseContainerRepository.Save(rehearseContainer, result);
             }
         }
@@ -104,6 +103,6 @@ public class AddLearningItemForRehearseCommandHandler : ICommandHandler<AddLearn
 
 public record AddLearningItemForRehearseCommand(
     string ItemId,
-    string ItemType) : ICommand<Result>;
+    string LearningObjectType) : ICommand<Result>;
 
 public class AddLearningItemForRehearseCommandValidator : AbstractValidator<AddLearningItemForRehearseCommand> {}

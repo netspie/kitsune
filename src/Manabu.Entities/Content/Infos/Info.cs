@@ -24,4 +24,4 @@ public class Info : Entity<InfoId>, IAggregateRoot<InfoId>
     }
 }
 
-public class InfoId : LearningItemId { public InfoId(string value) : base(value) { } }
+public class InfoId : LearningObjectId { public InfoId(string value) : base(value) { } }

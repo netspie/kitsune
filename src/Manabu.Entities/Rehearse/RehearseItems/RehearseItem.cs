@@ -1,8 +1,6 @@
-﻿using Corelibs.Basic.Collections;
-using Corelibs.Basic.DDD;
+﻿using Corelibs.Basic.DDD;
 using Corelibs.Basic.Encryption;
 using Manabu.Entities.Content.Users;
-using Manabu.Entities.Flashcards;
 using Manabu.Entities.Shared;
 
 namespace Manabu.Entities.Rehearse.RehearseItems;
@@ -13,7 +11,7 @@ public class RehearseItem : Entity<RehearseItemId>, IAggregateRoot<RehearseItemI
     public const float DefaultEFactor = 0.25f;
 
     public UserId Owner { get; init; }
-    public LearningItemId ItemId { get; init; }
+    public LearningObjectId ItemId { get; init; }
     public LearningItemType ItemType { get; init; }
     public LearningMode Mode { get; init; }
     public DateTime CreatedUtcTime { get; init; }
@@ -28,7 +26,7 @@ public class RehearseItem : Entity<RehearseItemId>, IAggregateRoot<RehearseItemI
     public RehearseItem(
         RehearseItemId id,
         UserId owner,
-        LearningItemId itemId,
+        LearningObjectId itemId,
         LearningItemType itemType,
         LearningMode mode) : base(id)
     {

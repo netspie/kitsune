@@ -20,4 +20,4 @@ public class Flashcard : Entity<FlashcardId>, IAggregateRoot<FlashcardId>
     public record FlashcardText(string Value, string Link);
 }
 
-public class FlashcardId : LearningItemId { public FlashcardId(string value) : base(value) { } }
+public class FlashcardId : LearningObjectId { public FlashcardId(string value) : base(value) { } }

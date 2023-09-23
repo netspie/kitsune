@@ -96,4 +96,4 @@ public class Course : Entity<CourseId>, IAggregateRoot<CourseId>
     public record Module(string Name, List<LessonId> LessonIds);
 }
 
-public class CourseId : LearningItemId { public CourseId(string value) : base(value) {} }
+public class CourseId : LearningObjectId { public CourseId(string value) : base(value) {} }

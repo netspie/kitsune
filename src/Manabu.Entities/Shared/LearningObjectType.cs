@@ -1,4 +1,4 @@
-﻿namespace Manabu.Entities.Flashcards;
+﻿namespace Manabu.Entities.Shared;
 
 public record LearningObjectType(string Value)
 {

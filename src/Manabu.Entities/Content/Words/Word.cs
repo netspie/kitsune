@@ -34,7 +34,7 @@ public class Word : Entity<WordId>, IAggregateRoot<WordId>
     }
 }
 
-public class WordId : LearningItemId { public WordId(string value) : base(value) {} }
+public class WordId : LearningObjectId { public WordId(string value) : base(value) {} }
 
 public record PartOfSpeech(string value)
 {
