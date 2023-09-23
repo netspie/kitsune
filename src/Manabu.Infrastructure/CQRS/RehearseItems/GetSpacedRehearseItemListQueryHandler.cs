@@ -2,14 +2,14 @@
 using Corelibs.Basic.Blocks;
 using Corelibs.Basic.Repository;
 using Corelibs.MongoDB;
+using Manabu.Entities.Content.Users;
 using Manabu.Entities.Rehearse.RehearseContainers;
-using Manabu.Entities.RehearseItems;
+using Manabu.Entities.Rehearse.RehearseItems;
+using Manabu.UseCases.Rehearse.RehearseItemLists;
 using Mediator;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using System.Security.Claims;
-using Manabu.Entities.Content.Users;
-using Manabu.UseCases.Rehearse.RehearseItemLists;
 
 namespace Manabu.Infrastructure.CQRS.RehearseItems;
 
@@ -41,7 +41,7 @@ public class GetRehearseItemListQueryHandler : IQueryHandler<GetSpacedRehearseIt
         //    Builders<RehearseItem>.Filter.Eq(x => x.ItemType, query.ItemType) &
         //    Builders<RehearseItem>.Filter.Eq(x => x.Mode, query.Mode);
 
-        var sortDefinition = Builders<RehearseItem>.Sort.Ascending(_ => _.SessionsToNextRehearse);
+        var sortDefinition = Builders<RehearseItem>.Sort.Ascending(_ => _.RepsInterval);
 
         var min = new BsonDocument("$min", "{ item: 'apple', type: 'jonagold' }");
         var hint = new BsonDocument("$hint", "{ item: 'apple', type: 'jonagold' }");

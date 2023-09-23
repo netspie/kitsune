@@ -3,7 +3,7 @@ using Corelibs.Basic.Blocks;
 using Corelibs.Basic.Repository;
 using FluentValidation;
 using Manabu.Entities.Content.Users;
-using Manabu.Entities.RehearseItems;
+using Manabu.Entities.Rehearse.RehearseItems;
 using Mediator;
 using System.Security.Claims;
 

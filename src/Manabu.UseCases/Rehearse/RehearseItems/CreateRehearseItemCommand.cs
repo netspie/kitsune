@@ -8,7 +8,7 @@ using Manabu.Entities.Content.Phrases;
 using Manabu.Entities.Content.Users;
 using Manabu.Entities.Flashcards;
 using Manabu.Entities.Rehearse.RehearseContainers;
-using Manabu.Entities.RehearseItems;
+using Manabu.Entities.Rehearse.RehearseItems;
 using Manabu.UseCases.Content.FlashcardLists;
 using Mediator;
 using System.Reflection;
