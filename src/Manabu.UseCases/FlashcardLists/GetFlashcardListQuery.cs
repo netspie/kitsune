@@ -2,13 +2,13 @@
 using Corelibs.Basic.Collections;
 using Corelibs.Basic.Functional;
 using Corelibs.Basic.Repository;
-using Manabu.Entities.Conversations;
-using Manabu.Entities.Courses;
-using Manabu.Entities.FlashcardLists;
 using Manabu.Entities.Flashcards;
-using Manabu.Entities.Lessons;
-using Manabu.Entities.Phrases;
 using Mediator;
+using Manabu.Entities.Content.Conversations;
+using Manabu.Entities.Content.Courses;
+using Manabu.Entities.Content.FlashcardLists;
+using Manabu.Entities.Content.Lessons;
+using Manabu.Entities.Content.Phrases;
 
 namespace Manabu.UseCases.FlashcardLists;
 

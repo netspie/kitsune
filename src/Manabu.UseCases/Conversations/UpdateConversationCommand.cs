@@ -1,8 +1,8 @@
 ﻿using Corelibs.Basic.Blocks;
 using Corelibs.Basic.Repository;
 using FluentValidation;
-using Manabu.Entities.Conversations;
 using Mediator;
+using Manabu.Entities.Content.Conversations;
 
 namespace Manabu.UseCases.Conversations;
 

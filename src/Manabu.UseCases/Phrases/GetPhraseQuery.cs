@@ -1,12 +1,12 @@
 ﻿using Corelibs.Basic.Blocks;
 using Corelibs.Basic.Collections;
 using Corelibs.Basic.Repository;
-using Manabu.Entities.Audios;
-using Manabu.Entities.Conversations;
-using Manabu.Entities.Courses;
-using Manabu.Entities.Lessons;
-using Manabu.Entities.Phrases;
 using Mediator;
+using Manabu.Entities.Content.Audios;
+using Manabu.Entities.Content.Conversations;
+using Manabu.Entities.Content.Courses;
+using Manabu.Entities.Content.Lessons;
+using Manabu.Entities.Content.Phrases;
 
 namespace Manabu.UseCases.Phrases;
 

@@ -1,11 +1,12 @@
 ﻿using Corelibs.Basic.Collections;
 using Corelibs.Basic.DDD;
-using Manabu.Entities.Lessons;
-using Manabu.Entities.Phrases;
 using Manabu.Entities.Shared;
-using Manabu.Entities.Users;
+using Manabu.Entities.Content.Conversations;
+using Manabu.Entities.Content.Lessons;
+using Manabu.Entities.Content.Phrases;
+using Manabu.Entities.Content.Users;
 
-namespace Manabu.Entities.Conversations;
+namespace Manabu.Entities.Content.Conversations;
 
 public class Conversation : Entity<ConversationId>, IAggregateRoot<ConversationId>
 {

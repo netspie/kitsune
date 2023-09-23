@@ -1,13 +1,14 @@
 ﻿using Corelibs.Basic.Collections;
 using Corelibs.Basic.DDD;
-using Manabu.Entities.Conversations;
-using Manabu.Entities.Courses;
-using Manabu.Entities.Infos;
-using Manabu.Entities.Phrases;
 using Manabu.Entities.Shared;
-using Manabu.Entities.Users;
+using Manabu.Entities.Content.Conversations;
+using Manabu.Entities.Content.Courses;
+using Manabu.Entities.Content.Infos;
+using Manabu.Entities.Content.Lessons;
+using Manabu.Entities.Content.Phrases;
+using Manabu.Entities.Content.Users;
 
-namespace Manabu.Entities.Lessons;
+namespace Manabu.Entities.Content.Lessons;
 
 public class Lesson : Entity<LessonId>, IAggregateRoot<LessonId>
 {

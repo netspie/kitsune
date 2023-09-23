@@ -1,7 +1,8 @@
 ﻿using Corelibs.Basic.DDD;
 using Manabu.Entities.Shared;
+using Manabu.Entities.Content.Infos;
 
-namespace Manabu.Entities.Infos;
+namespace Manabu.Entities.Content.Infos;
 
 public class Info : Entity<InfoId>, IAggregateRoot<InfoId>
 {

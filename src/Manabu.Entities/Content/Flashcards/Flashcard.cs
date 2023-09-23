@@ -1,7 +1,9 @@
 ﻿using Corelibs.Basic.DDD;
 using Manabu.Entities.Shared;
+using Manabu.Entities.Content.Flashcards;
+using Manabu.Entities.Flashcards;
 
-namespace Manabu.Entities.Flashcards;
+namespace Manabu.Entities.Content.Flashcards;
 
 public class Flashcard : Entity<FlashcardId>, IAggregateRoot<FlashcardId>
 {

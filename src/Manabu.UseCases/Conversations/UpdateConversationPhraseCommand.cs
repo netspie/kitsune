@@ -2,10 +2,10 @@
 using Corelibs.Basic.Collections;
 using Corelibs.Basic.Repository;
 using FluentValidation;
-using Manabu.Entities.Conversations;
-using Manabu.Entities.Phrases;
 using Mediator;
 using Microsoft.VisualBasic;
+using Manabu.Entities.Content.Conversations;
+using Manabu.Entities.Content.Phrases;
 
 namespace Manabu.UseCases.Conversations;
 

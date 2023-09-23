@@ -1,5 +1,5 @@
 ﻿using Corelibs.Basic.DDD;
-using Manabu.Entities.Users;
+using Manabu.Entities.Content.Users;
 
 namespace Manabu.Entities.Rehearse.RehearseSettings;
 

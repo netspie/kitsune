@@ -3,9 +3,9 @@ using Corelibs.Basic.Blocks;
 using Corelibs.Basic.Repository;
 using FluentValidation;
 using Manabu.Entities.RehearseItems;
-using Manabu.Entities.Users;
 using Mediator;
 using System.Security.Claims;
+using Manabu.Entities.Content.Users;
 
 namespace Manabu.UseCases.RehearseItems;
 

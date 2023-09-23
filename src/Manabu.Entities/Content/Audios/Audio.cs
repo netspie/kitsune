@@ -1,7 +1,8 @@
 ﻿using Corelibs.Basic.DDD;
 using Manabu.Entities.Shared;
+using Manabu.Entities.Content.Audios;
 
-namespace Manabu.Entities.Audios;
+namespace Manabu.Entities.Content.Audios;
 
 public class Audio : Entity<AudioId>, IAggregateRoot<AudioId>
 {

@@ -1,10 +1,10 @@
 ﻿using Corelibs.Basic.Repository;
-using Manabu.Entities.Conversations;
 using Manabu.Entities.Flashcards;
-using Manabu.Entities.Lessons;
-using Manabu.Entities.Phrases;
-using Manabu.Entities.Words;
 using System.Reflection;
+using Manabu.Entities.Content.Conversations;
+using Manabu.Entities.Content.Lessons;
+using Manabu.Entities.Content.Phrases;
+using Manabu.Entities.Content.Words;
 
 namespace Manabu.UseCases.Shared;
 

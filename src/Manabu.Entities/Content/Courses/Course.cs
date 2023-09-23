@@ -1,11 +1,11 @@
 ﻿using Corelibs.Basic.Collections;
 using Corelibs.Basic.DDD;
-using Manabu.Entities.Authors;
-using Manabu.Entities.Lessons;
+using Manabu.Entities.Content.Authors;
+using Manabu.Entities.Content.Lessons;
+using Manabu.Entities.Content.Users;
 using Manabu.Entities.Shared;
-using Manabu.Entities.Users;
 
-namespace Manabu.Entities.Courses;
+namespace Manabu.Entities.Content.Courses;
 
 public class Course : Entity<CourseId>, IAggregateRoot<CourseId>
 {

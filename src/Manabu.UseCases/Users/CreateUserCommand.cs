@@ -3,8 +3,8 @@ using Corelibs.Basic.Blocks;
 using Corelibs.Basic.Repository;
 using Corelibs.Basic.UseCases;
 using Mediator;
-using Manabu.Entities.Users;
 using System.Security.Claims;
+using Manabu.Entities.Content.Users;
 
 namespace Manabu.UseCases.Users;
 

@@ -3,12 +3,12 @@ using Corelibs.Basic.Collections;
 using Corelibs.Basic.DDD;
 using Corelibs.Basic.Repository;
 using Corelibs.MongoDB;
-using Manabu.Entities.Courses;
-using Manabu.Entities.Lessons;
 using Manabu.UseCases.Courses;
 using Mediator;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
+using Manabu.Entities.Content.Courses;
+using Manabu.Entities.Content.Lessons;
 
 namespace Manabu.Infrastructure.CQRS.Courses;
 

@@ -1,8 +1,8 @@
 ﻿using Corelibs.Basic.Blocks;
 using Corelibs.Basic.Repository;
 using FluentValidation;
-using Manabu.Entities.Authors;
 using Mediator;
+using Manabu.Entities.Content.Authors;
 
 namespace Manabu.UseCases.Authors;
 

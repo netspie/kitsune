@@ -1,8 +1,9 @@
 ﻿using Corelibs.Basic.DDD;
 using Manabu.Entities.Shared;
-using Manabu.Entities.Words;
+using Manabu.Entities.Content.WordLexemes;
+using Manabu.Entities.Content.Words;
 
-namespace Manabu.Entities.WordLexemes;
+namespace Manabu.Entities.Content.WordLexemes;
 
 public class WordLexeme : Entity<WordLexemeId>, IAggregateRoot<WordLexemeId>
 {

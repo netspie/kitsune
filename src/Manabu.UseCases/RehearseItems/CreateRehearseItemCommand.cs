@@ -2,17 +2,17 @@
 using Corelibs.Basic.Blocks;
 using Corelibs.Basic.Repository;
 using FluentValidation;
-using Manabu.Entities.Conversations;
 using Manabu.Entities.Flashcards;
-using Manabu.Entities.Lessons;
-using Manabu.Entities.Phrases;
 using Manabu.Entities.Rehearse.RehearseContainers;
 using Manabu.Entities.RehearseItems;
-using Manabu.Entities.Users;
 using Manabu.UseCases.FlashcardLists;
 using Mediator;
 using System.Reflection;
 using System.Security.Claims;
+using Manabu.Entities.Content.Conversations;
+using Manabu.Entities.Content.Lessons;
+using Manabu.Entities.Content.Phrases;
+using Manabu.Entities.Content.Users;
 
 namespace Manabu.UseCases.RehearseItems;
 

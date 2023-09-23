@@ -6,7 +6,6 @@ using Corelibs.Basic.UseCases;
 using Corelibs.MongoDB;
 using FluentValidation;
 using FluentValidation.AspNetCore;
-using Manabu.Entities.Audios;
 using Manabu.Infrastructure.CQRS.Flashcards;
 using Manabu.UI.Common;
 using Manabu.UI.Common.Extensions;
@@ -18,6 +17,7 @@ using Manabu.UseCases.Flashcards;
 using Mediator;
 using System.Reflection;
 using System.Security.Claims;
+using Manabu.Entities.Content.Audios;
 
 namespace Manabu.UI.Server;
 
@@ -26,7 +26,7 @@ public static class Startup
     public static void InitializeApp(this IServiceCollection services, IWebHostEnvironment environment)
     {
         var commonUIAssembly = typeof(App).Assembly;
-        var entitiesAssembly = typeof(Entities.Users.User).Assembly;
+        var entitiesAssembly = typeof(Manabu.Entities.Content.Users.User).Assembly;
         var useCasesAssembly = typeof(UseCases.Users.CreateUserCommand).Assembly;
 
         services.AddBlazoredLocalStorage();

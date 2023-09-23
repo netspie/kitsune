@@ -1,9 +1,10 @@
 ﻿using Corelibs.Basic.DDD;
 using Manabu.Entities.Shared;
-using Manabu.Entities.WordLexemes;
-using Manabu.Entities.WordMeanings;
+using Manabu.Entities.Content.WordLexemes;
+using Manabu.Entities.Content.WordMeanings;
+using Manabu.Entities.Content.Words;
 
-namespace Manabu.Entities.Words;
+namespace Manabu.Entities.Content.Words;
 
 public class Word : Entity<WordId>, IAggregateRoot<WordId>
 {

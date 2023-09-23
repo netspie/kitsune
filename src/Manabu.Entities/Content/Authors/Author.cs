@@ -1,8 +1,9 @@
 ﻿using Corelibs.Basic.DDD;
-using Manabu.Entities.Courses;
 using Manabu.Entities.Shared;
+using Manabu.Entities.Content.Authors;
+using Manabu.Entities.Content.Courses;
 
-namespace Manabu.Entities.Authors;
+namespace Manabu.Entities.Content.Authors;
 
 public class Author : Entity<AuthorId>, IAggregateRoot<AuthorId>
 {

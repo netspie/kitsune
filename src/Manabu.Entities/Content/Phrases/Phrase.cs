@@ -1,11 +1,12 @@
 ﻿using Corelibs.Basic.DDD;
-using Manabu.Entities.Audios;
-using Manabu.Entities.Conversations;
 using Manabu.Entities.Shared;
-using Manabu.Entities.Users;
-using Manabu.Entities.WordMeanings;
+using Manabu.Entities.Content.Audios;
+using Manabu.Entities.Content.Conversations;
+using Manabu.Entities.Content.Phrases;
+using Manabu.Entities.Content.Users;
+using Manabu.Entities.Content.WordMeanings;
 
-namespace Manabu.Entities.Phrases;
+namespace Manabu.Entities.Content.Phrases;
 
 public class Phrase : Entity<PhraseId>, IAggregateRoot<PhraseId>
 {

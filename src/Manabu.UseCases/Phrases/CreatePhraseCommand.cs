@@ -2,12 +2,11 @@
 using Corelibs.Basic.Blocks;
 using Corelibs.Basic.Repository;
 using FluentValidation;
-using Manabu.Entities.Conversations;
-using Manabu.Entities.Lessons;
-using Manabu.Entities.Phrases;
-using Manabu.Entities.Users;
 using Mediator;
 using System.Security.Claims;
+using Manabu.Entities.Content.Conversations;
+using Manabu.Entities.Content.Phrases;
+using Manabu.Entities.Content.Users;
 
 namespace Manabu.UseCases.Phrases;
 

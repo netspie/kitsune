@@ -1,7 +1,8 @@
 ﻿using Corelibs.Basic.DDD;
 using Manabu.Entities.Rehearse.RehearseSettings;
+using Manabu.Entities.Content.Users;
 
-namespace Manabu.Entities.Users;
+namespace Manabu.Entities.Content.Users;
 
 public class User : Entity<UserId>, IAggregateRoot<UserId>
 {

@@ -1,8 +1,6 @@
 ﻿using Corelibs.Basic.Blocks;
 using Corelibs.Basic.Collections;
 using Corelibs.Basic.Repository;
-using Manabu.Entities.Courses;
-using Manabu.Entities.Lessons;
 using Mediator;
 
 namespace Manabu.UseCases.Courses;
