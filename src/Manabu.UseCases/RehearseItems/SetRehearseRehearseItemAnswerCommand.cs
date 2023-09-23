@@ -2,11 +2,8 @@
 using Corelibs.Basic.Blocks;
 using Corelibs.Basic.Repository;
 using FluentValidation;
-using Manabu.Entities.Flashcards;
-using Manabu.Entities.RehearseContainers;
 using Manabu.Entities.RehearseItems;
 using Manabu.Entities.Users;
-using Manabu.UseCases.FlashcardLists;
 using Mediator;
 using System.Security.Claims;
 

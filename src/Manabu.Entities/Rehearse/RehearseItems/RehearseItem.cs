@@ -2,8 +2,6 @@
 using Corelibs.Basic.DDD;
 using Corelibs.Basic.Encryption;
 using Manabu.Entities.Users;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace Manabu.Entities.RehearseItems;
 

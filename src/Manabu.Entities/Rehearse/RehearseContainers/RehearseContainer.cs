@@ -1,10 +1,8 @@
 ﻿using Corelibs.Basic.DDD;
 using Corelibs.Basic.Encryption;
 using Manabu.Entities.Users;
-using System.Security.Cryptography;
-using System.Text;
 
-namespace Manabu.Entities.RehearseContainers;
+namespace Manabu.Entities.Rehearse.RehearseContainers;
 
 public class RehearseContainer : Entity<RehearseContainerId>, IAggregateRoot<RehearseContainerId>
 {

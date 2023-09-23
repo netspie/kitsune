@@ -2,7 +2,7 @@
 using Corelibs.Basic.Blocks;
 using Corelibs.Basic.Repository;
 using Corelibs.MongoDB;
-using Manabu.Entities.RehearseContainers;
+using Manabu.Entities.Rehearse.RehearseContainers;
 using Manabu.Entities.RehearseItems;
 using Manabu.Entities.Users;
 using Manabu.UseCases.RehearseItemLists;

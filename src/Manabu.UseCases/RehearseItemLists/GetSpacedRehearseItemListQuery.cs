@@ -8,7 +8,6 @@ using Manabu.Entities.Courses;
 using Manabu.Entities.Lessons;
 using Manabu.Entities.Phrases;
 using Manabu.Entities.RehearseItems;
-using Manabu.Entities.RehearseSchedules;
 using Manabu.Entities.Users;
 using Mediator;
 using System.Security.Claims;

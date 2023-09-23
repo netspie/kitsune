@@ -1,8 +1,7 @@
 ﻿using Corelibs.Basic.DDD;
-using Manabu.Entities.RehearseSchedules;
 using Manabu.Entities.Users;
 
-namespace Manabu.Entities.RehearseSettings;
+namespace Manabu.Entities.Rehearse.RehearseSettings;
 
 public class RehearseSetting : Entity<RehearseSettingId>, IAggregateRoot<RehearseSettingId>
 {
@@ -10,7 +9,8 @@ public class RehearseSetting : Entity<RehearseSettingId>, IAggregateRoot<Rehears
 
     public UserId Owner { get; private set; }
 
-    public RehearseScheduleId RehearseSchedule { get; set; }
+    public int MaxSpacedItemsPerDay { get; set; }
+    public int CurrentSpacedItemsInDay { get; set; }
 
     public RehearseSetting(
         UserId owner)

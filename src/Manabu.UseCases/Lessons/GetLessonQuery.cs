@@ -4,7 +4,7 @@ using Corelibs.Basic.Repository;
 using Manabu.Entities.Conversations;
 using Manabu.Entities.Courses;
 using Manabu.Entities.Lessons;
-using Manabu.Entities.RehearseContainers;
+using Manabu.Entities.Rehearse.RehearseContainers;
 using Manabu.Entities.Users;
 using Mediator;
 using System.Security.Claims;

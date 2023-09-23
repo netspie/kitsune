@@ -6,7 +6,7 @@ using Manabu.Entities.Conversations;
 using Manabu.Entities.Flashcards;
 using Manabu.Entities.Lessons;
 using Manabu.Entities.Phrases;
-using Manabu.Entities.RehearseContainers;
+using Manabu.Entities.Rehearse.RehearseContainers;
 using Manabu.Entities.RehearseItems;
 using Manabu.Entities.Users;
 using Manabu.UseCases.FlashcardLists;
