@@ -1,12 +1,11 @@
 ﻿using Corelibs.Basic.Collections;
 using Corelibs.Basic.DDD;
-using Manabu.Entities.Shared;
 using Manabu.Entities.Content.Conversations;
 using Manabu.Entities.Content.Courses;
 using Manabu.Entities.Content.Infos;
-using Manabu.Entities.Content.Lessons;
 using Manabu.Entities.Content.Phrases;
 using Manabu.Entities.Content.Users;
+using Manabu.Entities.Shared;
 
 namespace Manabu.Entities.Content.Lessons;
 

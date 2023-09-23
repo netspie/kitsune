@@ -1,6 +1,5 @@
 ﻿using Corelibs.Basic.DDD;
 using Manabu.Entities.Shared;
-using Manabu.Entities.Content.Audios;
 
 namespace Manabu.Entities.Content.Audios;
 

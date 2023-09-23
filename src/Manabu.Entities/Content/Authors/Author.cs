@@ -1,7 +1,6 @@
 ﻿using Corelibs.Basic.DDD;
-using Manabu.Entities.Shared;
-using Manabu.Entities.Content.Authors;
 using Manabu.Entities.Content.Courses;
+using Manabu.Entities.Shared;
 
 namespace Manabu.Entities.Content.Authors;
 

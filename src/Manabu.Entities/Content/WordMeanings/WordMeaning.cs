@@ -1,6 +1,5 @@
 ﻿using Corelibs.Basic.DDD;
 using Manabu.Entities.Shared;
-using Manabu.Entities.Content.WordMeanings;
 
 namespace Manabu.Entities.Content.WordMeanings;
 

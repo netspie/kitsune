@@ -1,10 +1,9 @@
 ﻿using Corelibs.Basic.DDD;
-using Manabu.Entities.Shared;
 using Manabu.Entities.Content.Audios;
 using Manabu.Entities.Content.Conversations;
-using Manabu.Entities.Content.Phrases;
 using Manabu.Entities.Content.Users;
 using Manabu.Entities.Content.WordMeanings;
+using Manabu.Entities.Shared;
 
 namespace Manabu.Entities.Content.Phrases;
 

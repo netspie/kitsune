@@ -1,9 +1,9 @@
 ﻿using Corelibs.Basic.Blocks;
 using Corelibs.Basic.Repository;
 using Manabu.Entities.Flashcards;
-using Manabu.UseCases.Flashcards;
 using Manabu.Entities.Content.Audios;
 using Manabu.Entities.Content.Phrases;
+using Manabu.UseCases.Content.Flashcards;
 
 namespace Manabu.Infrastructure.CQRS.Flashcards;
 

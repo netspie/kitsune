@@ -1,8 +1,6 @@
 ﻿using Corelibs.Basic.DDD;
-using Manabu.Entities.Flashcards;
-using Manabu.Entities.Shared;
-using Manabu.Entities.Content.FlashcardLists;
 using Manabu.Entities.Content.Flashcards;
+using Manabu.Entities.Shared;
 
 namespace Manabu.Entities.Content.FlashcardLists;
 

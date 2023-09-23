@@ -1,7 +1,6 @@
 ﻿using Corelibs.Basic.DDD;
-using Manabu.Entities.Shared;
-using Manabu.Entities.Content.WordLexemes;
 using Manabu.Entities.Content.Words;
+using Manabu.Entities.Shared;
 
 namespace Manabu.Entities.Content.WordLexemes;
 

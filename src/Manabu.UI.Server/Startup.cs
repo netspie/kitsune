@@ -13,11 +13,11 @@ using Manabu.UI.Common.Operations;
 using Manabu.UI.Common.State;
 using Manabu.UI.Common.Storage;
 using Manabu.UI.Server.Data;
-using Manabu.UseCases.Flashcards;
 using Mediator;
 using System.Reflection;
 using System.Security.Claims;
 using Manabu.Entities.Content.Audios;
+using Manabu.UseCases.Content.Flashcards;
 
 namespace Manabu.UI.Server;
 
@@ -27,7 +27,7 @@ public static class Startup
     {
         var commonUIAssembly = typeof(App).Assembly;
         var entitiesAssembly = typeof(Manabu.Entities.Content.Users.User).Assembly;
-        var useCasesAssembly = typeof(UseCases.Users.CreateUserCommand).Assembly;
+        var useCasesAssembly = typeof(Manabu.UseCases.Content.Users.CreateUserCommand).Assembly;
 
         services.AddBlazoredLocalStorage();
 
