@@ -215,7 +215,7 @@
 
     protected override async Task RefreshViewModel()
     {
-        var phrasesMode = IsTranslationShown.Value && !IsEdit ? ItemMode.Translation.Value : null;
+        var phrasesMode = IsTranslationShown.Value && !IsEdit ? LearningItemProperty.Translation.Value : null;
 
         var response = await QueryExecutor.Execute<GetConversationQuery, GetConversationQueryResponse>(
             new GetConversationQuery(ConversationId, phrasesMode));

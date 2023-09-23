@@ -49,10 +49,10 @@ public class CreateRehearseItemCommandHandler : ICommandHandler<CreateRehearseIt
 
         var itemIds = new List<string>();
 
-        var itemType = new ItemType(command.ItemType);
+        var itemType = new LearningItemType(command.ItemType);
         if (itemType.IsContainerItem())
         {
-            if (itemType == ItemType.Lesson)
+            if (itemType == LearningItemType.Lesson)
             {
                 var phrases = await GetFlashcardListQueryHandler.GetPhrases(command.ItemId, itemType, _lessonRepository, _conversationRepository);
                 itemIds.AddRange(phrases.Select(p => p.Value).ToArray());
@@ -71,8 +71,8 @@ public class CreateRehearseItemCommandHandler : ICommandHandler<CreateRehearseIt
             if (rehearseItem is not null)
                 continue;
 
-            rehearseItem = new RehearseItem(rehearseItemId, userId, command.ItemId, command.ItemType);
-            rehearseItems.Add(rehearseItem);
+            //rehearseItem = new RehearseItem(rehearseItemId, userId, command.ItemId, command.ItemType);
+            //rehearseItems.Add(rehearseItem);
         }
 
         result += await _rehearseItemRepository.Create(rehearseItems);

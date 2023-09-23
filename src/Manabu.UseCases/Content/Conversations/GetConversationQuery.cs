@@ -37,7 +37,7 @@ public class GetConversationQueryHandler : IQueryHandler<GetConversationQuery, R
         if (!result.ValidateSuccessAndValues())
             return result.Fail();
 
-        var phrasesMode = new ItemMode(query.PhrasesMode);
+        var phrasesMode = new LearningItemProperty(query.PhrasesMode);
 
         var phrasesIds = conversation.Phrases.SelectOrDefault(p => p.Phrase).ToList();
         var phrases = await _phraseRepository.Get(phrasesIds, result);
@@ -57,7 +57,7 @@ public class GetConversationQueryHandler : IQueryHandler<GetConversationQuery, R
                         .Select((p, i) =>
                         {
                             var phraseData = conversation.Phrases.FirstOrDefault(p2 => p2.Phrase == p.Id);
-                            var phraseText = phrasesMode == ItemMode.Translation ? p.Translations[0] : p.Original;
+                            var phraseText = phrasesMode == LearningItemProperty.Translation ? p.Translations[0] : p.Original;
                             return new PhraseDTO(
                                 p.Id.Value,
                                 phraseText,

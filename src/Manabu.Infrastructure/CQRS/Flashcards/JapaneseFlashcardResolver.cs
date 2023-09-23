@@ -24,74 +24,74 @@ public class JapaneseFlashcardResolver : IFlashcardResolver
     {
         var result = Result<FlashcardDTO>.Success();
 
-        var type = new ItemType(itemTypeStr);
-        var mode = new FlashcardMode(modeStr);
+        var type = new LearningItemType(itemTypeStr);
+        var mode = new LearningMode(modeStr);
 
-        if (type == ItemType.Phrase)
+        if (type == LearningItemType.Phrase)
             await GetPhrase(itemId, result, mode);
 
         return result;
     }
 
-    private async Task GetPhrase(string phraseId, Result<FlashcardDTO> result, FlashcardMode mode)
+    private async Task GetPhrase(string phraseId, Result<FlashcardDTO> result, LearningMode mode)
     {
         var phrase = await _phraseRepository.Get(new PhraseId(phraseId), result);
-        if (mode == FlashcardMode.Reading)
+        if (mode == LearningMode.Reading)
         {
             // Questions
             var questions = new List<FlashcardItemDTO>();
-            questions.Add(new(phrase.Id.Value, phrase.Original, ItemType.Phrase.Value));
+            questions.Add(new(phrase.Id.Value, phrase.Original, LearningItemType.Phrase.Value));
 
             if (phrase.Contexts?.Count > 0)
-                questions.Add(new FlashcardItemDTO(phraseId, phrase.Contexts.First(), ItemType.Context.Value));
+                questions.Add(new FlashcardItemDTO(phraseId, phrase.Contexts.First(), LearningItemType.Context.Value));
 
             // Answers
             var answers = new List<FlashcardItemDTO>();
-            answers.Add(new(phraseId, phrase.Translations.First(), ItemType.Phrase.Value));
+            answers.Add(new(phraseId, phrase.Translations.First(), LearningItemType.Phrase.Value));
 
             if (phrase.Audios?.Count > 0)
             {
                 var audio = await _audioRepository.Get(phrase.Audios.First(), result);
-                answers.Add(new FlashcardItemDTO(phraseId, audio.Href, ItemType.Audio.Value));
+                answers.Add(new FlashcardItemDTO(phraseId, audio.Href, LearningItemType.Audio.Value));
             }
 
             result.Add(new FlashcardDTO(
                 phraseId, questions.ToArray(), new[] { answers.ToArray() }));
         }
         else
-        if (mode == FlashcardMode.Listening)
+        if (mode == LearningMode.Listening)
         {
             // Questions
             var questions = new List<FlashcardItemDTO>();
-            questions.Add(new(phrase.Id.Value, phrase.Audios.First().Value, ItemType.Audio.Value));
+            questions.Add(new(phrase.Id.Value, phrase.Audios.First().Value, LearningItemType.Audio.Value));
 
             if (phrase.Contexts?.Count > 0)
-                questions.Add(new FlashcardItemDTO(phraseId, phrase.Contexts.First(), ItemType.Context.Value));
+                questions.Add(new FlashcardItemDTO(phraseId, phrase.Contexts.First(), LearningItemType.Context.Value));
 
             // Answers
             var answers = new List<FlashcardItemDTO>();
-            answers.Add(new(phrase.Id.Value, phrase.Original, ItemType.Phrase.Value));
-            answers.Add(new(phraseId, phrase.Translations.First(), ItemType.Phrase.Value));
+            answers.Add(new(phrase.Id.Value, phrase.Original, LearningItemType.Phrase.Value));
+            answers.Add(new(phraseId, phrase.Translations.First(), LearningItemType.Phrase.Value));
 
             result.Add(new FlashcardDTO(
                 phraseId, questions.ToArray(), new[] { answers.ToArray() }));
         }
         else
-        if (mode == FlashcardMode.Speaking)
+        if (mode == LearningMode.Speaking)
         {
             // Questions
             var questions = new List<FlashcardItemDTO>();
-            questions.Add(new(phraseId, phrase.Translations.First(), ItemType.Phrase.Value));
+            questions.Add(new(phraseId, phrase.Translations.First(), LearningItemType.Phrase.Value));
 
             if (phrase.Contexts?.Count > 0)
-                questions.Add(new FlashcardItemDTO(phraseId, phrase.Contexts.First(), ItemType.Context.Value));
+                questions.Add(new FlashcardItemDTO(phraseId, phrase.Contexts.First(), LearningItemType.Context.Value));
 
             // Answers
             var answers = new List<FlashcardItemDTO>();
-            answers.Add(new(phrase.Id.Value, phrase.Original, ItemType.Phrase.Value));
+            answers.Add(new(phrase.Id.Value, phrase.Original, LearningItemType.Phrase.Value));
 
             if (phrase.Audios?.Count > 0)
-                answers.Add(new(phrase.Id.Value, phrase.Audios.First().Value, ItemType.Audio.Value));
+                answers.Add(new(phrase.Id.Value, phrase.Audios.First().Value, LearningItemType.Audio.Value));
 
             result.Add(new FlashcardDTO(
                 phraseId, questions.ToArray(), new[] { answers.ToArray() }));

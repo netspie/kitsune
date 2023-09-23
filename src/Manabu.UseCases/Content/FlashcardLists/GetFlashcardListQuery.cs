@@ -38,11 +38,11 @@ public class GetFlashcardListQueryHandler : IQueryHandler<GetFlashcardListQuery,
     {
         var result = Result<GetFlashcardListQueryResponse>.Success();
 
-        var rootItemType = new ItemType(query.RootItemType);
-        var targetItemType = new ItemType(query.TargetItemType);
-        var flashcardMode = new FlashcardMode(query.FlashcardMode);
+        var rootItemType = new LearningItemType(query.RootItemType);
+        var targetItemType = new LearningItemType(query.TargetItemType);
+        var flashcardMode = new LearningMode(query.FlashcardMode);
         
-        if (targetItemType == ItemType.Phrase)
+        if (targetItemType == LearningItemType.Phrase)
         {
             var phrases = await GetPhrases(query.RootItemId, rootItemType, _lessonRepository, _conversationRepository);
             return result.With(new GetFlashcardListQueryResponse(
@@ -54,14 +54,14 @@ public class GetFlashcardListQueryHandler : IQueryHandler<GetFlashcardListQuery,
 
     public static async Task<PhraseId[]> GetPhrases(
         string itemId, 
-        ItemType itemType,
+        LearningItemType itemType,
         IRepository<Lesson, LessonId> lessonRepository,
         IRepository<Conversation, ConversationId> conversationRepository)
     {
         var result = Result.Success();
 
         var phraseIds = new List<PhraseId>();
-        if (itemType == ItemType.Lesson)
+        if (itemType == LearningItemType.Lesson)
         {
             var lesson = await lessonRepository.Get(new LessonId(itemId), result);
             var conversations = await conversationRepository.Get(lesson.Conversations ?? new(), result);

@@ -12,7 +12,7 @@ public class Word : Entity<WordId>, IAggregateRoot<WordId>
     public string Value { get; private set; }
     public PartOfSpeech PartOfSpeech { get; private set; }
     public List<WordMeaningId> Meanings { get; private set; }
-    public WordLexemeId? Lexeme {  get; private set; }
+    public WordLexemeId? Lexeme { get; private set; }
 
     public Word(string value)
     {

@@ -36,18 +36,18 @@ public class GetRehearseItemListQueryHandler : IQueryHandler<GetSpacedRehearseIt
 
         var userId = await _userAccessor.GetUserID<UserId>();
 
-        var filter = 
-            Builders<RehearseItem>.Filter.Eq(x => x.Owner, userId) & 
-            Builders<RehearseItem>.Filter.Eq(x => x.ItemType, query.ItemType) &
-            Builders<RehearseItem>.Filter.Eq(x => x.Mode, query.Mode);
+        //var filter = 
+        //    Builders<RehearseItem>.Filter.Eq(x => x.Owner, userId) & 
+        //    Builders<RehearseItem>.Filter.Eq(x => x.ItemType, query.ItemType) &
+        //    Builders<RehearseItem>.Filter.Eq(x => x.Mode, query.Mode);
 
         var sortDefinition = Builders<RehearseItem>.Sort.Ascending(_ => _.SessionsToNextRehearse);
 
         var min = new BsonDocument("$min", "{ item: 'apple', type: 'jonagold' }");
         var hint = new BsonDocument("$hint", "{ item: 'apple', type: 'jonagold' }");
-        await rehearseItemCollection.Find(filter, new FindOptions { Min = min, Hint = hint }).ToListAsync();
+        //await rehearseItemCollection.Find(filter, new FindOptions { Min = min, Hint = hint }).ToListAsync();
 
-        var results = await rehearseItemCollection.Find(filter).Sort(sortDefinition).Limit(20).ToListAsync();
+        //var results = await rehearseItemCollection.Find(filter).Sort(sortDefinition).Limit(20).ToListAsync();
         //var filterX = Builders<TEntity>.Filter.In(x => x.Id, ids);
 
         return result;

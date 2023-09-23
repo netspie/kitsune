@@ -10,18 +10,18 @@ namespace Manabu.UseCases.Content.Shared;
 
 public static class RepositoryExtensions
 {
-    public static readonly Dictionary<ItemType, Type> ItemsPerTypes = new()
+    public static readonly Dictionary<LearningItemType, Type> ItemsPerTypes = new()
     {
-        { ItemType.Conversation, typeof(Conversation) },
-        { ItemType.Lesson, typeof(Lesson) },
-        { ItemType.Phrase, typeof(Phrase) },
-        { ItemType.Word, typeof(Word) },
+        { LearningItemType.Conversation, typeof(Conversation) },
+        { LearningItemType.Lesson, typeof(Lesson) },
+        { LearningItemType.Phrase, typeof(Phrase) },
+        { LearningItemType.Word, typeof(Word) },
     };
 
-    public static IRepository? GetRepositoryOfItemType(this object instance, ItemType type) =>
+    public static IRepository? GetRepositoryOfItemType(this object instance, LearningItemType type) =>
         instance.GetAllRepositories().GetRepositoryOfItemType(type);
 
-    public static IRepository? GetRepositoryOfItemType(this IRepository[] repositories, ItemType type)
+    public static IRepository? GetRepositoryOfItemType(this IRepository[] repositories, LearningItemType type)
     {
         foreach (var repository in repositories)
         {
