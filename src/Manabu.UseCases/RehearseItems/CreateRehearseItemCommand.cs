@@ -6,6 +6,7 @@ using Manabu.Entities.Conversations;
 using Manabu.Entities.Flashcards;
 using Manabu.Entities.Lessons;
 using Manabu.Entities.Phrases;
+using Manabu.Entities.RehearseContainers;
 using Manabu.Entities.RehearseItems;
 using Manabu.Entities.Users;
 using Manabu.UseCases.FlashcardLists;
@@ -18,6 +19,7 @@ namespace Manabu.UseCases.RehearseItems;
 public class CreateRehearseItemCommandHandler : ICommandHandler<CreateRehearseItemCommand, Result>
 {
     private readonly IRepository<RehearseItem, RehearseItemId> _rehearseItemRepository;
+    private readonly IRepository<RehearseContainer, RehearseContainerId> _rehearseContainerRepository;
     private readonly IAccessorAsync<ClaimsPrincipal> _userAccessor;
     private readonly IRepository<Lesson, LessonId> _lessonRepository;
     private readonly IRepository<Conversation, ConversationId> _conversationRepository;
@@ -28,18 +30,22 @@ public class CreateRehearseItemCommandHandler : ICommandHandler<CreateRehearseIt
         IRepository<Conversation, ConversationId> conversationRepository,
         IRepository<Phrase, PhraseId> phraseRepository,
         IRepository<RehearseItem, RehearseItemId> rehearseItemRepository,
-        IRepository<Lesson, LessonId> lessonRepository)
+        IRepository<Lesson, LessonId> lessonRepository,
+        IRepository<RehearseContainer, RehearseContainerId> rehearseContainerRepository)
     {
         _userAccessor = userAccessor;
         _conversationRepository = conversationRepository;
         _phraseRepository = phraseRepository;
         _rehearseItemRepository = rehearseItemRepository;
         _lessonRepository = lessonRepository;
+        _rehearseContainerRepository = rehearseContainerRepository;
     }
 
     public async ValueTask<Result> Handle(CreateRehearseItemCommand command, CancellationToken ct)
     {
         var result = Result.Success();
+
+        var userId = await _userAccessor.GetUserID<UserId>();
 
         var itemIds = new List<string>();
 
@@ -50,10 +56,12 @@ public class CreateRehearseItemCommandHandler : ICommandHandler<CreateRehearseIt
             {
                 var phrases = await GetFlashcardListQueryHandler.GetPhrases(command.ItemId, itemType, _lessonRepository, _conversationRepository);
                 itemIds.AddRange(phrases.Select(p => p.Value).ToArray());
+
+                var rehearseContainerId = new RehearseContainerId(userId.Value, command.ItemId);
+                var rehearseContainer = new RehearseContainer(rehearseContainerId, userId, command.ItemId, command.ItemType);
+                await _rehearseContainerRepository.Save(rehearseContainer, result);
             }
         }
-
-        var userId = await _userAccessor.GetUserID<UserId>();
 
         var rehearseItems = new List<RehearseItem>();
         foreach (var itemId in itemIds) 
@@ -63,11 +71,11 @@ public class CreateRehearseItemCommandHandler : ICommandHandler<CreateRehearseIt
             if (rehearseItem is not null)
                 continue;
 
-            rehearseItem = new RehearseItem(userId, command.ItemId);
+            rehearseItem = new RehearseItem(rehearseItemId, userId, command.ItemId, command.ItemType);
             rehearseItems.Add(rehearseItem);
         }
 
-        //result += await _rehearseItemRepository.Save(rehearseItems);
+        result += await _rehearseItemRepository.Create(rehearseItems);
 
         return result;
     }

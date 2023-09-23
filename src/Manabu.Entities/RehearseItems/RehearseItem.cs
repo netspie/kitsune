@@ -11,19 +11,27 @@ public class RehearseItem : Entity<RehearseItemId>, IAggregateRoot<RehearseItemI
     public const string DefaultCollectionName = "rehearseItems";
 
     public UserId Owner { get; private set; }
-    public string ItemId { get; set; }
+    public string ItemId { get; private set; }
+    public string ItemType { get; private set; }
+    public string Mode { get; private set; }
     public DateTime CreatedUtcTime { get; init; }
+    public int SessionsToNextRehearse { get; set; }
 
     public List<RehearseItemPerMode> ItemsPerMode { get; private set; }
 
     public RehearseItem(
+        RehearseItemId id,
         UserId owner,
-        string itemId)
+        string itemId,
+        string itemType) : base(id)
     {
         Owner = owner;
         ItemId = itemId;
+        ItemType = itemType;
         CreatedUtcTime = DateTime.UtcNow;
     }
+
+    //public void Answer(Difficulty difficulty)
 
     public DateTime LastTimeRehearsedUtcTime =>
         ItemsPerMode.SelectOrDefault(i => i.LastTimeRehearsedUtcTime).Order().LastOrDefault();
@@ -43,6 +51,10 @@ public class RehearseItem : Entity<RehearseItemId>, IAggregateRoot<RehearseItemI
 
 public class RehearseItemId : EntityId
 {
+    public RehearseItemId(string id) : base(id)
+    {
+    }
+
     public RehearseItemId(string userId, string itemId) : base(GenerateGuidHash(userId, itemId))
     {
     }

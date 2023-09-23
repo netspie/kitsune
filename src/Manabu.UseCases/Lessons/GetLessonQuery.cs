@@ -1,26 +1,36 @@
-﻿using Corelibs.Basic.Blocks;
+﻿using Corelibs.Basic.Auth;
+using Corelibs.Basic.Blocks;
 using Corelibs.Basic.Repository;
 using Manabu.Entities.Conversations;
 using Manabu.Entities.Courses;
 using Manabu.Entities.Lessons;
+using Manabu.Entities.RehearseContainers;
+using Manabu.Entities.Users;
 using Mediator;
+using System.Security.Claims;
 
 namespace Manabu.UseCases.Lessons;
 
 public class GetLessonQueryHandler : IQueryHandler<GetLessonQuery, Result<GetLessonQueryResponse>>
 {
+    private readonly IAccessorAsync<ClaimsPrincipal> _userAccessor;
     private readonly IRepository<Course, CourseId> _courseRepository;
     private readonly IRepository<Lesson, LessonId> _lessonRepository;
     private readonly IRepository<Conversation, ConversationId> _conversationRepository;
+    private readonly IRepository<RehearseContainer, RehearseContainerId> _rehearseContainerRepository;
 
     public GetLessonQueryHandler(
         IRepository<Course, CourseId> courseRepository,
         IRepository<Lesson, LessonId> lessonRepository,
-        IRepository<Conversation, ConversationId> conversationRepository)
+        IRepository<Conversation, ConversationId> conversationRepository,
+        IRepository<RehearseContainer, RehearseContainerId> rehearseContainerRepository,
+        IAccessorAsync<ClaimsPrincipal> userAccessor)
     {
         _courseRepository = courseRepository;
         _lessonRepository = lessonRepository;
         _conversationRepository = conversationRepository;
+        _rehearseContainerRepository = rehearseContainerRepository;
+        _userAccessor = userAccessor;
     }
 
     public async ValueTask<Result<GetLessonQueryResponse>> Handle(GetLessonQuery query, CancellationToken cancellationToken)
@@ -31,6 +41,11 @@ public class GetLessonQueryHandler : IQueryHandler<GetLessonQuery, Result<GetLes
         if (!result.ValidateSuccessAndValues())
             return result.Fail();
 
+        var userId = await _userAccessor.GetUserID<UserId>();
+
+        var rehearseContainerId = new RehearseContainerId(userId.Value, query.LessonId);
+        var rehearseContainer = await _rehearseContainerRepository.Get(rehearseContainerId, result);
+
         var courses = await _courseRepository.Get(lesson.Courses ?? new(), result);
         var conversations = await _conversationRepository.Get(lesson.Conversations ?? new(), result);
 
@@ -40,6 +55,7 @@ public class GetLessonQueryHandler : IQueryHandler<GetLessonQuery, Result<GetLes
                     lesson.Id.Value,
                     lesson.Name,
                     lesson.Description,
+                    Learned: rehearseContainer is not null,
                     courses.OrderBy(c => lesson.Courses.IndexOf(c.Id)).Select(c => new CourseDTO(c.Id.Value, c.Name)).ToArray(),
                     conversations.OrderBy(c => lesson.Conversations.IndexOf(c.Id)).Select(c => new ConversationDTO(c.Id.Value, c.Name)).ToArray())));
     }
@@ -54,6 +70,7 @@ public record LessonDetailsDTO(
     string Id,
     string Name,
     string Description,
+    bool Learned,
     CourseDTO[] Courses,
     ConversationDTO[] Conversations);
 
