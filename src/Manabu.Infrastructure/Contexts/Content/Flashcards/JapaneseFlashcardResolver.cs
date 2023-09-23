@@ -5,7 +5,7 @@ using Manabu.Entities.Content.Audios;
 using Manabu.Entities.Content.Phrases;
 using Manabu.UseCases.Content.Flashcards;
 
-namespace Manabu.Infrastructure.CQRS.Rehearse.Flashcards;
+namespace Manabu.Infrastructure.CQRS.Content.Flashcards;
 
 public class JapaneseFlashcardResolver : IFlashcardResolver
 {
@@ -43,7 +43,7 @@ public class JapaneseFlashcardResolver : IFlashcardResolver
             questions.Add(new(phrase.Id.Value, phrase.Original, LearningItemType.Phrase.Value));
 
             if (phrase.Contexts?.Count > 0)
-                questions.Add(new FlashcardItemDTO(phraseId, phrase.Contexts.First(), LearningItemType.Context.Value));
+                questions.Add(new FlashcardItemDTO(phraseId, phrase.Contexts.First(), LearningPropertyType.Context.Value));
 
             // Answers
             var answers = new List<FlashcardItemDTO>();
@@ -52,7 +52,7 @@ public class JapaneseFlashcardResolver : IFlashcardResolver
             if (phrase.Audios?.Count > 0)
             {
                 var audio = await _audioRepository.Get(phrase.Audios.First(), result);
-                answers.Add(new FlashcardItemDTO(phraseId, audio.Href, LearningItemType.Audio.Value));
+                answers.Add(new FlashcardItemDTO(phraseId, audio.Href, LearningPropertyType.Audio.Value));
             }
 
             result.Add(new FlashcardDTO(
@@ -63,10 +63,10 @@ public class JapaneseFlashcardResolver : IFlashcardResolver
         {
             // Questions
             var questions = new List<FlashcardItemDTO>();
-            questions.Add(new(phrase.Id.Value, phrase.Audios.First().Value, LearningItemType.Audio.Value));
+            questions.Add(new(phrase.Id.Value, phrase.Audios.First().Value, LearningPropertyType.Audio.Value));
 
             if (phrase.Contexts?.Count > 0)
-                questions.Add(new FlashcardItemDTO(phraseId, phrase.Contexts.First(), LearningItemType.Context.Value));
+                questions.Add(new FlashcardItemDTO(phraseId, phrase.Contexts.First(), LearningPropertyType.Context.Value));
 
             // Answers
             var answers = new List<FlashcardItemDTO>();
@@ -84,14 +84,14 @@ public class JapaneseFlashcardResolver : IFlashcardResolver
             questions.Add(new(phraseId, phrase.Translations.First(), LearningItemType.Phrase.Value));
 
             if (phrase.Contexts?.Count > 0)
-                questions.Add(new FlashcardItemDTO(phraseId, phrase.Contexts.First(), LearningItemType.Context.Value));
+                questions.Add(new FlashcardItemDTO(phraseId, phrase.Contexts.First(), LearningPropertyType.Context.Value));
 
             // Answers
             var answers = new List<FlashcardItemDTO>();
             answers.Add(new(phrase.Id.Value, phrase.Original, LearningItemType.Phrase.Value));
 
             if (phrase.Audios?.Count > 0)
-                answers.Add(new(phrase.Id.Value, phrase.Audios.First().Value, LearningItemType.Audio.Value));
+                answers.Add(new(phrase.Id.Value, phrase.Audios.First().Value, LearningPropertyType.Audio.Value));
 
             result.Add(new FlashcardDTO(
                 phraseId, questions.ToArray(), new[] { answers.ToArray() }));

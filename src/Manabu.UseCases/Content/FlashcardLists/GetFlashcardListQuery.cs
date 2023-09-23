@@ -54,14 +54,14 @@ public class GetFlashcardListQueryHandler : IQueryHandler<GetFlashcardListQuery,
 
     public static async Task<PhraseId[]> GetPhrases(
         string itemId, 
-        LearningItemType itemType,
+        LearningObjectType itemType,
         IRepository<Lesson, LessonId> lessonRepository,
         IRepository<Conversation, ConversationId> conversationRepository)
     {
         var result = Result.Success();
 
         var phraseIds = new List<PhraseId>();
-        if (itemType == LearningItemType.Lesson)
+        if (itemType == LearningContainerType.Lesson)
         {
             var lesson = await lessonRepository.Get(new LessonId(itemId), result);
             var conversations = await conversationRepository.Get(lesson.Conversations ?? new(), result);

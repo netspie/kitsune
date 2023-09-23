@@ -1,6 +1,7 @@
 ﻿@using Corelibs.Basic.Blocks;
 @using Corelibs.Basic.Reflection;
 @using Corelibs.Basic.Collections;
+@using Manabu.Entities.Flashcards;
 @using Manabu.Entities.Shared;
 @using Manabu.UI.Common.Operations;
 @using Manabu.UI.Common.State;
@@ -215,7 +216,7 @@
 
     protected override async Task RefreshViewModel()
     {
-        var phrasesMode = IsTranslationShown.Value && !IsEdit ? LearningItemProperty.Translation.Value : null;
+        var phrasesMode = IsTranslationShown.Value && !IsEdit ? LearningPropertyType.Translation.Value : null;
 
         var response = await QueryExecutor.Execute<GetConversationQuery, GetConversationQueryResponse>(
             new GetConversationQuery(ConversationId, phrasesMode));

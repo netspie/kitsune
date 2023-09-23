@@ -10,7 +10,7 @@ using Manabu.Entities.Content.Courses;
 using Manabu.Entities.Content.Lessons;
 using Manabu.UseCases.Content.Courses;
 
-namespace Manabu.Infrastructure.CQRS.Rehearse.Courses;
+namespace Manabu.Infrastructure.CQRS.Content.Courses;
 
 public class GetCourseQueryHandler : IQueryHandler<GetCourseQuery, Result<GetCourseQueryResponse>>
 {

@@ -1,8 +1,10 @@
 ﻿using Corelibs.Basic.Auth;
 using Corelibs.Basic.Blocks;
 using Corelibs.Basic.Repository;
+using Corelibs.Basic.UseCases;
 using FluentValidation;
 using Manabu.Entities.Content.Conversations;
+using Manabu.Entities.Content.Events;
 using Manabu.Entities.Content.Lessons;
 using Manabu.Entities.Content.Phrases;
 using Manabu.Entities.Content.Users;
@@ -24,6 +26,7 @@ public class AddLearningItemForRehearseCommandHandler : ICommandHandler<AddLearn
     private readonly IRepository<Lesson, LessonId> _lessonRepository;
     private readonly IRepository<Conversation, ConversationId> _conversationRepository;
     private readonly IRepository<Phrase, PhraseId> _phraseRepository;
+    private readonly IPublisher _publisher;
 
     public AddLearningItemForRehearseCommandHandler(
         IAccessorAsync<ClaimsPrincipal> userAccessor,
@@ -31,7 +34,8 @@ public class AddLearningItemForRehearseCommandHandler : ICommandHandler<AddLearn
         IRepository<Phrase, PhraseId> phraseRepository,
         IRepository<RehearseItem, RehearseItemId> rehearseItemRepository,
         IRepository<Lesson, LessonId> lessonRepository,
-        IRepository<RehearseContainer, RehearseContainerId> rehearseContainerRepository)
+        IRepository<RehearseContainer, RehearseContainerId> rehearseContainerRepository,
+        IPublisher publisher)
     {
         _userAccessor = userAccessor;
         _conversationRepository = conversationRepository;
@@ -39,6 +43,7 @@ public class AddLearningItemForRehearseCommandHandler : ICommandHandler<AddLearn
         _rehearseItemRepository = rehearseItemRepository;
         _lessonRepository = lessonRepository;
         _rehearseContainerRepository = rehearseContainerRepository;
+        _publisher = publisher;
     }
 
     public async ValueTask<Result> Handle(AddLearningItemForRehearseCommand command, CancellationToken ct)
@@ -49,10 +54,12 @@ public class AddLearningItemForRehearseCommandHandler : ICommandHandler<AddLearn
 
         var itemIds = new List<string>();
 
-        var itemType = new LearningItemType(command.ItemType);
+        await _publisher.Publish(new LearningObjectAddedEvent());
+
+        var itemType = new LearningObjectType(command.ItemType);
         if (itemType.IsContainerItem())
         {
-            if (itemType == LearningItemType.Lesson)
+            if (itemType == LearningContainerType.Lesson)
             {
                 var phrases = await GetFlashcardListQueryHandler.GetPhrases(command.ItemId, itemType, _lessonRepository, _conversationRepository);
                 itemIds.AddRange(phrases.Select(p => p.Value).ToArray());
