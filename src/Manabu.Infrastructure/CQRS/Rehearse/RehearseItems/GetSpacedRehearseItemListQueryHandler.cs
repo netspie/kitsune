@@ -11,7 +11,7 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using System.Security.Claims;
 
-namespace Manabu.Infrastructure.CQRS.RehearseItems;
+namespace Manabu.Infrastructure.CQRS.Rehearse.RehearseItems;
 
 public class GetRehearseItemListQueryHandler : IQueryHandler<GetSpacedRehearseItemListQuery, Result<GetRehearseItemListQueryResponse>>
 {

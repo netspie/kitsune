@@ -16,7 +16,7 @@ using System.Security.Claims;
 
 namespace Manabu.UseCases.Rehearse.RehearseItems;
 
-public class CreateRehearseItemCommandHandler : ICommandHandler<CreateRehearseItemCommand, Result>
+public class AddLearningItemForRehearseCommandHandler : ICommandHandler<AddLearningItemForRehearseCommand, Result>
 {
     private readonly IRepository<RehearseItem, RehearseItemId> _rehearseItemRepository;
     private readonly IRepository<RehearseContainer, RehearseContainerId> _rehearseContainerRepository;
@@ -25,7 +25,7 @@ public class CreateRehearseItemCommandHandler : ICommandHandler<CreateRehearseIt
     private readonly IRepository<Conversation, ConversationId> _conversationRepository;
     private readonly IRepository<Phrase, PhraseId> _phraseRepository;
 
-    public CreateRehearseItemCommandHandler(
+    public AddLearningItemForRehearseCommandHandler(
         IAccessorAsync<ClaimsPrincipal> userAccessor,
         IRepository<Conversation, ConversationId> conversationRepository,
         IRepository<Phrase, PhraseId> phraseRepository,
@@ -41,7 +41,7 @@ public class CreateRehearseItemCommandHandler : ICommandHandler<CreateRehearseIt
         _rehearseContainerRepository = rehearseContainerRepository;
     }
 
-    public async ValueTask<Result> Handle(CreateRehearseItemCommand command, CancellationToken ct)
+    public async ValueTask<Result> Handle(AddLearningItemForRehearseCommand command, CancellationToken ct)
     {
         var result = Result.Success();
 
@@ -95,8 +95,8 @@ public class CreateRehearseItemCommandHandler : ICommandHandler<CreateRehearseIt
     }
 }
 
-public record CreateRehearseItemCommand(
+public record AddLearningItemForRehearseCommand(
     string ItemId,
     string ItemType) : ICommand<Result>;
 
-public class CreateRehearseItemCommandValidator : AbstractValidator<CreateRehearseItemCommand> {}
+public class AddLearningItemForRehearseCommandValidator : AbstractValidator<AddLearningItemForRehearseCommand> {}

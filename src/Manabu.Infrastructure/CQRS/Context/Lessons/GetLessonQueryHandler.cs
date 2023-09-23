@@ -9,7 +9,7 @@
 //using MongoDB.Bson.Serialization;
 //using MongoDB.Driver;
 
-//namespace Manabu.Infrastructure.CQRS.Lessons;
+//namespace Manabu.Infrastructure.CQRS.Rehearse.Lessons;
 
 //public class GetLessonQueryHandler : IQueryHandler<GetLessonQuery, Result<GetLessonQueryResponse>>
 //{

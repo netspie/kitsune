@@ -5,7 +5,7 @@ using Manabu.Entities.Content.Audios;
 using Manabu.Entities.Content.Phrases;
 using Manabu.UseCases.Content.Flashcards;
 
-namespace Manabu.Infrastructure.CQRS.Flashcards;
+namespace Manabu.Infrastructure.CQRS.Rehearse.Flashcards;
 
 public class JapaneseFlashcardResolver : IFlashcardResolver
 {
