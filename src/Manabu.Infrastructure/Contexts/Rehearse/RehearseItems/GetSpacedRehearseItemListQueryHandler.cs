@@ -3,7 +3,6 @@ using Corelibs.Basic.Blocks;
 using Corelibs.Basic.Repository;
 using Corelibs.MongoDB;
 using Manabu.Entities.Content.Users;
-using Manabu.Entities.Rehearse.RehearseContainers;
 using Manabu.Entities.Rehearse.RehearseItems;
 using Manabu.UseCases.Rehearse.RehearseItemLists;
 using Mediator;
@@ -32,7 +31,6 @@ public class GetRehearseItemListQueryHandler : IQueryHandler<GetSpacedRehearseIt
         var result = Result<GetRehearseItemListQueryResponse>.Success();
 
         var rehearseItemCollection = _mongoConnection.Database.GetCollection<RehearseItem>(RehearseItem.DefaultCollectionName);
-        var rehearseContainerCollection = _mongoConnection.Database.GetCollection<RehearseContainer>(RehearseContainer.DefaultCollectionName);
 
         var userId = await _userAccessor.GetUserID<UserId>();
 

@@ -44,7 +44,7 @@ public class GetFlashcardListQueryHandler : IQueryHandler<GetFlashcardListQuery,
         
         if (targetItemType == LearningItemType.Phrase)
         {
-            var phrases = await GetPhrases(query.RootItemId, rootItemType, _lessonRepository, _conversationRepository);
+            var phrases = await GetPhrases(new LearningObjectId(query.RootItemId), rootItemType, _lessonRepository, _conversationRepository);
             return result.With(new GetFlashcardListQueryResponse(
                 new FlashcardListDTO(query.RootItemType, query.FlashcardMode, phrases.Select(p => p.Value).ToArray())));
         }
@@ -53,7 +53,7 @@ public class GetFlashcardListQueryHandler : IQueryHandler<GetFlashcardListQuery,
     }
 
     public static async Task<PhraseId[]> GetPhrases(
-        string itemId,
+        LearningObjectId objectId,
         LearningObjectType itemType,
         IRepository<Lesson, LessonId> lessonRepository,
         IRepository<Conversation, ConversationId> conversationRepository)
@@ -63,7 +63,7 @@ public class GetFlashcardListQueryHandler : IQueryHandler<GetFlashcardListQuery,
         var phraseIds = new List<PhraseId>();
         if (itemType == LearningContainerType.Lesson)
         {
-            var lesson = await lessonRepository.Get(new LessonId(itemId), result);
+            var lesson = await lessonRepository.Get(new LessonId(objectId.Value), result);
             var conversations = await conversationRepository.Get(lesson.Conversations ?? new(), result);
             
             var convPhraseIds = conversations.SelectMany(c => c.Phrases.SelectOrDefault(p => p.Phrase)).ToArray();
