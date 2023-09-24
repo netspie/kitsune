@@ -49,8 +49,8 @@ public class RehearseItemId : EntityId
     {
     }
 
-    public RehearseItemId(UserId userId, LearningObjectId itemId)
-        : base(EncryptionFunctions.GenerateGuidHash(userId.Value, itemId.Value))
+    public RehearseItemId(UserId userId, LearningObjectId itemId, LearningMode mode)
+        : base(EncryptionFunctions.GenerateGuidHash(userId.Value, itemId.Value, mode.Value))
     {
     }
 }

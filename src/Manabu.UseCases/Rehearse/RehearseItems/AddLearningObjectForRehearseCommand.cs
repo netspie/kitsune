@@ -25,9 +25,9 @@ public class AddLearningItemForRehearseCommandHandler : ICommandHandler<AddLearn
 
     public async ValueTask<Result> Handle(AddLearningObjectForRehearseCommand command, CancellationToken ct)
     {
-        await _publisher.Publish(new LearningObjectAddedEvent()
+        await _publisher.Publish(new LearningObjectAddedForRehearseEvent()
         { 
-            ObjectId = new LearningObjectId(command.ItemId),
+            ObjectId = new LearningObjectId(command.LearningObjectId),
             ObjectType = new LearningObjectType(command.LearningObjectType),
             Owner = await _userAccessor.GetUserID<UserId>()
         });
@@ -37,7 +37,7 @@ public class AddLearningItemForRehearseCommandHandler : ICommandHandler<AddLearn
 }
 
 public record AddLearningObjectForRehearseCommand(
-    string ItemId,
+    string LearningObjectId,
     string LearningObjectType) : ICommand<Result>;
 
 public class AddLearningItemForRehearseCommandValidator : AbstractValidator<AddLearningObjectForRehearseCommand> {}

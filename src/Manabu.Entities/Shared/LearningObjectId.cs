@@ -2,4 +2,4 @@
 
 namespace Manabu.Entities.Shared;
 
-public class LearningObjectId : EntityId { public LearningObjectId(string value) : base(value) {} }
+public sealed class LearningObjectId : EntityId { public LearningObjectId(string value) : base(value) {} }

@@ -48,4 +48,4 @@ public class Lesson : Entity<LessonId>, IAggregateRoot<LessonId>
             Courses.Count <= 1 ? true : Courses.Remove(course);
 }
 
-public class LessonId : LearningObjectId { public LessonId(string value) : base(value) { } }
+public class LessonId : EntityId { public LessonId(string value) : base(value) { } }

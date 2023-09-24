@@ -18,7 +18,7 @@ public class GetRehearseItemListQueryHandler : IQueryHandler<GetSpacedRehearseIt
     private readonly IAccessorAsync<ClaimsPrincipal> _userAccessor;
 
     public GetRehearseItemListQueryHandler(
-       MongoConnection mongoConnection,
+        MongoConnection mongoConnection,
         IAccessorAsync<ClaimsPrincipal> userAccessor)
     {
         _mongoConnection = mongoConnection;

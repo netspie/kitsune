@@ -1,4 +1,5 @@
-﻿
+﻿@using Manabu.UseCases.Rehearse.RehearseItems;
+
 <div>
     @if (!IsAlreadyAdded)
     {
@@ -16,12 +17,18 @@
 @code {
     public delegate Task OnClickDelegate(string itemId);
 
-    [Parameter] public string ItemId { get; set; }
+    [Parameter] public string LearningObjectId { get; set; }
+    [Parameter] public string LearningObjectType { get; set; }
     [Parameter] public OnClickDelegate OnClick { get; set; }
     [Parameter] public bool IsAlreadyAdded { get; set; }
 
+    [Inject] public ICommandExecutor CommandExecutor { get; set; }
+
     public async Task OnClickInternal()
     {
-        await UIComponent.InvokeBool(OnClick, ItemId)();
+        await CommandExecutor.Execute(new AddLearningObjectForRehearseCommand(
+            LearningObjectId, LearningObjectType));
+
+        await UIComponent.InvokeBool(OnClick, LearningObjectId)();
     }
 }

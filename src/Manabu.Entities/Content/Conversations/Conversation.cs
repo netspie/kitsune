@@ -86,4 +86,4 @@ public class Conversation : Entity<ConversationId>, IAggregateRoot<ConversationI
     public record PhraseData(string Speaker, string SpeakerTranslation, PhraseId Phrase);
 }
 
-public class ConversationId : LearningObjectId { public ConversationId(string value) : base(value) {} }
+public class ConversationId : EntityId { public ConversationId(string value) : base(value) {} }

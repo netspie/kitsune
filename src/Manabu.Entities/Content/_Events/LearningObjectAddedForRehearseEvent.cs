@@ -4,7 +4,7 @@ using Mediator;
 
 namespace Manabu.Entities.Content.Events;
 
-public class LearningObjectAddedEvent : INotification
+public class LearningObjectAddedForRehearseEvent : INotification
 {
     public required UserId Owner { get; init; }
     public required LearningObjectId ObjectId { get; init; }

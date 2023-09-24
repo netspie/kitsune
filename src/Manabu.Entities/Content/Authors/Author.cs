@@ -27,4 +27,4 @@ public class Author : Entity<AuthorId>, IAggregateRoot<AuthorId>
     }
 }
 
-public class AuthorId : LearningObjectId { public AuthorId(string value) : base(value) {} }
+public class AuthorId : EntityId { public AuthorId(string value) : base(value) {} }

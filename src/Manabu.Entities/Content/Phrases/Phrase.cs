@@ -50,4 +50,4 @@ public class Phrase : Entity<PhraseId>, IAggregateRoot<PhraseId>
     }
 }
 
-public class PhraseId : LearningObjectId { public PhraseId(string value) : base(value) { } }
+public class PhraseId : EntityId { public PhraseId(string value) : base(value) { } }

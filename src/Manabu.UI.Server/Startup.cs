@@ -7,6 +7,7 @@ using Corelibs.MongoDB;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Manabu.Entities.Content.Audios;
+using Manabu.Entities.Shared;
 using Manabu.Infrastructure.CQRS.Content.Flashcards;
 using Manabu.UI.Common;
 using Manabu.UI.Common.Extensions;
