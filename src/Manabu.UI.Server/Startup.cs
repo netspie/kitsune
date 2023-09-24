@@ -19,6 +19,7 @@ using Manabu.UI.Common.Operations;
 using Manabu.UI.Common.Storage;
 using Manabu.UI.Server.Data;
 using Manabu.UseCases.Content.Flashcards;
+using Manabu.UseCases.Rehearse;
 using Mediator;
 using System.Reflection;
 using System.Security.Claims;
@@ -57,18 +58,30 @@ public static class Startup
 
         services.AddTypes(commonUIAssembly.GetTypesInFolder("State"), ServiceLifetime.Scoped);
 
+        // ------ UI / CLIENT ------
+
         services.AddScoped<IStorage, BlazoredJsonLocalStorage>();
+
+        // Operations
         services.AddScoped<CutCopyPhraseOperation>();
 
+        // ------ EVENTS ------
+
+        // Event Store
         var eventTypes = AssemblyExtensionsEx.GetCurrentDomainTypesImplementing<BaseDomainEvent>(entitiesAssembly);
         var eventTypesDict = eventTypes.ToDictionary(t => t.Name, t => t);
         services.AddScoped<IEventStore>(sp =>
             new MongoDbEventStore(sp.GetRequiredService<MongoConnection>(), eventTypesDict));
 
+        // Event Listener
         services.AddHostedService(sp => new EventStoreListenerWorker(
                 sp.GetRequiredService<IServiceScopeFactory>()));
 
+        // Event Handlers
         services.AddScoped<IEventHandler<LearningObjectAddedForRehearseEvent>, LearningObjectAddedForRehearseEventHandler>();
+
+        // TO DO: REGISTER PROCESSOR??? REGISTER ENTITY INFOS!
+        //services.AddScoped
     }
 
     public static void AddRepositories(this IServiceCollection services, IWebHostEnvironment environment, Assembly assembly)
