@@ -11,7 +11,7 @@ using Mediator;
 
 namespace Manabu.Infrastructure.Contexts.Rehearse.EventHandlers;
 
-public class LearningObjectAddedEventHandler : INotificationHandler<LearningObjectAddedForRehearseEvent>
+public class LearningObjectAddedEventHandler
 {
     private readonly IRepository<RehearseItem, RehearseItemId> _rehearseItemRepository;
     private readonly IRepository<RehearseItemAsap, RehearseItemId> _rehearseItemAsapRepository;

@@ -55,6 +55,8 @@ public static class Startup
 
         services.AddScoped<IStorage, BlazoredJsonLocalStorage>();
         services.AddScoped<CutCopyPhraseOperation>();
+
+        services.AddScoped<IEventStore, MongoDbEventStore>();
     }
 
     public static void AddRepositories(this IServiceCollection services, IWebHostEnvironment environment, Assembly assembly)
