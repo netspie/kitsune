@@ -1,4 +1,5 @@
 ﻿using Blazored.LocalStorage;
+using Corelibs.Basic.DDD;
 using Corelibs.Basic.Reflection;
 using Corelibs.Basic.Repository;
 using Corelibs.Basic.Storage;
@@ -7,7 +8,10 @@ using Corelibs.MongoDB;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Manabu.Entities.Content.Audios;
+using Manabu.Entities.Content.Events;
 using Manabu.Entities.Shared;
+using Manabu.Infrastructure.Contexts.Rehearse._EventHandlers;
+using Manabu.Infrastructure.Contexts.Rehearse.EventHandlers;
 using Manabu.Infrastructure.CQRS.Content.Flashcards;
 using Manabu.UI.Common;
 using Manabu.UI.Common.Extensions;
@@ -56,7 +60,15 @@ public static class Startup
         services.AddScoped<IStorage, BlazoredJsonLocalStorage>();
         services.AddScoped<CutCopyPhraseOperation>();
 
-        services.AddScoped<IEventStore, MongoDbEventStore>();
+        var eventTypes = AssemblyExtensionsEx.GetCurrentDomainTypesImplementing<BaseDomainEvent>(entitiesAssembly);
+        var eventTypesDict = eventTypes.ToDictionary(t => t.Name, t => t);
+        services.AddScoped<IEventStore>(sp =>
+            new MongoDbEventStore(sp.GetRequiredService<MongoConnection>(), eventTypesDict));
+
+        services.AddHostedService(sp => new EventStoreListenerWorker(
+                sp.GetRequiredService<IServiceScopeFactory>()));
+
+        services.AddScoped<IEventHandler<LearningObjectAddedForRehearseEvent>, LearningObjectAddedForRehearseEventHandler>();
     }
 
     public static void AddRepositories(this IServiceCollection services, IWebHostEnvironment environment, Assembly assembly)
