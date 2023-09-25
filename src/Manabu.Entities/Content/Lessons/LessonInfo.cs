@@ -9,7 +9,7 @@ public class LessonInfo : IProcessorEntityInfo<Lesson, LessonId>
 {
     public bool IsLearningItem => false;
     public LearningMode[] LearningModes => Array.Empty<LearningMode>();
-    public LearningObjectType LearningObjectType => LearningContainerType.Lesson;
+    public LearningObjectType LearningObjectType => LearningContainerType.Lesson.ToObjectType();
     public LessonId CreateId(LearningObjectId id) =>
         new LessonId(id.Value);
 

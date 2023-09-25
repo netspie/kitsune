@@ -15,7 +15,7 @@ public class PhraseInfo : IProcessorEntityInfo<Phrase, PhraseId>
         LearningMode.Speaking,
     };
 
-    public LearningObjectType LearningObjectType => LearningItemType.Phrase;
+    public LearningObjectType LearningObjectType => LearningItemType.Phrase.ToObjectType();
     public PhraseId CreateId(LearningObjectId id) =>
         new PhraseId(id.Value);
 

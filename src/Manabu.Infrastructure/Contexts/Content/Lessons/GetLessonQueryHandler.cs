@@ -53,7 +53,7 @@ public class GetLessonQueryHandler : IQueryHandler<GetLessonQuery, Result<GetLes
         var learningObjectId = new LearningObjectId(query.LessonId);
 
         var collection = _mongoConnection.Database.GetCollection<RehearseEntity>(RehearseEntity.DefaultCollectionName);
-        var rehearseEntityCount = collection.CountDocuments(Builders<RehearseEntity>.Filter.Eq(nameof(RehearseEntity.Id), query.LessonId));
+        var rehearseEntityCount = collection.CountDocuments(Builders<RehearseEntity>.Filter.Eq("_id", learningObjectId));
 
         var userId = await _userAccessor.GetUserID<UserId>();
 

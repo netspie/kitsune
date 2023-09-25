@@ -42,30 +42,42 @@ public class LearningObjectType
         !(left == right);
 }
 
-public class LearningContainerType : LearningObjectType
+public class LearningContainerType
 {
+    public string Value { get; }
+
     public static readonly LearningContainerType Conversation = new LearningContainerType("conversation");
     public static readonly LearningContainerType Lesson = new LearningContainerType("lesson");
 
-    public LearningContainerType(string value) : base(value)
+    public LearningContainerType(string value)
     {
+        Value = value;
     }
+
+    public LearningObjectType ToObjectType() => new(Value);
 }
 
-public class LearningPropertyType : LearningObjectType
+public class LearningPropertyType
 {
+    public string Value { get; }
+
     public static readonly LearningPropertyType Audio = new LearningPropertyType("audio");
     public static readonly LearningPropertyType Context = new LearningPropertyType("context");
     public static readonly LearningPropertyType Original = new LearningPropertyType("original");
     public static readonly LearningPropertyType Translation = new LearningPropertyType("translation");
 
-    public LearningPropertyType(string value) : base(value)
+    public LearningPropertyType(string value)
     {
+        Value = value;
     }
+
+    public LearningObjectType ToObjectType() => new(Value);
 }
 
-public class LearningItemType : LearningObjectType
+public class LearningItemType
 {
+    public string Value { get; }
+
     public static readonly LearningItemType Phrase = new("phrase");
     public static readonly LearningItemType Word = new("word");
     public static readonly LearningItemType WordMeaning = new("word-meaning");
@@ -74,7 +86,10 @@ public class LearningItemType : LearningObjectType
     public static readonly LearningItemType Kana = new("kana");
     public static readonly LearningItemType Kanji = new("kanji");
 
-    public LearningItemType(string value) : base(value)
+    public LearningItemType(string value)
     {
+        Value = value;
     }
+
+    public LearningObjectType ToObjectType() => new(Value);
 }

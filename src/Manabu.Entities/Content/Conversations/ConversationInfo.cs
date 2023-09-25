@@ -9,7 +9,7 @@ public class ConversationInfo : IProcessorEntityInfo<Conversation, ConversationI
 {
     public bool IsLearningItem => false;
     public LearningMode[] LearningModes => Array.Empty<LearningMode>();
-    public LearningObjectType LearningObjectType => LearningContainerType.Conversation;
+    public LearningObjectType LearningObjectType => LearningContainerType.Conversation.ToObjectType();
     public ConversationId CreateId(LearningObjectId id) =>
         new ConversationId(id.Value);
 

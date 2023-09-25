@@ -61,7 +61,7 @@ public class GetFlashcardListQueryHandler : IQueryHandler<GetFlashcardListQuery,
         var result = Result.Success();
 
         var phraseIds = new List<PhraseId>();
-        if (itemType == LearningContainerType.Lesson)
+        if (itemType == LearningContainerType.Lesson.ToObjectType())
         {
             var lesson = await lessonRepository.Get(new LessonId(objectId.Value), result);
             var conversations = await conversationRepository.Get(lesson.Conversations ?? new(), result);
