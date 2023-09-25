@@ -4,22 +4,24 @@ using Corelibs.Basic.Reflection;
 using Corelibs.Basic.Repository;
 using Corelibs.Basic.Storage;
 using Corelibs.Basic.UseCases;
+using Corelibs.Basic.UseCases.Events;
 using Corelibs.MongoDB;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Manabu.Entities.Content._Shared;
 using Manabu.Entities.Content.Audios;
 using Manabu.Entities.Content.Events;
-using Manabu.Entities.Shared;
 using Manabu.Infrastructure.Contexts.Rehearse._EventHandlers;
 using Manabu.Infrastructure.Contexts.Rehearse.EventHandlers;
+using Manabu.Infrastructure.CQRS.Content;
 using Manabu.Infrastructure.CQRS.Content.Flashcards;
 using Manabu.UI.Common;
 using Manabu.UI.Common.Extensions;
 using Manabu.UI.Common.Operations;
 using Manabu.UI.Common.Storage;
 using Manabu.UI.Server.Data;
+using Manabu.UseCases.Content;
 using Manabu.UseCases.Content.Flashcards;
-using Manabu.UseCases.Rehearse;
 using Mediator;
 using System.Reflection;
 using System.Security.Claims;
@@ -37,7 +39,7 @@ public static class Startup
         services.AddBlazoredLocalStorage();
 
         services.AddScoped<IAccessorAsync<ClaimsPrincipal>, ClaimsPrincipalAccessor>();
-        
+
         services.AddFluentValidationAutoValidation();
         services.AddValidatorsFromAssembly(useCasesAssembly);
 
@@ -53,10 +55,10 @@ public static class Startup
         services.AddRepositories(environment, entitiesAssembly);
         services.AddSingleton<IMediaStorage<Audio>>(sp => new LocalMediaStorage<Audio>(
             $"/media/audio", $"/media/audio"));
-        
-        services.AddScoped<IFlashcardResolver, JapaneseFlashcardResolver>();
 
         services.AddTypes(commonUIAssembly.GetTypesInFolder("State"), ServiceLifetime.Scoped);
+
+        services.AddScoped<IFlashcardResolver, JapaneseFlashcardResolver>();
 
         // ------ UI / CLIENT ------
 
@@ -80,8 +82,9 @@ public static class Startup
         // Event Handlers
         services.AddScoped<IEventHandler<LearningObjectAddedForRehearseEvent>, LearningObjectAddedForRehearseEventHandler>();
 
-        // TO DO: REGISTER PROCESSOR??? REGISTER ENTITY INFOS!
-        //services.AddScoped
+        // ------ PROCESSORS - LEARNING ENTITIES TO REHEARSE ITEMS ------
+
+        AddRehearseProcessors(services, entitiesAssembly);
     }
 
     public static void AddRepositories(this IServiceCollection services, IWebHostEnvironment environment, Assembly assembly)
@@ -92,5 +95,30 @@ public static class Startup
         MongoConventionPackExtensions.AddIgnoreConventionPack();
 
         services.AddMongoRepositories(assembly, mongoConnectionString, databaseName);
+    }
+
+    private static void AddRehearseProcessors(IServiceCollection services, Assembly entitiesAssembly)
+    {
+        var pim = new ProcessorEntitiesInfoMaster();
+        services.AddSingleton(pim);
+
+        var infoTypes = AssemblyExtensionsEx.GetCurrentDomainTypesImplementing<IProcessorEntityInfo>(entitiesAssembly);
+        foreach (var type in infoTypes)
+        {
+            var info = pim.Add(Activator.CreateInstance(type) as IProcessorEntityInfo);
+
+            var infoInterfaceType = TypeCreateExtensions.CreateInterface(
+                typeof(IProcessorEntityInfo<,>), info.EntityType, info.IdType);
+
+            services.AddSingleton(infoInterfaceType, info);
+
+            var processorInterfaceType = TypeCreateExtensions.CreateInterface(
+                typeof(ILearningObjectToRehearseProcessor<,>), info.EntityType, info.IdType);
+
+            var processorConcreteType = TypeCreateExtensions.CreateClass(
+                typeof(LearningObjectToRehearseProcessor<,>), info.EntityType, info.IdType);
+
+            services.AddScoped(processorInterfaceType, processorConcreteType);
+        }
     }
 }

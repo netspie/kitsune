@@ -1,6 +1,6 @@
 ﻿using Corelibs.Basic.Blocks;
 using Corelibs.Basic.DDD;
-using Corelibs.Basic.UseCases;
+using Corelibs.Basic.UseCases.Events;
 using Corelibs.MongoDB;
 using Manabu.Entities.Content.Events;
 using Manabu.Infrastructure.Contexts.Rehearse.EventHandlers;

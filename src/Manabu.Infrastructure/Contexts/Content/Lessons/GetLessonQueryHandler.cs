@@ -11,7 +11,6 @@ using Manabu.Entities.Shared;
 using Manabu.UseCases.Content.Lessons;
 using Mediator;
 using MongoDB.Driver;
-using System.Numerics;
 using System.Security.Claims;
 
 namespace Manabu.Infrastructure.CQRS.Content.Lessons;

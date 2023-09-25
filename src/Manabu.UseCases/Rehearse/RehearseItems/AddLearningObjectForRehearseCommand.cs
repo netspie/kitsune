@@ -1,7 +1,7 @@
 ﻿using Corelibs.Basic.Auth;
 using Corelibs.Basic.Blocks;
 using Corelibs.Basic.Repository;
-using Corelibs.Basic.UseCases;
+using Corelibs.Basic.UseCases.Events;
 using FluentValidation;
 using Manabu.Entities.Content.Events;
 using Manabu.Entities.Content.Users;
