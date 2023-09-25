@@ -7,6 +7,7 @@ using Corelibs.MongoDB;
 using Manabu.Entities.Content._Shared;
 using Manabu.Entities.Content.Events;
 using Manabu.Entities.Content.Users;
+using Manabu.Entities.Rehearse.RehearseEntities;
 using Manabu.Entities.Rehearse.RehearseItems;
 using Manabu.Entities.Shared;
 using Manabu.UseCases.Content;
@@ -21,25 +22,31 @@ public sealed class LearningObjectToRehearseProcessor<TEntity, TId> :
 {
     private readonly MongoClient _mongoClient;
     private readonly MongoConnection _mongoConnection;
+    private readonly ProcessorEntitiesInfoMaster _processorEntitiesInfoMaster;
     private readonly IEventStore _eventStore;
     private readonly IRepository<RehearseItem, RehearseItemId> _rehearseItemRepository;
+    private readonly IRepository<RehearseEntity, RehearseEntityId> _rehearseEntityRepository;
     private readonly IRepository<TEntity, TId> _entityRepository;
     private readonly IProcessorEntityInfo<TEntity, TId> _entityInfo;
 
     public LearningObjectToRehearseProcessor(
         MongoClient mongoClient,
         MongoConnection mongoConnection,
+        ProcessorEntitiesInfoMaster processorEntitiesInfoMaster,
         IEventStore eventStore,
         IRepository<RehearseItem, RehearseItemId> rehearseItemRepository,
         IProcessorEntityInfo<TEntity, TId> entityInfo,
-        IRepository<TEntity, TId> entityRepository)
+        IRepository<TEntity, TId> entityRepository,
+        IRepository<RehearseEntity, RehearseEntityId> rehearseEntityRepository)
     {
         _mongoClient = mongoClient;
         _mongoConnection = mongoConnection;
+        _processorEntitiesInfoMaster = processorEntitiesInfoMaster;
         _eventStore = eventStore;
         _rehearseItemRepository = rehearseItemRepository;
         _entityInfo = entityInfo;
         _entityRepository = entityRepository;
+        _rehearseEntityRepository = rehearseEntityRepository;
     }
 
     public async Task<Result> Process(UserId owner, LearningObjectId learningObjectId)
@@ -59,6 +66,12 @@ public sealed class LearningObjectToRehearseProcessor<TEntity, TId> :
 
         await _eventStore.Save(events);
 
+        var rehearseEntityId = new RehearseEntityId(learningObjectId.Value);
+        var rehearseEntityResult = await _rehearseEntityRepository.GetBy(rehearseEntityId);
+        if (!rehearseEntityResult.ValidateSuccessAndValues())
+            result += await _rehearseEntityRepository.Create(
+                new RehearseEntity(rehearseEntityId, owner, _entityInfo.LearningObjectType));
+
         var modes = _entityInfo.LearningModes;
         if (!_entityInfo.IsLearningItem || modes.IsNullOrEmpty())
             return result;
@@ -76,8 +89,6 @@ public sealed class LearningObjectToRehearseProcessor<TEntity, TId> :
                 rehearseItemId, owner, learningObjectId, learningItemType, mode));
         };
 
-        // TO DO: Add entity of rehearse history? or data?
-
         result += _rehearseItemRepository.Create(rehearseItems);
         if (result.IsSuccess)
             await session.CommitTransactionAsync();
@@ -91,12 +102,13 @@ public sealed class LearningObjectToRehearseProcessor<TEntity, TId> :
         ids.Select(id =>
         {
             var type = id.GetType();
+            var objectType = _processorEntitiesInfoMaster.GetType(id);
 
             return new LearningObjectAddedForRehearseEvent()
             {
                 Id = Guid.NewGuid().ToString(),
                 Timestamp = DateTime.UtcNow.Ticks,
-                ObjectType = _entityInfo.LearningObjectType, // FIX
+                ObjectType = objectType,
                 ObjectId = new LearningObjectId(id.Value),
                 Owner = owner
             };

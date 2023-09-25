@@ -13,11 +13,11 @@ public class LessonInfo : IProcessorEntityInfo<Lesson, LessonId>
     public LessonId CreateId(LearningObjectId id) =>
         new LessonId(id.Value);
 
-    public EntityId[] GetChildLearningItemIds(Lesson lesson) =>
+    public EntityId[] GetChildLearningItemIds(Lesson entity) =>
         ArrayExtensions.CreateArray<EntityId>(
-            lesson.Phrases,
-            lesson.Conversations,
-            lesson.Infos);
+            entity.Phrases,
+            entity.Conversations,
+            entity.Infos);
 
     public Type EntityType => typeof(Lesson);
     public Type IdType => typeof(LessonId);

@@ -66,13 +66,13 @@ public class LearningPropertyType : LearningObjectType
 
 public class LearningItemType : LearningObjectType
 {
-    public static readonly LearningItemType Phrase = new LearningItemType("phrase");
-    public static readonly LearningItemType Word = new LearningItemType("word");
-    public static readonly LearningItemType WordMeaning = new LearningItemType("word-meaning");
-    public static readonly LearningItemType WordFormation = new LearningItemType("word-formation");
-    public static readonly LearningItemType Radical = new LearningItemType("radical");
-    public static readonly LearningItemType Kana = new LearningItemType("kana");
-    public static readonly LearningItemType Kanji = new LearningItemType("kanji");
+    public static readonly LearningItemType Phrase = new("phrase");
+    public static readonly LearningItemType Word = new("word");
+    public static readonly LearningItemType WordMeaning = new("word-meaning");
+    public static readonly LearningItemType WordFormation = new("word-formation");
+    public static readonly LearningItemType Radical = new("radical");
+    public static readonly LearningItemType Kana = new("kana");
+    public static readonly LearningItemType Kanji = new("kanji");
 
     public LearningItemType(string value) : base(value)
     {

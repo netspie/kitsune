@@ -38,7 +38,7 @@ public class GetFlashcardListQueryHandler : IQueryHandler<GetFlashcardListQuery,
     {
         var result = Result<GetFlashcardListQueryResponse>.Success();
 
-        var rootItemType = new LearningItemType(query.RootItemType);
+        var rootItemType = new LearningObjectType(query.RootItemType);
         var targetItemType = new LearningItemType(query.TargetItemType);
         var flashcardMode = new LearningMode(query.FlashcardMode);
         
