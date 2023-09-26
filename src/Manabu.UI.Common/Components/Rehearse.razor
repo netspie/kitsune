@@ -1,0 +1,158 @@
+﻿@using Manabu.UseCases.Content.Courses;
+
+@inherits CoreComponent
+
+@*@if (_dto is null) { return; }*@
+
+<MudStack Class="main-section courses" Style="width: 100%;">
+    <SiteTitle>@SiteTitle.Name</SiteTitle>
+
+    <MudStack Style="margin-top: 25px; display: flex; flex-direction: column; gap: 50px;">
+        <MudGrid>
+            <MudText Typo="Typo.h4" Align="Align.Center" Style="font-weight: bold; font-family: unica; width: 100%;">TODAY</MudText>
+            <MudItem xs="12">
+                <MudGrid Justify=@Justify.SpaceEvenly>
+                    <MudItem xs=4>
+                        <MudPaper Class="d-flex flex-column align-center mud-width-full" Style="justify-content: space-evenly; height: 120px; font-family: unica;">
+                            <MudText Typo="Typo.h3" Align="Align.Center" Style="font-weight: bold; font-family: unica;">23</MudText>
+                            <MudText Typo="Typo.body1" Align="Align.Center">To Review</MudText>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs=4>
+                        <MudPaper Class="d-flex flex-column align-center mud-width-full" Style="justify-content: space-evenly; height: 120px; font-family: unica;">
+                            <MudText Typo="Typo.h3" Align="Align.Center" Style="font-weight: bold; font-family: unica;">7</MudText>
+                            <MudText Typo="Typo.body1" Align="Align.Center">Rehearsed</MudText>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs=4>
+                        <MudPaper Class="d-flex flex-column align-center mud-width-full" Style="justify-content: space-evenly; height: 120px;">
+                            <MudText Typo="Typo.h3" Align="Align.Center" Style="font-weight: bold; font-family: unica;">92</MudText>
+                            <MudText Typo="Typo.body1" Align="Align.Center">Failed</MudText>
+                        </MudPaper>
+                    </MudItem>
+                </MudGrid>
+            </MudItem>
+        </MudGrid>
+        <MudGrid>
+            <MudText Typo="Typo.h4" Align="Align.Center" Style="font-weight: bold; font-family: unica; width: 100%;">TODAY</MudText>
+            <MudItem xs="12">
+                <MudGrid Justify=@Justify.SpaceEvenly>
+                    <MudItem xs=4>
+                        <MudPaper Class="d-flex flex-column align-center mud-width-full" Style="justify-content: space-evenly; height: 120px; font-family: unica;">
+                            <MudText Typo="Typo.h3" Align="Align.Center" Style="font-weight: bold; font-family: unica;">7</MudText>
+                            <MudText Typo="Typo.body1" Align="Align.Center">Items Left Out</MudText>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs=4>
+                        <MudPaper Class="d-flex flex-column align-center mud-width-full" Style="justify-content: space-evenly; height: 120px;">
+                            <MudText Typo="Typo.h3" Align="Align.Center" Style="font-weight: bold; font-family: unica;">92</MudText>
+                            <MudText Typo="Typo.body1" Align="Align.Center">Items Left Out</MudText>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs=4>
+                        <MudPaper Class="d-flex flex-column align-center mud-width-full" Style="justify-content: space-evenly; height: 120px; font-family: unica;">
+                            <MudText Typo="Typo.h3" Align="Align.Center" Style="font-weight: bold; font-family: unica;">30</MudText>
+                            <MudText Typo="Typo.body1" Align="Align.Center">Items To Rehearse</MudText>
+                        </MudPaper>
+                    </MudItem>
+                </MudGrid>
+            </MudItem>
+        </MudGrid>
+        <MudStack>
+            <MudText Typo="Typo.h4" Align="Align.Center" Style="font-weight: bold; font-family: unica; width: 100%;">SPACED REPETITION</MudText>
+        </MudStack>
+    </MudStack>
+    
+
+    @if (_isAdmin)
+    {
+        <MudSwitch @bind-Checked=@_isEdit Label="Edit Mode" Color="Color.Info" />
+    }
+
+</MudStack>
+
+@code {
+    [Inject] public State.SiteTitle SiteTitle { get; set; }
+
+    private CoursesDTO? _dto;
+
+    private List<CourseItemData> _coursesListItems;
+    private List<CourseItemData> _coursesArchivedListItems;
+
+    protected override async Task OnInitializedAsyncImpl()
+    {
+        SiteTitle.Rename("REHEARSE");
+        await RefreshViewModel();
+    }
+
+    #region Courses
+
+    private async Task<bool> OnAddCourseItem(
+        EditableList.TreeItemData item, int index, MenuItem menuItem)
+    {
+        if (!await Auth.IsAdmin())
+            return false;
+
+        await CommandExecutor.Execute(new CreateCourseCommand(item.Name));
+        await RefreshView();
+
+        return true;
+    }
+
+    private async Task OnRemoveCourseItem(EditableList.TreeItemData item, MenuItem menuItem) =>
+        await ExecuteAdminViewAction(() => CommandExecutor.Execute(
+            new RemoveCourseCommand(item.Id)));
+
+    private async Task OnCourseItemClick(EditableList.TreeItemData item)
+    {
+        Navigation.NavigateTo($"courses/{item.Id}");
+    }
+
+    private EditableList.TreeItemData CreateCustomItemData(int index)
+    {
+        return new CourseItemData("", "New Course", "");
+    }
+
+    private MenuItem[] CoursesMenuItemsRoot = new MenuItem[]
+    {
+        MenuItems.AddChildAsLast,
+        MenuItems.AddChildAsFirst
+    };
+
+    private MenuItem[] CourseMenuItems = new MenuItem[]
+    {
+        MenuItems.AddSibling,
+        MenuItems.Remove
+    };
+
+    #endregion
+
+    #region Archived Courses
+
+    private MenuItem[] ArchivedCourseMenuItems = new MenuItem[]
+    {
+        MenuItems.AddSibling with { Name = "Restore" },
+    };
+
+    #endregion
+
+    protected override async Task RefreshViewModel()
+    {
+        //var response = await QueryExecutor.Execute<GetCoursesQuery, GetCoursesQueryResponse>();
+
+        //_dto = response.Content;
+
+        //_coursesListItems = _dto.Courses?.Select(c => new CourseItemData(c.Id, c.Name, ""))?.ToList();
+        //_coursesArchivedListItems = _dto.CoursesArchived?.Select(c => new CourseItemData(c.Id, c.Name, ""))?.ToList();
+    }
+
+    public class CourseItemData : EditableList.TreeItemData
+    {
+        public string Author { get; }
+
+        public CourseItemData(string id, string name, string author) : base(id, name)
+        {
+            Author = author;
+        }
+    }
+}
