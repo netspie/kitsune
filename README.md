@@ -27,6 +27,10 @@ For japanese language learners - address the following problems (just some among
 - Hard to get back and rehearse your knowledge in an easy way. No automation. No challenging tasks.  
 - If there are high quality materials, then they are costly.  
 
+## Architecture
+
+![System Context Diagram](/docs/images/System%20Context%20Diagram.png)
+
 ## Design
 
 #### User Scenarios
