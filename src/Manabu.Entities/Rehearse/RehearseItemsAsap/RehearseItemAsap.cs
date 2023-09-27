@@ -9,16 +9,19 @@ public class RehearseItemAsap : Entity<RehearseItemId>, IAggregateRoot<RehearseI
     public const string DefaultCollectionName = "rehearseItemsAsap";
 
     public UserId Owner { get; init; }
+    public LearningObjectId ItemId { get; init; }
     public LearningItemType ItemType { get; init; }
     public LearningMode Mode { get; init; }
 
     public RehearseItemAsap(
         RehearseItemId id,
         UserId owner,
+        LearningObjectId itemId,
         LearningItemType itemType,
         LearningMode mode) : base(id)
     {
         Owner = owner;
+        ItemId = itemId;
         ItemType = itemType;
         Mode = mode;
     }

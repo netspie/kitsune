@@ -1,4 +1,5 @@
 ﻿@using Manabu.UseCases.Content.Courses;
+@using Manabu.UseCases.Rehearse.RehearseItemLists;
 @using Manabu.UseCases.Rehearse.RehearseItems;
 
 @inherits CoreComponent
@@ -101,57 +102,18 @@
     protected override async Task OnInitializedAsyncImpl()
     {
         SiteTitle.Rename("REHEARSE");
-        await RefreshViewModel();
     }
 
-    #region Courses
+    #region Spaced Repetition
 
-    private async Task<bool> OnAddCourseItem(
-        EditableList.TreeItemData item, int index, MenuItem menuItem)
+    private async Task<bool> OnRehearseNowButtonClick()
     {
-        if (!await Auth.IsAdmin())
-            return false;
-
-        await CommandExecutor.Execute(new CreateCourseCommand(item.Name));
-        await RefreshView();
+        var response = await QueryExecutor.Execute<
+            GetSpacedRehearseItemListQuery, GetSpacedRehearseItemListQueryResponse>(
+                new GetSpacedRehearseItemListQuery());
 
         return true;
     }
-
-    private async Task OnRemoveCourseItem(EditableList.TreeItemData item, MenuItem menuItem) =>
-        await ExecuteAdminViewAction(() => CommandExecutor.Execute(
-            new RemoveCourseCommand(item.Id)));
-
-    private async Task OnCourseItemClick(EditableList.TreeItemData item)
-    {
-        Navigation.NavigateTo($"courses/{item.Id}");
-    }
-
-    private EditableList.TreeItemData CreateCustomItemData(int index)
-    {
-        return new CourseItemData("", "New Course", "");
-    }
-
-    private MenuItem[] CoursesMenuItemsRoot = new MenuItem[]
-    {
-        MenuItems.AddChildAsLast,
-        MenuItems.AddChildAsFirst
-    };
-
-    private MenuItem[] CourseMenuItems = new MenuItem[]
-    {
-        MenuItems.AddSibling,
-        MenuItems.Remove
-    };
-
-    #endregion
-
-    #region Archived Courses
-
-    private MenuItem[] ArchivedCourseMenuItems = new MenuItem[]
-    {
-        MenuItems.AddSibling with { Name = "Restore" },
-    };
 
     #endregion
 
@@ -160,15 +122,5 @@
         var response = await QueryExecutor.Execute<GetRehearseViewQuery, GetRehearseViewQueryResponse>();
 
         _dto = response.Content;
-    }
-
-    public class CourseItemData : EditableList.TreeItemData
-    {
-        public string Author { get; }
-
-        public CourseItemData(string id, string name, string author) : base(id, name)
-        {
-            Author = author;
-        }
     }
 }
