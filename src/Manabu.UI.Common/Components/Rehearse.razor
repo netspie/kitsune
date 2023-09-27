@@ -1,39 +1,40 @@
 ﻿@using Manabu.UseCases.Content.Courses;
+@using Manabu.UseCases.Rehearse.RehearseItems;
 
 @inherits CoreComponent
 
-@*@if (_dto is null) { return; }*@
+@if (_dto is null) { return; }
 
 <MudStack Class="main-section courses" Style="width: 100%;">
     <SiteTitle>@SiteTitle.Name</SiteTitle>
 
     <MudStack Style="margin-top: 25px; display: flex; flex-direction: column; gap: 50px;">
         <MudGrid>
-            <MudText Typo="Typo.h4" Align="Align.Center" Style="font-weight: bold; font-family: unica; width: 100%;">TODAY</MudText>
+            @*<MudText Typo="Typo.h4" Align="Align.Center" Style="font-weight: bold; font-family: unica; width: 100%;">TODAY</MudText>*@
             <MudItem xs="12">
                 <MudGrid Justify=@Justify.SpaceEvenly>
-                    <MudItem xs=4>
-                        <MudPaper Class="d-flex flex-column align-center mud-width-full" Style="justify-content: space-evenly; height: 120px; font-family: unica;">
-                            <MudText Typo="Typo.h3" Align="Align.Center" Style="font-weight: bold; font-family: unica;">23</MudText>
-                            <MudText Typo="Typo.body1" Align="Align.Center">To Review</MudText>
+                    <MudItem xs=6>
+                        <MudPaper Elevation=0 Class="d-flex flex-column align-center mud-width-full" Style="justify-content: space-evenly; height: 120px; font-family: unica; border: solid; border-width: 1px;">
+                            <MudText Typo="Typo.h3" Align="Align.Center" Style="font-weight: bold; font-family: unica;">@_dto.TotalRehearseItems</MudText>
+                            <MudText Typo="Typo.body1" Align="Align.Center">Total Rehearse Items</MudText>
                         </MudPaper>
                     </MudItem>
-                    <MudItem xs=4>
-                        <MudPaper Class="d-flex flex-column align-center mud-width-full" Style="justify-content: space-evenly; height: 120px; font-family: unica;">
-                            <MudText Typo="Typo.h3" Align="Align.Center" Style="font-weight: bold; font-family: unica;">7</MudText>
-                            <MudText Typo="Typo.body1" Align="Align.Center">Rehearsed</MudText>
+                    <MudItem xs=6>
+                        <MudPaper Elevation=0 Class ="d-flex flex-column align-center mud-width-full" Style="justify-content: space-evenly; height: 120px; font-family: unica; border: solid; border-width: 1px;">
+                            <MudText Typo="Typo.h3" Align="Align.Center" Style="font-weight: bold; font-family: unica;">@_dto.TotalRehearseCollections</MudText>
+                            <MudText Typo="Typo.body1" Align="Align.Center">Total Rehearse Collections</MudText>
                         </MudPaper>
                     </MudItem>
-                    <MudItem xs=4>
+                    @*<MudItem xs=4>
                         <MudPaper Class="d-flex flex-column align-center mud-width-full" Style="justify-content: space-evenly; height: 120px;">
                             <MudText Typo="Typo.h3" Align="Align.Center" Style="font-weight: bold; font-family: unica;">92</MudText>
                             <MudText Typo="Typo.body1" Align="Align.Center">Failed</MudText>
                         </MudPaper>
-                    </MudItem>
+                    </MudItem>*@
                 </MudGrid>
             </MudItem>
         </MudGrid>
-        <MudGrid>
+        @*<MudGrid>
             <MudText Typo="Typo.h4" Align="Align.Center" Style="font-weight: bold; font-family: unica; width: 100%;">TODAY</MudText>
             <MudItem xs="12">
                 <MudGrid Justify=@Justify.SpaceEvenly>
@@ -57,7 +58,7 @@
                     </MudItem>
                 </MudGrid>
             </MudItem>
-        </MudGrid>
+        </MudGrid>*@
         <MudStack>
             <MudText Typo="Typo.h4" Align="Align.Center" Style="font-weight: bold; font-family: unica; width: 100%;">SPACED REPETITION</MudText>
         </MudStack>
@@ -74,10 +75,7 @@
 @code {
     [Inject] public State.SiteTitle SiteTitle { get; set; }
 
-    private CoursesDTO? _dto;
-
-    private List<CourseItemData> _coursesListItems;
-    private List<CourseItemData> _coursesArchivedListItems;
+    private RehearseViewDTO? _dto;
 
     protected override async Task OnInitializedAsyncImpl()
     {
@@ -138,12 +136,9 @@
 
     protected override async Task RefreshViewModel()
     {
-        //var response = await QueryExecutor.Execute<GetCoursesQuery, GetCoursesQueryResponse>();
+        var response = await QueryExecutor.Execute<GetRehearseViewQuery, GetRehearseViewQueryResponse>();
 
-        //_dto = response.Content;
-
-        //_coursesListItems = _dto.Courses?.Select(c => new CourseItemData(c.Id, c.Name, ""))?.ToList();
-        //_coursesArchivedListItems = _dto.CoursesArchived?.Select(c => new CourseItemData(c.Id, c.Name, ""))?.ToList();
+        _dto = response.Content;
     }
 
     public class CourseItemData : EditableList.TreeItemData

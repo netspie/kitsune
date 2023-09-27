@@ -13,7 +13,7 @@ using Manabu.Entities.Shared;
 using Manabu.UseCases.Content;
 using MongoDB.Driver;
 
-namespace Manabu.Infrastructure.CQRS.Content;
+namespace Manabu.Infrastructure.Contexts.Rehearse;
 
 public sealed class LearningObjectToRehearseProcessor<TEntity, TId> :
     ILearningObjectToRehearseProcessor<TEntity, TId>
@@ -70,7 +70,7 @@ public sealed class LearningObjectToRehearseProcessor<TEntity, TId> :
         var rehearseEntityResult = await _rehearseEntityRepository.GetBy(rehearseEntityId);
         if (!rehearseEntityResult.ValidateSuccessAndValues())
             result += await _rehearseEntityRepository.Create(
-                new RehearseEntity(rehearseEntityId, owner, _entityInfo.LearningObjectType));
+                new RehearseEntity(rehearseEntityId, owner, _entityInfo.LearningObjectType, _entityInfo.IsLearningItem));
 
         var modes = _entityInfo.LearningModes;
         if (!_entityInfo.IsLearningItem || modes.IsNullOrEmpty())

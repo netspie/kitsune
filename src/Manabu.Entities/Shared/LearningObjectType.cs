@@ -55,6 +55,23 @@ public class LearningContainerType
     }
 
     public LearningObjectType ToObjectType() => new(Value);
+
+    public override bool Equals(object obj)
+    {
+        if (obj is LearningContainerType other)
+            return Value == other.Value;
+
+        return false;
+    }
+
+    public override int GetHashCode() =>
+        Value.GetHashCode();
+
+    public static bool operator ==(LearningContainerType left, LearningContainerType right) =>
+        left.Equals(right);
+
+    public static bool operator !=(LearningContainerType left, LearningContainerType right) =>
+        !(left == right);
 }
 
 public class LearningPropertyType
@@ -72,6 +89,23 @@ public class LearningPropertyType
     }
 
     public LearningObjectType ToObjectType() => new(Value);
+
+    public override bool Equals(object obj)
+    {
+        if (obj is LearningPropertyType other)
+            return Value == other.Value;
+
+        return false;
+    }
+
+    public override int GetHashCode() =>
+        Value.GetHashCode();
+
+    public static bool operator ==(LearningPropertyType left, LearningPropertyType right) =>
+        left.Equals(right);
+
+    public static bool operator !=(LearningPropertyType left, LearningPropertyType right) =>
+        !(left == right);
 }
 
 public class LearningItemType
@@ -92,4 +126,21 @@ public class LearningItemType
     }
 
     public LearningObjectType ToObjectType() => new(Value);
+
+    public override bool Equals(object obj)
+    {
+        if (obj is LearningItemType other)
+            return Value == other.Value;
+
+        return false;
+    }
+
+    public override int GetHashCode() =>
+        Value.GetHashCode();
+
+    public static bool operator ==(LearningItemType left, LearningItemType right) =>
+        left.Equals(right);
+
+    public static bool operator !=(LearningItemType left, LearningItemType right) =>
+        !(left == right);
 }

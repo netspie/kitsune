@@ -10,14 +10,17 @@ public class RehearseEntity : Entity<RehearseEntityId>, IAggregateRoot<RehearseE
 
     public UserId Owner { get; init; }
     public LearningObjectType ObjectType { get; init; }
+    public bool IsItem { get; init; }
 
     public RehearseEntity(
         RehearseEntityId id,
         UserId owner,
-        LearningObjectType objectType) : base(id)
+        LearningObjectType objectType,
+        bool isItem) : base(id)
     {
         Owner = owner;
         ObjectType = objectType;
+        IsItem = isItem;
     }
 }
 
