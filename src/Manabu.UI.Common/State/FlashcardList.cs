@@ -2,5 +2,7 @@
 
 public class FlashcardList
 {
-    public string[] ItemIds { get; set; }
+    public Flashcard[] Items { get; set; }
+
+    public record Flashcard(string ItemId, string? RehearseItemId = null, string? ItemType = null, string? Mode = null);
 }

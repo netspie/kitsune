@@ -104,5 +104,5 @@ public class GetRehearseItemListQueryHandler : IQueryHandler<GetSpacedRehearseIt
         )));
     }
 
-    public record ItemProjection(RehearseItemId Id, LearningObjectId ItemId, LearningItemType ItemType, LearningMode Mode);
+    public record ItemProjection(LearningObjectId Id, LearningObjectId ItemId, LearningItemType ItemType, LearningMode Mode);
 }

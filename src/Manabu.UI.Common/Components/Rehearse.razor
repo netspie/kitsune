@@ -1,4 +1,5 @@
-﻿@using Manabu.UseCases.Content.Courses;
+﻿@using Manabu.UI.Common.State;
+@using Manabu.UseCases.Content.Courses;
 @using Manabu.UseCases.Rehearse.RehearseItemLists;
 @using Manabu.UseCases.Rehearse.RehearseItems;
 
@@ -66,7 +67,7 @@
                 <MultiSelect Name="Type" Values=@_itemTypes />
                 <MultiSelect Name="Mode" Values=@_modes />
             </MudStack>
-            <MudButton Variant=@Variant.Filled DisableElevation=true>Rehearse Now</MudButton>
+            <MudButton Variant=@Variant.Filled DisableElevation=true OnClick=@OnRehearseNowButtonClick>Rehearse Now</MudButton>
         </MudStack>
     </MudStack>
     
@@ -80,6 +81,7 @@
 
 @code {
     [Inject] public State.SiteTitle SiteTitle { get; set; }
+    [Inject] public State.FlashcardList _flashcardListState { get; set; }
 
     private RehearseViewDTO? _dto;
 
@@ -112,6 +114,15 @@
             GetSpacedRehearseItemListQuery, GetSpacedRehearseItemListQueryResponse>(
                 new GetSpacedRehearseItemListQuery());
 
+        _flashcardListState.Items = response.Content.Flashcards
+            .Select(card => new FlashcardList.Flashcard(
+                card.LearningItemId,
+                card.RehearseItemId,
+                card.Type,
+                card.Mode)).ToArray();
+
+        Navigation.NavigateTo($"/flashcard");
+
         return true;
     }
 
@@ -120,7 +131,6 @@
     protected override async Task RefreshViewModel()
     {
         var response = await QueryExecutor.Execute<GetRehearseViewQuery, GetRehearseViewQueryResponse>();
-
         _dto = response.Content;
     }
 }

@@ -1,26 +1,47 @@
 ﻿@using Corelibs.Basic.Maths;
 @using Corelibs.Basic.Storage;
 @using Manabu.Entities.Content.Audios;
+@using Manabu.UI.Common.State;
 @using Manabu.UseCases.Content.Flashcards;
 @using Microsoft.AspNetCore.WebUtilities;
 
 @inherits CoreComponent
 
+@if (_flashcardListState.Items.IsNullOrEmpty())
+{
+    <h3 style="width: 100%; text-align: center;">No Items To Show!</h3>
+    return;
+}
+
 @if (_dto is null) { return; }
 
 <div>
-    <MudStack Class="flashcard" Style="position: absolute; left: 0; align-items: center; justify-content: space-evenly; height: 80vh; width: 100%; padding: 35px;
-    ">
-        <MudText Class="count-text">
+    <MudStack Class="flashcard" Style="position: absolute; left: 0; align-items: center; justify-content: space-evenly; height: 80vh; width: 100%; padding: 35px;">
+        <MudStack Row=true Class="count-text">
             <span>@(_i + 1)</span>
-            &nbsp;/&nbsp;
-            <span>@(_itemIds.Length)</span>
-        </MudText>
+            /
+            <span>@(_items.Length)</span>
+        </MudStack>
+
+        <MudStack Row=true Class="info-panel">
+            <span style="text-transform: uppercase; font-family: Unica;">@_items[_i].ItemType,</span>
+            <span style="text-transform: uppercase; font-family: Unica;">@_items[_i].Mode</span>
+        </MudStack>
 
         <MudStack Style="align-items: center;">
             @foreach (var question in _dto.Questions)
             {
-                <MudText Style="font-size: 16px; text-align: center;">@question.Text</MudText>
+                @if (question.Type == "audio")
+                {
+                    <audio controls style="padding-bottom: 10px;" @key=@question.Text>
+                        <source src=@($"{AudioStorage.BaseReadPath}/{question.Text}?v={DateTime.Now.Ticks}") type="audio/mpeg">
+                        Your browser does not support the audio element.
+                    </audio>
+                }
+                else
+                {
+                    <MudText Style="font-size: 16px; text-align: center;">@question.Text</MudText>
+                }
             }
         </MudStack>
 
@@ -55,20 +76,19 @@
     </MudStack>
 </div>
 
-
 @code {
     [Parameter] public string ItemId { get; set; }
 
     [Inject] public State.FlashcardList _flashcardListState { get; set; }
     [Inject] public IMediaStorage<Audio> AudioStorage { get; set; }
 
-    private string _rootItemId;
-    private string _itemType;
-    private string _mode;
+    private string? _rootItemId;
+    private string? _itemType;
+    private string? _mode;
 
     private bool _showAnswer;
 
-    private string[] _itemIds;
+    private FlashcardList.Flashcard[] _items;
     private int _i;
 
     private FlashcardDTO _dto;
@@ -78,7 +98,10 @@
     protected override void OnInitialized()
     {
         SiteTitle.Rename("");
-        _itemIds = _flashcardListState.ItemIds.Shuffle().ToArray();
+        if (_flashcardListState.Items.IsNullOrEmpty())
+            return;
+
+        _items = _flashcardListState.Items.Shuffle().ToArray();
 
         var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
         if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("itemId", out var itemId))
@@ -93,11 +116,17 @@
 
     protected override async Task RefreshViewModel()
     {
+        if (_items.IsNullOrEmpty())
+            return;
+
+        var item = _items[_i];
         var response = await QueryExecutor.Execute<GetFlashcardQuery, GetFlashcardQueryResponse>(
-            new GetFlashcardQuery(_itemIds[_i], _itemType, _mode));
+            new GetFlashcardQuery(item.ItemId, item.ItemType ?? _itemType, item.Mode ?? _mode));
 
         _dto = response?.Content;
         _showAnswer = false;
+
+        await InvokeAsync(StateHasChanged);
     }
 
     private void OnAnswerClick(MouseEventArgs args)
@@ -107,13 +136,13 @@
 
     private Task OnPrevClick(MouseEventArgs args)
     {
-        _i = (--_i).Clamp(_itemIds.Length - 1);
+        _i = (--_i).Clamp(_items.Length - 1);
         return RefreshViewModel();
     }
 
     private Task OnNextClick(MouseEventArgs args)
     {
-        _i = (++_i).Clamp(_itemIds.Length - 1);
+        _i = (++_i).Clamp(_items.Length - 1);
         return RefreshViewModel();
     }
 }

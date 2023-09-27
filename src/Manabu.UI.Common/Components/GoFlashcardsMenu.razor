@@ -1,4 +1,5 @@
-﻿@using Manabu.UseCases.Content.FlashcardLists;
+﻿@using Manabu.UI.Common.State;
+@using Manabu.UseCases.Content.FlashcardLists;
 
 <div style="margin-top: 15px;">
     @*<MudExpansionPanels DisableBorders="true" Elevation="0"
@@ -75,7 +76,8 @@
         var response = await QueryExecutor.Execute<GetFlashcardListQuery, GetFlashcardListQueryResponse>(
             new GetFlashcardListQuery(RootItemId, RootItemType, itemType, mode));
 
-        _flashcardListState.ItemIds = response.Content.ItemIds;
+        _flashcardListState.Items = response.Content.ItemIds
+            .Select(id => new FlashcardList.Flashcard(id, itemType, mode)).ToArray();
 
         Navigation.NavigateTo($"/flashcard?itemType={itemType}&mode={mode}&itemId={RootItemId}");
     }

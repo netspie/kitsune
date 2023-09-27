@@ -63,7 +63,8 @@ public class JapaneseFlashcardResolver : IFlashcardResolver
         {
             // Questions
             var questions = new List<FlashcardItemDTO>();
-            questions.Add(new(phrase.Id.Value, phrase.Audios.First().Value, LearningPropertyType.Audio.Value));
+            var audio = await _audioRepository.Get(phrase.Audios.First(), result);
+            questions.Add(new(phrase.Id.Value, audio.Href, LearningPropertyType.Audio.Value));
 
             if (phrase.Contexts?.Count > 0)
                 questions.Add(new FlashcardItemDTO(phraseId, phrase.Contexts.First(), LearningPropertyType.Context.Value));
