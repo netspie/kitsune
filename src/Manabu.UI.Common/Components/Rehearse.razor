@@ -61,6 +61,11 @@
         </MudGrid>*@
         <MudStack>
             <MudText Typo="Typo.h4" Align="Align.Center" Style="font-weight: bold; font-family: unica; width: 100%;">SPACED REPETITION</MudText>
+            <MudStack Row=true>
+                <MultiSelect Name="Type" Values=@_itemTypes />
+                <MultiSelect Name="Mode" Values=@_modes />
+            </MudStack>
+            <MudButton Variant=@Variant.Filled DisableElevation=true>Rehearse Now</MudButton>
         </MudStack>
     </MudStack>
     
@@ -76,6 +81,22 @@
     [Inject] public State.SiteTitle SiteTitle { get; set; }
 
     private RehearseViewDTO? _dto;
+
+    private string _itemType = "";
+    private readonly string[] _itemTypes =
+    {
+        "Phrase"
+    };
+    private IEnumerable<string> _itemTypesSelected { get; set; } = new HashSet<string>() { "Any" };
+
+    private string _mode = "";
+    private readonly string[] _modes =
+    {
+        "Reading",
+        "Listening",
+        "Speaking"
+    };
+    private IEnumerable<string> _modesSelected { get; set; } = new HashSet<string>() { "Any" };
 
     protected override async Task OnInitializedAsyncImpl()
     {

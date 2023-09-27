@@ -58,13 +58,13 @@
         if (relative.IsEmpty())
             _layoutFree = true;
 
-        //await RedirectIfNotSignedIn();
+        await RedirectIfNotSignedIn();
         Navigation.LocationChanged += OnNavigationLocationChanged;
     }
 
     private async void OnNavigationLocationChanged(object sender, LocationChangedEventArgs args)
     {
-        //RedirectIfNotSignedIn();
+        RedirectIfNotSignedIn();
         var relative = Navigation.ToBaseRelativePath(Navigation.Uri);
         _layoutFree = relative.IsEmpty();
 
