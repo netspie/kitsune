@@ -30,25 +30,31 @@
 - Subscription Payments - allow user to pay and subscribe for additional benefits, access to all content and features
 - User settings - change password, username etc.
 
+#### Deliverables
+
+| Current State | Planned |
+|----------|----------|
+| Single web server app with ui server side ui rendering deployed | Mobile application for android, later for iOS  |
+
 #### Quality Attributes
 
 *Current State*
+
 Since the application is just a prototype and feature development time is a priority, no serious measurements has been performed yet.
 
 *Planned*
+
 - monitoring and observability - logging, real-time user activity
 - maintainability - unit tests, E2E tests
 - performance - stress, load, endurance tests, etc.
-
 - api and offline access
 
-#### Deliverables
+#### Content
 
-*Current State*
-- single web server app with ui server side ui rendering deployed
-
-*Planned*
-- mobile application for android, later for iOS 
+| Current State | Planned |
+|----------|----------|
+| Test Lesson and Phrase Content | Custom Content Created in collaboration with language experts |
+|  | Various media like anime or manga subtitles, songs lyrics and other possible to be added by anyone |
 
 #### Purpose
 
