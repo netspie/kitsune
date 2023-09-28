@@ -1,7 +1,6 @@
 ﻿using Corelibs.Basic.Auth;
 using Corelibs.Basic.Blocks;
 using Corelibs.Basic.Collections;
-using Corelibs.Basic.DDD;
 using Corelibs.Basic.Repository;
 using Corelibs.MongoDB;
 using Manabu.Entities.Content.Users;
@@ -12,7 +11,7 @@ using Mediator;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
-using System.Numerics;
+using System.Linq.Expressions;
 using System.Security.Claims;
 
 namespace Manabu.Infrastructure.Contexts.RehearseItemLists;
@@ -53,22 +52,15 @@ public class GetRehearseItemListQueryHandler : IQueryHandler<GetSpacedRehearseIt
         // ITEMS - Items to review in general
         var itemsCollection = _mongoConnection.Database.GetCollection<RehearseItem>(RehearseItem.DefaultCollectionName);
         var itemsFilter = Builders<RehearseItem>.Filter.Eq("Owner", userId);
+        if (!query.DayIntervals.IsNullOrEmpty())
+            itemsFilter &= GetFilter<RehearseItem, int, int>(x => x.RepsInterval, query.DayIntervals, m => m);
+        else
+            itemsFilter &= GetFilter<RehearseItem, int, int>(x => x.RepsInterval, new[] { 0 }, m => m);
         if (!query.ItemTypes.IsNullOrEmpty())
-        {
-            var itemsTypeFilter = Builders<RehearseItem>.Filter.Eq(x => x.ItemType, new LearningItemType(query.ItemTypes[0].ToLower()));
-            for (int i = 1; i < query.ItemTypes.Length; i++)
-                itemsTypeFilter |= Builders<RehearseItem>.Filter.Eq(x => x.ItemType, new LearningItemType(query.ItemTypes[i].ToLower()));
-
-            itemsFilter &= itemsTypeFilter;
-        }
+            itemsFilter &= GetFilter<RehearseItem, string, LearningItemType>(x => x.ItemType, query.ItemTypes, m => new LearningItemType(m.ToLower()));
         if (!query.Modes.IsNullOrEmpty())
-        {
-            var modeFilter = Builders<RehearseItem>.Filter.Eq(x => x.Mode, new LearningMode(query.Modes[0].ToLower()));
-            for (int i = 1; i < query.Modes.Length; i++)
-                modeFilter |= Builders<RehearseItem>.Filter.Eq(x => x.Mode, new LearningMode(query.Modes[i].ToLower()));
+            itemsFilter &= GetFilter<RehearseItem, string, LearningMode>(x => x.Mode, query.Modes, m => new LearningMode(m.ToLower()));
 
-            itemsFilter &= modeFilter;
-        }
         var itemsProjection = Builders<RehearseItem>.Projection.Include(x => x.Id).Include(x => x.ItemId).Include(x => x.ItemType).Include(x => x.Mode);
         var itemsHint = new BsonDocument(new Dictionary<string, object>()
         {
@@ -79,11 +71,20 @@ public class GetRehearseItemListQueryHandler : IQueryHandler<GetSpacedRehearseIt
         });
         var itemsDocs = itemsAsap.Length == SessionItemCount ?
             new() :
-            await itemsCollection
-                .Find(itemsFilter, new FindOptions() { Hint = itemsHint })
-                .Project(itemsProjection)
-                .Limit(SessionItemCount - itemsAsap.Length)
-                .ToListAsync();
+                query.Random ?
+                    await itemsCollection
+                        .Aggregate(new AggregateOptions() { Hint = itemsHint })
+                        .Match(itemsFilter)
+                        .AppendStage<RehearseItem>($@"{{ $sample: {{ size: {SessionItemCount - itemsAsap.Length} }} }}")
+                        .Project(itemsProjection)
+                        .ToListAsync() :
+
+                    await itemsCollection
+                        .Find(itemsFilter, new FindOptions() { Hint = itemsHint })
+                        .Project(itemsProjection)
+                        .Limit(SessionItemCount - itemsAsap.Length)
+                        .ToListAsync();
+
         var items = itemsDocs.Select(doc => BsonSerializer.Deserialize<ItemProjection>(doc)).ToArray();
 
         // ITEMS TOTAL
@@ -102,6 +103,16 @@ public class GetRehearseItemListQueryHandler : IQueryHandler<GetSpacedRehearseIt
                     i.Mode.Value))
             .ToArray()
         )));
+    }
+
+    private static FilterDefinition<TEntity> GetFilter<TEntity, TFieldIn, TFieldOut>(
+            Expression<Func<TEntity, TFieldOut>> field, TFieldIn[] array, Func<TFieldIn, TFieldOut> transform)
+    {
+        var filter = Builders<TEntity>.Filter.Eq(field, transform(array[0]));
+        for (int i = 1; i < array.Length; i++)
+            filter |= Builders<TEntity>.Filter.Eq(field, transform(array[i]));
+
+        return filter;
     }
 
     public record ItemProjection(LearningObjectId Id, LearningObjectId ItemId, LearningItemType ItemType, LearningMode Mode);

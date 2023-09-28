@@ -54,3 +54,60 @@ public class RehearseItemId : EntityId
     {
     }
 }
+
+public static class SpacedRepetitionFunctions
+{
+    public static float CalculateEFactorAndNextDayInterval(
+        Difficulty difficulty,
+        float ef,
+        ref int repsDone,
+        ref int repsInterval,
+        out bool shouldReviewAsap)
+    {
+        shouldReviewAsap = difficulty < Difficulty.Easy;
+        if (difficulty < Difficulty.Challenging)
+        {
+            repsDone = 1;
+            return ef;
+        }
+        else
+        {
+            repsInterval = CalculateNextDayInterval(repsDone, ef);
+            repsDone++;
+            return CalculateEFactor(difficulty, ef);
+        }
+    }
+
+    /// <summary>
+    /// Calculate next e-factor value based on given difficulty and previous e-factor.
+    /// </summary>
+    /// <param name="q">Given difficulty of rehearse item</param>
+    /// <param name="ef">Previous e-factor of the rehearse item</param>
+    /// <returns></returns>
+    private static float CalculateEFactor(Difficulty q, float ef)
+    {
+        int maxQ = Difficulty.Obvious.Value;
+        var diff = (0.1f - (maxQ - q) * (0.08f + (maxQ - q) * 0.02f));
+        ef += diff;
+        return ef < 1.3f ? 1.3f : ef;
+    }
+
+    private static int CalculateNextDayInterval(int repsDone, float eFactor) =>
+        CalculateNextDayInterval(repsDone, (int)Math.Round(eFactor));
+
+    private static int CalculateNextDayInterval(int repsDone, int eFactor)
+    {
+        return repsDone switch
+        {
+            1 => 1,
+            2 => 1,
+            3 => 2,
+            4 => 2,
+            5 => 2,
+            6 => 3,
+            7 => 4,
+            _ when repsDone > 2 => CalculateNextDayInterval(repsDone - 1, eFactor) * eFactor,
+            _ => 1
+        };
+    }
+}

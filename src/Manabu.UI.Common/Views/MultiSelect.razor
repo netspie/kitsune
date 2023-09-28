@@ -1,5 +1,5 @@
 ﻿
-<MudSelect T=string Label=@Name MultiSelection=true @bind-SelectedValues=@_selected>
+<MudSelect T=string Label=@Name MultiSelection=true @bind-SelectedValues=@Selected>
     @foreach (var value in Values)
     {
         <MudSelectItem T="string" Value=@value>@value</MudSelectItem>
@@ -10,10 +10,10 @@
     [Parameter] public string Name { get; set; }
     [Parameter] public string[] Values { get; set; }
 
-    private IEnumerable<string> _selected { get; set; }
+    public IEnumerable<string> Selected { get; set; }
 
     protected override void OnInitialized()
     {
-        _selected = new HashSet<string>(Values);
+        Selected = new HashSet<string>(Values);
     }
 }
