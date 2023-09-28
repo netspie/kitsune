@@ -28,6 +28,7 @@
 - Allow any user for adding content by giving a proper role and allow for submitting it for global publish
 - Rehearse settings - customize schedule, repetition day intervals, max rehearse items per day + max new items to learn per day
 - Subscription Payments - allow user to pay and subscribe for additional benefits, access to all content and features
+- Global search
 - User settings - change password, username etc.
 
 #### Deliverables
