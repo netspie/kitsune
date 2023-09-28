@@ -10,13 +10,25 @@
 #### Demo Urls
 &nbsp;&nbsp;&nbsp;&nbsp; https://kitsunestudy.net
 
-#### High Level Features
+#### Features
 
-- Create, edit and explore learning content - courses, lessons, conversations, phrases, vocabulary and various media
-- Turn anything into a flashcard list in desired, customizable form - for reading, listening, speaking, writing practice
-- Track progress of learned material, adjust for own needs
+*Current State*
 
-#### Goals
+- Official Content Creation - Course, Conversations and phrases - add, edit and explore learning content - text and audio
+- Flashcard List Generation - Phrases - turn any lesson or conversation phrases into a flashcard list in any mode - reading, listening, speaking
+- Progress Tracking progress - view basic statistics of learned material
+- Spaced Repetition Flashcard Generation - Rehearse learned phrases in spaced repetition mode with basic filtering options by mode
+
+*Planned*
+
+- Various Content Creation - kana, kanji, vocabulary, various media - anime, manga, songs, etc.
+- Categorization - by theme, linguistics, situation, formality, dialects, jargons
+- Flashcard List Generation - kana, kanji, words and its inflections
+- Multiselection - select desired content items and add for rehearse or generate flashcards instantly
+- Allow any user for adding content by giving a proper role and allow for submitting it for global publish
+- 
+
+#### Purpose
 
 For japanese language learners - address the following problems (just some among many):  
   
@@ -29,6 +41,7 @@ For japanese language learners - address the following problems (just some among
 
 ## Architecture
 
+### System Context Diagram
 ![System Context Diagram](/docs/images/System%20Context%20Diagram.png)
 
 ## Design
