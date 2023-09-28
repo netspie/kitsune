@@ -26,41 +26,41 @@ RUN dotnet build "Corelibs.MongoDB.csproj" -c Release -o /app/build
 
 # Manabu.Entities
 WORKDIR /src
-COPY ["manabu/src/Manabu.Entities/Manabu.Entities.csproj", "Manabu.Entities/"]
+COPY ["kitsune/src/Manabu.Entities/Manabu.Entities.csproj", "Manabu.Entities/"]
 RUN dotnet restore "Manabu.Entities/Manabu.Entities.csproj"
-COPY ["manabu/src", "." ]
+COPY ["kitsune/src", "." ]
 WORKDIR "/src/Manabu.Entities/"
 RUN dotnet build "Manabu.Entities.csproj" -c Release -o /app/build
 
 # Manabu.UseCases
 WORKDIR /src
-COPY ["manabu/src/Manabu.UseCases/Manabu.UseCases.csproj", "Manabu.UseCases/"]
+COPY ["kitsune/src/Manabu.UseCases/Manabu.UseCases.csproj", "Manabu.UseCases/"]
 RUN dotnet restore "Manabu.UseCases/Manabu.UseCases.csproj"
-COPY ["manabu/src", "." ]
+COPY ["kitsune/src", "." ]
 WORKDIR "/src/Manabu.UseCases/"
 RUN dotnet build "Manabu.UseCases.csproj" -c Release -o /app/build
 
 # Manabu.Infrastructure
 WORKDIR /src
-COPY ["manabu/src/Manabu.Infrastructure/Manabu.Infrastructure.csproj", "Manabu.Infrastructure/"]
+COPY ["kitsune/src/Manabu.Infrastructure/Manabu.Infrastructure.csproj", "Manabu.Infrastructure/"]
 RUN dotnet restore "Manabu.Infrastructure/Manabu.Infrastructure.csproj"
-COPY ["manabu/src", "." ]
+COPY ["kitsune/src", "." ]
 WORKDIR "/src/Manabu.Infrastructure/"
 RUN dotnet build "Manabu.Infrastructure.csproj" -c Release -o /app/build
 
 # Manabu.UI.Common
 WORKDIR /src
-COPY ["manabu/src/Manabu.UI.Common/Manabu.UI.Common.csproj", "Manabu.UI.Common/"]
+COPY ["kitsune/src/Manabu.UI.Common/Manabu.UI.Common.csproj", "Manabu.UI.Common/"]
 RUN dotnet restore "Manabu.UI.Common/Manabu.UI.Common.csproj"
-COPY ["manabu/src", "." ]
+COPY ["kitsune/src", "." ]
 WORKDIR "/src/Manabu.UI.Common/"
 RUN dotnet build "Manabu.UI.Common.csproj" -c Release -o /app/build
 
 # Manabu.UI.Server
 WORKDIR /src
-COPY ["manabu/src/Manabu.UI.Server/Manabu.UI.Server.csproj", "Manabu.UI.Server/"]
+COPY ["kitsune/src/Manabu.UI.Server/Manabu.UI.Server.csproj", "Manabu.UI.Server/"]
 RUN dotnet restore "Manabu.UI.Server/Manabu.UI.Server.csproj"
-COPY ["manabu/src", "." ]
+COPY ["kitsune/src", "." ]
 WORKDIR "/src/Manabu.UI.Server/"
 RUN dotnet build "Manabu.UI.Server.csproj" -c Release -o /app/build
 
