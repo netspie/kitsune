@@ -74,12 +74,24 @@ Address following problems with learning japanese language:
 
 ## Environment
 
-### Tools
+### Development
 - IDEs - Visual Studio 2022, Notepad++
 - Task Management - Trello
 - Source Version Control - Git, Github, SourceTree
 - MongoDb Database Tools - MongoDb Cloud, MongoDb Shell, Studio 3T, MongoDb Compass
-- Production environement - Linux, Vim for config files editing like nginx.conf, Docker
+- Design Tools - Miro
+
+### Production
+- Domain Provider - [seohost.pl](https://seohost.pl/)
+- Backend Host - AWS E2C
+- Backend System - Ubuntu
+- SSL Certificate - Let's Encrypt, NGinx for https redirection
+- Plain Text Editors - Vim for config files editing like nginx.conf
+- Build and Deployment - Docker build/push, Python build script for .dockerignore and 3rdparty local project dependendencies generation
+- Authentication Service - Azure B2C
+- Databases - MongoDb Cloud - data backups done by mongodump and mongorestore
+- Static/media files storage - currently local storage with plans to switch to Amazon S3 - media backups done by ssh scp command
+- Mailing Newsletter - MailerLite (planned to enable)
 
 ## Design
 
