@@ -21,28 +21,59 @@
 
 *Planned*
 
-- Various Content Creation - kana, kanji, vocabulary, various media - anime, manga, songs, etc.
+- Various Content Creation - informations and questions, kana, kanji, vocabulary, various media - anime, manga, songs, etc.
 - Categorization - by theme, linguistics, situation, formality, dialects, jargons
 - Flashcard List Generation - kana, kanji, words and its inflections
 - Multiselection - select desired content items and add for rehearse or generate flashcards instantly
 - Allow any user for adding content by giving a proper role and allow for submitting it for global publish
-- 
+- Rehearse settings - customize schedule, repetition day intervals, max rehearse items per day + max new items to learn per day
+- Subscription Payments - allow user to pay and subscribe for additional benefits, access to all content and features
+- User settings - change password, username etc.
+
+#### Quality Attributes
+
+*Current State*
+Since the application is just a prototype and feature development time is a priority, no serious measurements has been performed yet.
+
+*Planned*
+- monitoring and observability - logging, real-time user activity
+- maintainability - unit tests, E2E tests
+- performance - stress, load, endurance tests, etc.
+
+- api and offline access
+
+#### Deliverables
+
+*Current State*
+- single web server app with ui server side ui rendering deployed
+
+*Planned*
+- mobile application for android, later for iOS 
 
 #### Purpose
 
-For japanese language learners - address the following problems (just some among many):  
+Address following problems with learning japanese language:  
   
 - Writing notes from videos, courses, articles, lectures - which takes effort and time.  
 - Material fatigue - lack of innovation of learning process and revisions, which leads to procrastination.  
 - Lack of tools, ways for learning material from different angles, ex. reading, listening, speaking, writing.  
 - Learning materials scattered all over the internet, instead of in the single place.  
 - Hard to get back and rehearse your knowledge in an easy way. No automation. No challenging tasks.  
-- If there are high quality materials, then they are costly.  
+- If there are high quality materials, they are costly.  
 
 ## Architecture
 
 ### System Context Diagram
 ![System Context Diagram](/docs/images/System%20Context%20Diagram.png)
+
+## Environment
+
+### Tools
+- IDEs - Visual Studio 2022, Notepad++
+- Task Management - Trello
+- Source Version Control - Git, Github, SourceTree
+- MongoDb Database Tools - MongoDb Cloud, MongoDb Shell, Studio 3T, MongoDb Compass
+- Production environement - Linux, Vim for config files editing like nginx.conf, Docker
 
 ## Design
 
