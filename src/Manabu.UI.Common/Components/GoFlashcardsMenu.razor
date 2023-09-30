@@ -77,7 +77,7 @@
             new GetFlashcardListQuery(RootItemId, RootItemType, itemType, mode));
 
         _flashcardListState.Items = response.Content.ItemIds
-            .Select(id => new FlashcardList.Flashcard(id, itemType, mode)).ToArray();
+            .Select(id => new FlashcardList.Flashcard(id, null, itemType, mode)).ToArray();
 
         Navigation.NavigateTo($"/flashcard?itemType={itemType}&mode={mode}&itemId={RootItemId}");
     }
