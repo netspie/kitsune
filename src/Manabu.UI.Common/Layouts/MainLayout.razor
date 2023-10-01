@@ -78,19 +78,15 @@
             return;
         
         var state = await Auth.GetAuthenticationStateAsync();
-        if (!IsPathPublic(relative) && await Auth.IsSignedIn() is false)
+        if (IsPrivatePath(relative) && await Auth.IsSignedIn() is false)
         {
             Navigation.NavigateTo("/", forceLoad: true);
             return;
         }
 
-        bool IsPathPublic(string path)
+        bool IsPrivatePath(string path)
         {
-            if (relative == "terms" ||
-                relative == "privacy" ||
-                relative == "contact" ||
-                relative == AuthenticationStateProviderExtensions.SignInUrl ||
-                relative == AuthenticationStateProviderExtensions.SignOutUrl)
+            if (relative.StartsWith("rehearse"))
             {
                 return true;
             }

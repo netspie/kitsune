@@ -29,6 +29,10 @@
         await CommandExecutor.Execute(new AddLearningObjectForRehearseCommand(
             LearningObjectId, LearningObjectType));
 
-        await UIComponent.InvokeBool(OnClick, LearningObjectId)();
+        if (!await UIComponent.InvokeBool(OnClick, LearningObjectId)())
+            return;
+
+        IsAlreadyAdded = true;
+        await InvokeAsync(StateHasChanged);
     }
 }
