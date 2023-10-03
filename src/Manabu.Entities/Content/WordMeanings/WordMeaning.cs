@@ -1,11 +1,10 @@
 ﻿using Corelibs.Basic.DDD;
-using Manabu.Entities.Shared;
 
 namespace Manabu.Entities.Content.WordMeanings;
 
 public class WordMeaning : Entity<WordMeaningId>, IAggregateRoot<WordMeaningId>
 {
-    public const string DefaultCollectionName = "wordMeanings";
+    public static string DefaultCollectionName { get; } = "wordMeanings";
 
     public string Original { get; private set; }
     public List<string> Translations { get; private set; }

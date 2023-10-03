@@ -7,7 +7,7 @@ namespace Manabu.Entities.Rehearse.RehearseItems;
 
 public class RehearseItem : Entity<RehearseItemId>, IAggregateRoot<RehearseItemId>
 {
-    public const string DefaultCollectionName = "rehearseItems";
+    public static string DefaultCollectionName { get; } = "rehearseItems";
     public const float DefaultEFactor = 0.25f;
 
     public UserId Owner { get; init; }

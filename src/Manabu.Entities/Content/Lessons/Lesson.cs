@@ -5,13 +5,12 @@ using Manabu.Entities.Content.Courses;
 using Manabu.Entities.Content.Infos;
 using Manabu.Entities.Content.Phrases;
 using Manabu.Entities.Content.Users;
-using Manabu.Entities.Shared;
 
 namespace Manabu.Entities.Content.Lessons;
 
 public class Lesson : Entity<LessonId>, IAggregateRoot<LessonId>
 {
-    public const string DefaultCollectionName = "lessons";
+    public static string DefaultCollectionName { get; } = "lessons";
 
     public UserId Owner { get; private set; }
     public string Name { get; set; }

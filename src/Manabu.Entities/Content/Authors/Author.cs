@@ -1,12 +1,11 @@
 ﻿using Corelibs.Basic.DDD;
 using Manabu.Entities.Content.Courses;
-using Manabu.Entities.Shared;
 
 namespace Manabu.Entities.Content.Authors;
 
 public class Author : Entity<AuthorId>, IAggregateRoot<AuthorId>
 {
-    public const string DefaultCollectionName = "authors";
+    public static string DefaultCollectionName { get; } = "authors";
 
     public string Name { get; private set; }
     public List<CourseId> Courses { get; private set; }

@@ -3,13 +3,12 @@ using Corelibs.Basic.DDD;
 using Manabu.Entities.Content.Authors;
 using Manabu.Entities.Content.Lessons;
 using Manabu.Entities.Content.Users;
-using Manabu.Entities.Shared;
 
 namespace Manabu.Entities.Content.Courses;
 
 public class Course : Entity<CourseId>, IAggregateRoot<CourseId>
 {
-    public const string DefaultCollectionName = "courses";
+    public static string DefaultCollectionName { get; } = "courses";
 
     public UserId Owner { get; private set; }
     public string Name { get; set; }

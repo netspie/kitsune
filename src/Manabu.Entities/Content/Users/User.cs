@@ -5,7 +5,7 @@ namespace Manabu.Entities.Content.Users;
 
 public class User : Entity<UserId>, IAggregateRoot<UserId>
 {
-    public const string DefaultCollectionName = "users";
+    public static string DefaultCollectionName { get; } = "users";
 
     public RehearseSetting RehearseSetting { get; set; }
 

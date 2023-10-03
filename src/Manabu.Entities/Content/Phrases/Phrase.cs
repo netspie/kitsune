@@ -3,13 +3,12 @@ using Manabu.Entities.Content.Audios;
 using Manabu.Entities.Content.Conversations;
 using Manabu.Entities.Content.Users;
 using Manabu.Entities.Content.WordMeanings;
-using Manabu.Entities.Shared;
 
 namespace Manabu.Entities.Content.Phrases;
 
 public class Phrase : Entity<PhraseId>, IAggregateRoot<PhraseId>
 {
-    public const string DefaultCollectionName = "phrases";
+    public static string DefaultCollectionName { get; } = "phrases";
 
     public UserId Owner { get; private set; }
     public string Original { get; set; }

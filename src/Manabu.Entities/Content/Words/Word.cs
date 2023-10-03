@@ -1,13 +1,12 @@
 ﻿using Corelibs.Basic.DDD;
 using Manabu.Entities.Content.WordLexemes;
 using Manabu.Entities.Content.WordMeanings;
-using Manabu.Entities.Shared;
 
 namespace Manabu.Entities.Content.Words;
 
 public class Word : Entity<WordId>, IAggregateRoot<WordId>
 {
-    public const string DefaultCollectionName = "words";
+    public static string DefaultCollectionName { get; } = "words";
 
     public string Value { get; private set; }
     public PartOfSpeech PartOfSpeech { get; private set; }

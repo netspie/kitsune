@@ -1,12 +1,11 @@
 ﻿using Corelibs.Basic.DDD;
 using Manabu.Entities.Content.Flashcards;
-using Manabu.Entities.Shared;
 
 namespace Manabu.Entities.Content.FlashcardLists;
 
 public class FlashcardList : Entity<FlashcardListId>, IAggregateRoot<FlashcardListId>
 {
-    public const string DefaultCollectionName = "flashcardLists";
+    public static string DefaultCollectionName { get; } = "flashcardLists";
 
     public string ParentItemId { get; private set; }
 

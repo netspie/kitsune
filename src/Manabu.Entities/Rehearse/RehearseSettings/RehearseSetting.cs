@@ -5,7 +5,7 @@ namespace Manabu.Entities.Rehearse.RehearseSettings;
 
 public class RehearseSetting : Entity<RehearseSettingId>, IAggregateRoot<RehearseSettingId>
 {
-    public const string DefaultCollectionName = "rehearseSettings";
+    public static string DefaultCollectionName { get; } = "rehearseSettings";
 
     public UserId Owner { get; private set; }
 

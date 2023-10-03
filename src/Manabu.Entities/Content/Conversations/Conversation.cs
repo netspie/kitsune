@@ -3,13 +3,12 @@ using Corelibs.Basic.DDD;
 using Manabu.Entities.Content.Lessons;
 using Manabu.Entities.Content.Phrases;
 using Manabu.Entities.Content.Users;
-using Manabu.Entities.Shared;
 
 namespace Manabu.Entities.Content.Conversations;
 
 public class Conversation : Entity<ConversationId>, IAggregateRoot<ConversationId>
 {
-    public const string DefaultCollectionName = "conversations";
+    public static string DefaultCollectionName { get; } = "conversations";
 
     public UserId Owner { get; private set; }
     public List<PhraseData> Phrases { get; private set; }

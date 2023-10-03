@@ -6,7 +6,7 @@ namespace Manabu.Entities.Rehearse.RehearseEntities;
 
 public class RehearseEntity : Entity<RehearseEntityId>, IAggregateRoot<RehearseEntityId>
 {
-    public const string DefaultCollectionName = "rehearseEntities";
+    public static string DefaultCollectionName { get; } = "rehearseEntities";
 
     public UserId Owner { get; init; }
     public LearningObjectType ObjectType { get; init; }
