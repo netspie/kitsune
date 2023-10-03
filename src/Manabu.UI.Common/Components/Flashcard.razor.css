@@ -1,4 +1,19 @@
-﻿::deep .flashcard {
+﻿.flashcard-container {
+    width: 100%;
+    height: 100%;
+}
+
+div ::deep .flashcard {
+    align-items: center;
+}
+
+div ::deep .flashcard-content {
+    left: 0; 
+    align-items: center;
+    justify-content: space-evenly; 
+    height: 80vh; 
+    width: 100%; 
+    padding: 35px;
 }
 
 div ::deep .count-text {
@@ -12,19 +27,72 @@ div ::deep .info-panel {
     position: absolute; 
     left: 50px; 
     top: 0px;
-    display: flex;
+    display: flex;  
     gap: 5px;
+}
+
+div ::deep .buttons {
+    justify-content: space-evenly; 
+    width: 50%;
+    position: absolute;
+    bottom: 0;
+}
+
+div ::deep .rate-buttons {
+    position: absolute;
+    top: 0;
+    transform: translateY(-150%);
+}
+
+div ::deep .tooltip {
+
+}
+
+div ::deep .rate-button-child {
+  font-weight: bold;
+  color: black;
+}
+
+div ::deep .rate-button-child:hover {
+  filter: grayscale(90%);
 }
 
 @media only screen and (max-width: 600px) {
     div ::deep .count-text {
         position: fixed; 
         top: 75px;
-        right: 50px; 
+        right: 25px;
     }
 
     div ::deep .info-panel {
         position: fixed; 
         top: 75px;
+        left: 25px; 
+    }
+
+    div ::deep .buttons {
+        width: 100%;
+        padding-left: 25px;
+        padding-right: 25px;
+        gap: 10px;
+    }
+
+    div ::deep .button {
+        width: 100%;
+    }
+    
+    div ::deep .rate-buttons {
+        width: 100%;
+         padding-left: 25px;
+        padding-right: 25px;
+        justify-content: space-evenly;
+    }
+
+    div ::deep .tooltip {
+        min-width: fit-content;
+    }
+
+     div ::deep .rate-button-child {
+        min-width: fit-content;
     }
 }

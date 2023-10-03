@@ -25,4 +25,7 @@ public class RehearseItemAsap : Entity<RehearseItemId>, IAggregateRoot<RehearseI
         ItemType = itemType;
         Mode = mode;
     }
+
+    public static RehearseItemAsap Create(RehearseItem item) =>
+        new(item.Id, item.Owner, item.ItemId, item.ItemType, item.Mode);
 }

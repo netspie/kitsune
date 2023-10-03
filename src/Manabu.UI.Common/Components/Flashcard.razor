@@ -3,75 +3,102 @@
 @using Manabu.Entities.Content.Audios;
 @using Manabu.UI.Common.State;
 @using Manabu.UseCases.Content.Flashcards;
+@using Manabu.UseCases.Rehearse.RehearseItems;
 @using Microsoft.AspNetCore.WebUtilities;
 
 @inherits CoreComponent
+@inject ISnackbar Snackbar
 
 @if (_flashcardListState.Items.IsNullOrEmpty())
 {
-    <h3 style="width: 100%; text-align: center;">No Items To Show!</h3>
+    <h3 style="width: 100%; text-align: center; margin-top: 100px;">No Items To Show!</h3>
     return;
 }
 
 @if (_dto is null) { return; }
 
-<div>
-    <MudStack Class="flashcard" Style="position: absolute; left: 0; align-items: center; justify-content: space-evenly; height: 80vh; width: 100%; padding: 35px;">
-        <MudStack Row=true Class="count-text">
-            <span>@(_i + 1)</span>
-            /
-            <span>@(_items.Length)</span>
-        </MudStack>
+<div class="flashcard-container">
+    <MudStack Class="flashcard">
+        <MudStack Class="flashcard-content">
+            <MudStack Row=true Class="count-text">
+                <span>@(_i + 1)</span>
+                /
+                <span>@(_items.Length)</span>
+            </MudStack>
 
-        <MudStack Row=true Class="info-panel">
-            <span style="text-transform: uppercase; font-family: Unica;">@_items[_i].ItemType,</span>
-            <span style="text-transform: uppercase; font-family: Unica;">@_items[_i].Mode</span>
-        </MudStack>
+            <MudStack Row=true Class="info-panel">
+                <span style="text-transform: uppercase; font-family: Unica;">@_items[_i].ItemType,</span>
+                <span style="text-transform: uppercase; font-family: Unica;">@_items[_i].Mode</span>
+            </MudStack>
 
-        <MudStack Style="align-items: center;">
-            @foreach (var question in _dto.Questions)
-            {
-                @if (question.Type == "audio")
+            <MudStack Style="align-items: center;">
+                @foreach (var question in _dto.Questions)
                 {
-                    <audio controls style="padding-bottom: 10px;" @key=@question.Text>
-                        <source src=@($"{AudioStorage.BaseReadPath}/{question.Text}?v={DateTime.Now.Ticks}") type="audio/mpeg">
-                        Your browser does not support the audio element.
-                    </audio>
-                }
-                else
-                {
-                    <MudText Style="font-size: 16px; text-align: center;">@question.Text</MudText>
-                }
-            }
-        </MudStack>
-
-        <MudStack Style="align-items: center;">
-            @if (_showAnswer)
-            {
-                @foreach (var answerArr in _dto.Answers)
-                {
-                    @foreach (var answer in answerArr)
+                    @if (question.Type == "audio")
                     {
-                        @if (answer.Type == "audio")
+                        <audio controls style="padding-bottom: 10px;" @key=@question.Text>
+                            <source src=@($"{AudioStorage.BaseReadPath}/{question.Text}?v={DateTime.Now.Ticks}") type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                    }
+                    else
+                    {
+                        <MudText Style="font-size: 16px; text-align: center;">@question.Text</MudText>
+                    }
+                }
+            </MudStack>
+
+            <MudStack Style="align-items: center;">
+                @if (_showAnswer)
+                {
+                    @foreach (var answerArr in _dto.Answers)
+                    {
+                        @foreach (var answer in answerArr)
                         {
-                            <audio controls style="padding-bottom: 10px;">
-                                <source src=@($"{AudioStorage.BaseReadPath}/{answer.Text}") type="audio/mpeg">
-                                Your browser does not support the audio element.
-                            </audio>
-                        }
-                        else
-                        {
-                            <MudText Style=" text-align: center;">@answer.Text</MudText>
+                            @if (answer.Type == "audio")
+                            {
+                                <audio controls style="padding-bottom: 10px;">
+                                    <source src=@($"{AudioStorage.BaseReadPath}/{answer.Text}") type="audio/mpeg">
+                                    Your browser does not support the audio element.
+                                </audio>
+                            }
+                            else
+                            {
+                                <MudText Style=" text-align: center;">@answer.Text</MudText>
+                            }
                         }
                     }
                 }
-            }
+            </MudStack>
         </MudStack>
 
-        <MudStack Row=true Style="justify-content: space-evenly; width: 50%;">
-            <MudButton Style="font-weight: bold;" OnClick=@OnPrevClick>Prev</MudButton>
-            <MudButton Style="font-weight: bold;" OnClick=@OnAnswerClick>Answer</MudButton>
-            <MudButton Style="font-weight: bold;" OnClick=@OnNextClick>Next</MudButton>
+        <MudStack Class="buttons" Row=true>
+            @if (_showAnswer)
+            {
+                <MudStack Class="rate-buttons" Row=true>
+                    <MudTooltip Text="Total Blackout" Class="tooltip">
+                        <MudButton OnClick=@(() => OnDifficultySelected(0)) Style="background: rgb(255, 0, 0);" DisableElevation=true Class="rate-button-child" Variant=Variant.Filled>0</MudButton>
+                    </MudTooltip>
+                    <MudTooltip Text="Difficult" Class="tooltip">
+                        <MudButton OnClick=@(() => OnDifficultySelected(1)) Style="background: rgb(255, 85, 0);" DisableElevation=true Class="rate-button-child" Variant=Variant.Filled>1</MudButton>
+                    </MudTooltip>
+                    <MudTooltip Text="Advanced" Class="tooltip">
+                        <MudButton OnClick=@(() => OnDifficultySelected(2)) Style="background: rgb(255, 170, 0);" DisableElevation=true Class="rate-button-child" Variant=Variant.Filled>2</MudButton>
+                    </MudTooltip>
+                    <MudTooltip Text="Challenging" Class="tooltip">
+                        <MudButton OnClick=@(() => OnDifficultySelected(3)) Style="background: rgb(255, 255, 0);" DisableElevation=true Class="rate-button-child" Variant=Variant.Filled>3</MudButton>
+                    </MudTooltip>
+                    <MudTooltip Text="Easy" Class="tooltip">
+                        <MudButton OnClick=@(() => OnDifficultySelected(4)) Style="background: rgb(170, 255, 0);" DisableElevation=true Class="rate-button-child" Variant=Variant.Filled>4</MudButton>
+                    </MudTooltip>
+                    <MudTooltip Text="Totally Obvious" Class="tooltip">
+                        <MudButton OnClick=@(() => OnDifficultySelected(5)) Style="background: rgb(0, 255, 0);" DisableElevation=true Class="rate-button-child" Variant=Variant.Filled>5</MudButton>
+                    </MudTooltip>
+                </MudStack> 
+            }
+            <MudButton Class="button" DisableElevation=true Variant=Variant.Filled Style="font-weight: bold;" OnClick=@OnPrevClick>Prev</MudButton>
+            <MudButton Class="button" DisableElevation=true Variant=Variant.Filled Style="font-weight: bold;" OnClick=@OnAnswerClick>Answer</MudButton>
+            <MudButton Class="button" DisableElevation=true Variant=Variant.Filled Style="font-weight: bold;" OnClick=@OnNextClick>Next</MudButton>
         </MudStack>
     </MudStack>
 </div>
@@ -144,5 +171,17 @@
     {
         _i = (++_i).Clamp(_items.Length - 1);
         return RefreshViewModel();
+    }
+
+    private async Task OnDifficultySelected(int i)
+    {
+        var item = _items[_i];
+        var response = await CommandExecutor.Execute<SetRehearseItemDifficultyCommand>(
+            new SetRehearseItemDifficultyCommand(item.RehearseItemId, i));
+
+        if (response.IsSuccess)
+            Snackbar.AddInfo("Difficulty set successfully!");
+        else
+            Snackbar.AddError("Couldn't modify");
     }
 }

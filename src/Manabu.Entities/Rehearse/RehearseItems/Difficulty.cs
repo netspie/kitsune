@@ -9,6 +9,8 @@ public record Difficulty(int Value)
     public static readonly Difficulty Easy = new(4);
     public static readonly Difficulty Obvious = new(5);
 
+    public bool IsValid() => Value >= 0 && Value <= 5;
+
     public static bool operator >(Difficulty left, Difficulty right) =>
         left.Value > right.Value;
 
@@ -50,4 +52,5 @@ public record Difficulty(int Value)
 
     public static int operator +(int left, Difficulty right) =>
         left + right.Value;
+
 }

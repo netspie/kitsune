@@ -37,9 +37,26 @@ public class RehearseItem : Entity<RehearseItemId>, IAggregateRoot<RehearseItemI
         CreatedUtcTime = DateTime.UtcNow;
     }
 
-    public void Answer(Difficulty difficulty)
+    public bool Rehearse(Difficulty difficulty, out bool reviewAsap)
     {
+        reviewAsap = false;
+        if (!difficulty.IsValid())
+            return false;
 
+        Difficulty = difficulty;
+        LastRehearsedUtcTime = DateTime.UtcNow;
+
+        var repsInternal = RepsInternal;
+        var repsInterval = RepsInterval;
+
+        EFactor = SpacedRepetitionFunctions.CalculateEFactorAndNextDayInterval(
+            Difficulty, EFactor, ref repsInternal, ref repsInterval, out reviewAsap);
+
+        RepsTotal++;
+        RepsInternal = repsInternal;
+        RepsInterval = repsInterval;
+
+        return true;
     }
 }
 
