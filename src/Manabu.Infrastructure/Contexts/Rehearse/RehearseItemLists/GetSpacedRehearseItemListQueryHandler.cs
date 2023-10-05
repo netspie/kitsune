@@ -148,7 +148,7 @@ public class GetRehearseItemListQueryHandler : IQueryHandler<GetSpacedRehearseIt
                                         new BsonDocument
                                         {
                                             {
-                                                "$multiply", new BsonArray
+                                                "$multiply", new BsonArray // TO DO: FIX the problem with always offsetting time, make possible to practice anytime in the day. - maybe add another last time rehearsed just for checks as in reps counting
                                                 {
                                                     "$RepsInterval",
                                                     ticksInADay
