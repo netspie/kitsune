@@ -6,7 +6,7 @@ namespace Manabu.UseCases.Rehearse.RehearseItemLists;
 public record GetSpacedRehearseItemListQuery(
     string[]? Modes = null,
     string[]? ItemTypes = null,
-    int[]? DayIntervals = null,
+    int? DayInterval = null,
     bool Random = true) : IQuery<Result<GetSpacedRehearseItemListQueryResponse>>;
 
 public record GetSpacedRehearseItemListQueryResponse(FlashcardListDTO Content);

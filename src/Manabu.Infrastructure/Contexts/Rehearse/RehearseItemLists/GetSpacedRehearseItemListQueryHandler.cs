@@ -49,13 +49,20 @@ public class GetRehearseItemListQueryHandler : IQueryHandler<GetSpacedRehearseIt
             .ToListAsync();
         var itemsAsap = itemsAsapDocs.Select(doc => BsonSerializer.Deserialize<ItemProjection>(doc)).ToArray();
 
+        var nowUtcTime = DateTime.UtcNow;
+        var nowUtcTimeTicks = nowUtcTime.Ticks;
+
         // ITEMS - Items to review in general
         var itemsCollection = _mongoConnection.Database.GetCollection<RehearseItem>(RehearseItem.DefaultCollectionName);
         var itemsFilter = Builders<RehearseItem>.Filter.Eq("Owner", userId);
-        if (!query.DayIntervals.IsNullOrEmpty())
-            itemsFilter &= GetFilter<RehearseItem, int, int>(x => x.RepsInterval, query.DayIntervals, m => m);
+        if (query.DayInterval is not null)
+            itemsFilter &= Builders<RehearseItem>.Filter.Eq(x => x.RepsInterval, query.DayInterval.Value);
         else
-            itemsFilter &= GetFilter<RehearseItem, int, int>(x => x.RepsInterval, new[] { 0 }, m => m);
+        {
+            var currentTime = DateTime.UtcNow;
+            long ticksInADay = TimeSpan.FromDays(1).Ticks;
+            itemsFilter &= GetRehearsedTimeFilter();
+        }
         if (!query.ItemTypes.IsNullOrEmpty())
             itemsFilter &= GetFilter<RehearseItem, string, LearningItemType>(x => x.ItemType, query.ItemTypes, m => new LearningItemType(m.ToLower()));
         if (!query.Modes.IsNullOrEmpty())
@@ -69,6 +76,10 @@ public class GetRehearseItemListQueryHandler : IQueryHandler<GetSpacedRehearseIt
             { nameof(RehearseItem.ItemType), 1 },
             { nameof(RehearseItem.Mode), 1 },
         });
+
+        var time = DateTime.UtcNow;
+        var time2 = time + TimeSpan.FromDays(1) * 3;
+
         var itemsDocs = itemsAsap.Length == SessionItemCount ?
             new() :
                 query.Random ?
@@ -78,7 +89,6 @@ public class GetRehearseItemListQueryHandler : IQueryHandler<GetSpacedRehearseIt
                         .AppendStage<RehearseItem>($@"{{ $sample: {{ size: {SessionItemCount - itemsAsap.Length} }} }}")
                         .Project(itemsProjection)
                         .ToListAsync() :
-
                     await itemsCollection
                         .Find(itemsFilter, new FindOptions() { Hint = itemsHint })
                         .Project(itemsProjection)
@@ -86,7 +96,7 @@ public class GetRehearseItemListQueryHandler : IQueryHandler<GetSpacedRehearseIt
                         .ToListAsync();
 
         var items = itemsDocs.Select(doc => BsonSerializer.Deserialize<ItemProjection>(doc)).ToArray();
-
+        
         // ITEMS TOTAL
         var itemsTotal = new List<ItemProjection>(itemsAsap.Length + items.Length);
         itemsTotal.AddRange(itemsAsap);
@@ -113,6 +123,46 @@ public class GetRehearseItemListQueryHandler : IQueryHandler<GetSpacedRehearseIt
             filter |= Builders<TEntity>.Filter.Eq(field, transform(array[i]));
 
         return filter;
+    }
+
+    private BsonDocument GetRehearsedTimeFilter()
+    {
+        var currentTime = DateTime.UtcNow;
+        long ticksInADay = TimeSpan.FromDays(1).Ticks;
+
+        return new BsonDocument(new Dictionary<string, object>()
+        {
+            {
+                "$expr", new BsonDocument
+                {
+                    {
+                        "$gt", new BsonArray
+                        {
+                            currentTime,
+                            new BsonDocument
+                            {
+                                {
+                                    "$add", new BsonArray
+                                    {
+                                        "$LastRehearsedUtcTime",
+                                        new BsonDocument
+                                        {
+                                            {
+                                                "$multiply", new BsonArray
+                                                {
+                                                    "$RepsInterval",
+                                                    ticksInADay
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
     }
 
     public record ItemProjection(LearningObjectId Id, LearningObjectId ItemId, LearningItemType ItemType, LearningMode Mode);
