@@ -1,7 +1,5 @@
 ﻿using Blazored.LocalStorage;
 using Corelibs.Basic.Collections;
-using MongoDB.Bson;
-using MongoDB.Bson.IO;
 
 namespace Manabu.UI.Common.Storage;
 

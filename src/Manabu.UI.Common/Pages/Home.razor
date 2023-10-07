@@ -83,7 +83,7 @@
 
 @code {
     [Inject] public NavigationManager Navigation { get; set; }
-    [Inject] public AuthenticationStateProvider Auth { get; set; }
+    [Inject] public IAuthenticationService Auth { get; set; }
 
     [Inject] public State.SiteTitle SiteTitle { get; set; }
 
@@ -110,7 +110,6 @@
     private async Task RedirectIfNotSignedIn()
     {
         var relative = Navigation.ToBaseRelativePath(Navigation.Uri);
-        var state = await Auth.GetAuthenticationStateAsync();
         if (!relative.IsEmpty() && await Auth.IsSignedIn() is false)
         {
             Navigation.NavigateTo("/", forceLoad: true);

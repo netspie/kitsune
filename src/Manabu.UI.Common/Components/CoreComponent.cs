@@ -13,7 +13,7 @@ public abstract class CoreComponent : ComponentBase
     [Inject] public IQueryExecutor QueryExecutor { get; set; }
     [Inject] public ICommandExecutor CommandExecutor { get; set; }
     [Inject] public NavigationManager Navigation { get; set; }
-    [Inject] public AuthenticationStateProvider Auth { get; set; }
+    [Inject] public IAuthenticationService Auth { get; set; }
     [Inject] public IStorage Storage { get; set; }
     
     protected bool _isSignedIn { get; private set; }

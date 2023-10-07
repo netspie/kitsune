@@ -1,4 +1,5 @@
 ﻿using Blazored.LocalStorage;
+using Corelibs.Basic.Auth;
 using Corelibs.Basic.DDD;
 using Corelibs.Basic.Reflection;
 using Corelibs.Basic.Repository;
@@ -16,6 +17,7 @@ using Manabu.Infrastructure.Contexts.Rehearse._EventHandlers;
 using Manabu.Infrastructure.Contexts.Rehearse.EventHandlers;
 using Manabu.Infrastructure.CQRS.Content.Flashcards;
 using Manabu.UI.Common;
+using Manabu.UI.Common.Auth;
 using Manabu.UI.Common.Extensions;
 using Manabu.UI.Common.Operations;
 using Manabu.UI.Common.Storage;
@@ -39,6 +41,11 @@ public static class Startup
         services.AddBlazoredLocalStorage();
 
         services.AddScoped<IAccessorAsync<ClaimsPrincipal>, ClaimsPrincipalAccessor>();
+
+        if (environment.IsDevelopment()) 
+            services.AddScoped<IAuthenticationService, MockAuthenticationService>();
+        else
+            services.AddScoped<IAuthenticationService, AzureB2CAuthenticationService>();
 
         services.AddFluentValidationAutoValidation();
         services.AddValidatorsFromAssembly(useCasesAssembly);

@@ -46,7 +46,7 @@
         }
     };
 
-    [Inject] public AuthenticationStateProvider Auth { get; set; }
+    [Inject] public IAuthenticationService Auth { get; set; }
     [Inject] public NavigationManager Navigation { get; set; }
     [Inject] public ICommandExecutor CommandExecutor { get; set; }
 
@@ -77,7 +77,6 @@
         if (relative.IsEmpty())
             return;
         
-        var state = await Auth.GetAuthenticationStateAsync();
         if (IsPrivatePath(relative) && await Auth.IsSignedIn() is false)
         {
             Navigation.NavigateTo("/", forceLoad: true);
