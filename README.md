@@ -11,4 +11,4 @@
 &nbsp;&nbsp;&nbsp;&nbsp; https://kitsunestudy.net
 
 #### Documentation
-Detailed documentation can be found at https://github.com/drlsn/kitsune-docs/tree/main.
+Detailed documentation can be found at https://github.com/drlsn/kitsune-docs.
