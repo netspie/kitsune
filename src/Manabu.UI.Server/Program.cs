@@ -1,13 +1,13 @@
+using Corelibs.Basic.Corelibs.Basic.Net;
+using Manabu.UI.Server;
+using Manabu.UI.Server.Extensions;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using Manabu.UI.Server;
 using MudBlazor.Services;
-using Corelibs.Basic.Corelibs.Basic.Net;
-using Microsoft.Extensions.FileProviders;
-using Manabu.UI.Server.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,13 +23,13 @@ builder.Services.Configure<CookiePolicyOptions>(options =>
     options.Secure = CookieSecurePolicy.Always;
 });
 
-var useLocalIp = Environment.GetEnvironmentVariable("Hackstudy_UseLocalIP") is not null ? true : false;
+var useLocalIp = Environment.GetEnvironmentVariable("Kitsune_UseLocalIP") is not null ? true : false;
 builder.Services.Configure<OpenIdConnectOptions>(
     OpenIdConnectDefaults.AuthenticationScheme, options =>
     {
         options.ResponseType = OpenIdConnectResponseType.Code;
         options.SaveTokens = true;
-        options.ClientSecret = Environment.GetEnvironmentVariable("HackstudyServerClientSecret");
+        options.ClientSecret = builder.Environment.IsProduction() ? Environment.GetEnvironmentVariable("KitsuneAuthSecret") : "";
         options.Scope.Add("offline_access");
         options.Scope.Add(options?.ClientId);
         options.Events.OnRedirectToIdentityProvider = async context =>
