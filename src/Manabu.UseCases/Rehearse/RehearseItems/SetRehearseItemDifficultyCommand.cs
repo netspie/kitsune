@@ -32,7 +32,7 @@ public class SetRehearseItemDifficultyCommandHandler : ICommandHandler<SetRehear
 
         var difficulty = new Difficulty(command.Difficulty);
         var rehearseItem = await _rehearseItemRepository.Get(new RehearseItemId(command.RehearseItemId), result);
-        if (!rehearseItem.Rehearse(difficulty, out bool shouldReviewAsap))
+        if (rehearseItem is null || !rehearseItem.Rehearse(difficulty, out bool shouldReviewAsap))
             return Result.Failure();
 
         var itemAsap = await _rehearseItemAsapRepository.Get(rehearseItem.Id, result);

@@ -1,5 +1,4 @@
 ﻿using Blazored.LocalStorage;
-using Corelibs.Basic.Auth;
 using Corelibs.Basic.DDD;
 using Corelibs.Basic.Reflection;
 using Corelibs.Basic.Repository;
@@ -38,20 +37,29 @@ public static class Startup
         var entitiesAssembly = typeof(Manabu.Entities.Content.Users.User).Assembly;
         var useCasesAssembly = typeof(Manabu.UseCases.Content.Users.CreateUserCommand).Assembly;
 
+        var mongoConnectionString = Environment.GetEnvironmentVariable("KitsuneDatabaseConn");
+
         services.AddBlazoredLocalStorage();
 
-        services.AddScoped<IAccessorAsync<ClaimsPrincipal>, ClaimsPrincipalAccessor>();
-
-        if (environment.IsDevelopment()) 
+        if (environment.IsDevelopment())
+        {
             services.AddScoped<IAuthenticationService, MockAuthenticationService>();
+            services.AddScoped<IAccessorAsync<ClaimsPrincipal>, MockPrincipalAccessor>();
+        }
         else
+        {
+            services.AddScoped<IAccessorAsync<ClaimsPrincipal>, ClaimsPrincipalAccessor>();
             services.AddScoped<IAuthenticationService, AzureB2CAuthenticationService>();
+        }
 
         services.AddFluentValidationAutoValidation();
         services.AddValidatorsFromAssembly(useCasesAssembly);
 
         services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
-        services.AddScoped(typeof(IPipelineBehavior<,>), typeof(MongoDbCommandTransactionBehaviour<,>));
+        if (environment.IsDevelopment() && !MongoDbExtensions.CanHaveTransactions(mongoConnectionString))
+            services.AddScoped(typeof(IPipelineBehavior<,>), typeof(MongoDbCommandNoTransactionBehaviour<,>));
+        else
+            services.AddScoped(typeof(IPipelineBehavior<,>), typeof(MongoDbCommandTransactionBehaviour<,>));
         services.AddScoped(typeof(IPipelineBehavior<,>), typeof(MongoDbQueryBehaviour<,>));
 
         services.AddScoped<IQueryExecutor, MediatorQueryExecutor>();
@@ -59,7 +67,7 @@ public static class Startup
 
         services.AddMediator(opts => opts.ServiceLifetime = ServiceLifetime.Scoped);
 
-        services.AddRepositories(environment, entitiesAssembly);
+        services.AddRepositories(environment, entitiesAssembly, mongoConnectionString);
         services.AddSingleton<IMediaStorage<Audio>>(sp => new LocalMediaStorage<Audio>(
             $"/media/audio", $"/media/audio"));
 
@@ -94,14 +102,17 @@ public static class Startup
         AddRehearseProcessors(services, entitiesAssembly);
     }
 
-    public static void AddRepositories(this IServiceCollection services, IWebHostEnvironment environment, Assembly assembly)
+    public static void AddRepositories(
+        this IServiceCollection services, 
+        IWebHostEnvironment environment, 
+        Assembly assembly,
+        string connectionString)
     {
-        var mongoConnectionString = Environment.GetEnvironmentVariable("KitsuneDatabaseConn");
         var databaseName = environment.IsDevelopment() ? "Kitsune_dev" : "Kitsune_prod";
 
         MongoConventionPackExtensions.AddIgnoreConventionPack();
 
-        services.AddMongoRepositories(assembly, mongoConnectionString, databaseName);
+        services.AddMongoRepositories(assembly, connectionString, databaseName);
     }
 
     private static void AddRehearseProcessors(IServiceCollection services, Assembly entitiesAssembly)
