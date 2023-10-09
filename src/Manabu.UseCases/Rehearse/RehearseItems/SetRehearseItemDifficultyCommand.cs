@@ -35,6 +35,7 @@ public class SetRehearseItemDifficultyCommandHandler : ICommandHandler<SetRehear
         if (rehearseItem is null || !rehearseItem.Rehearse(difficulty, out bool shouldReviewAsap))
             return Result.Failure();
 
+        // SAVE AND FIX ASAP CAUSING ERROR!
         var itemAsap = await _rehearseItemAsapRepository.Get(rehearseItem.Id, result);
         if (itemAsap is null && shouldReviewAsap)
         {

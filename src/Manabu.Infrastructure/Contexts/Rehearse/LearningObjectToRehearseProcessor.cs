@@ -20,6 +20,10 @@ public sealed class LearningObjectToRehearseProcessor<TEntity, TId> :
     where TEntity : Entity<TId>
     where TId : EntityId
 {
+#if DEBUG
+    public static readonly string MongoConnectionString = MongoConfig.ConnectionString;
+#endif
+
     private readonly MongoClient _mongoClient;
     private readonly MongoConnection _mongoConnection;
     private readonly ProcessorEntitiesInfoMaster _processorEntitiesInfoMaster;
@@ -56,6 +60,10 @@ public sealed class LearningObjectToRehearseProcessor<TEntity, TId> :
         using var session = await _mongoClient.StartSessionAsync();
         _mongoConnection.Session = session;
         _mongoConnection.Database = _mongoClient.GetDatabase(_mongoConnection.DatabaseName);
+
+#if DEBUG
+        if (MongoDbExtensions.CanHaveTransactions(MongoConnectionString))
+#endif
         session.StartTransaction();
 
         var id = _entityInfo.CreateId(learningObjectId);
@@ -90,6 +98,10 @@ public sealed class LearningObjectToRehearseProcessor<TEntity, TId> :
         };
 
         result += _rehearseItemRepository.Create(rehearseItems);
+
+#if DEBUG
+        if (MongoDbExtensions.CanHaveTransactions(MongoConnectionString))
+#endif
         if (result.IsSuccess)
             await session.CommitTransactionAsync();
         else

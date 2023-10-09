@@ -11,6 +11,7 @@ using FluentValidation.AspNetCore;
 using Manabu.Entities.Content._Shared;
 using Manabu.Entities.Content.Audios;
 using Manabu.Entities.Content.Events;
+using Manabu.Infrastructure;
 using Manabu.Infrastructure.Contexts.Rehearse;
 using Manabu.Infrastructure.Contexts.Rehearse._EventHandlers;
 using Manabu.Infrastructure.Contexts.Rehearse.EventHandlers;
@@ -37,7 +38,7 @@ public static class Startup
         var entitiesAssembly = typeof(Manabu.Entities.Content.Users.User).Assembly;
         var useCasesAssembly = typeof(Manabu.UseCases.Content.Users.CreateUserCommand).Assembly;
 
-        var mongoConnectionString = Environment.GetEnvironmentVariable("KitsuneDatabaseConn");
+        var mongoConnectionString = MongoConfig.ConnectionString;
 
         services.AddBlazoredLocalStorage();
 
