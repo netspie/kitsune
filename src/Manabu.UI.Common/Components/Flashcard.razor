@@ -73,7 +73,14 @@
         </MudStack>
 
         <MudStack Class="buttons" Row=true>
-            @if (_showAnswer)
+            @{
+
+                var canSetDifficulty = _items.IsIndexInRange(_i) && 
+                    _items[_i].RehearseItemId is not null &&
+                    !_difficultySetItems.Contains(_items[_i].RehearseItemId);
+            }
+
+            @if (_showAnswer && canSetDifficulty)
             {
                 <MudStack Class="rate-buttons" Row=true>
                     <MudTooltip Text="Total Blackout" Class="tooltip">
@@ -119,6 +126,8 @@
     private int _i;
 
     private FlashcardDTO _dto;
+
+    private readonly HashSet<string> _difficultySetItems = new();
 
     [Inject] public State.SiteTitle SiteTitle { get; set; }
 
@@ -178,6 +187,8 @@
         var item = _items[_i];
         var response = await CommandExecutor.Execute<SetRehearseItemDifficultyCommand>(
             new SetRehearseItemDifficultyCommand(item.RehearseItemId, i));
+
+        _difficultySetItems.Add(item.RehearseItemId);
 
         if (response.IsSuccess)
             Snackbar.AddInfo("Difficulty set successfully!");
