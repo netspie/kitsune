@@ -10,6 +10,10 @@ public class RehearseEntity : Entity<RehearseEntityId>, IAggregateRoot<RehearseE
 
     public UserId Owner { get; init; }
     public LearningObjectType ObjectType { get; init; }
+
+    /// <summary>
+    /// Tells if represents an actual item which can be rehearsed (phrase, word..) instead of a container like lesson, conversation etc.
+    /// </summary>
     public bool IsItem { get; init; }
 
     public RehearseEntity(

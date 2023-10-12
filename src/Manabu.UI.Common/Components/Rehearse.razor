@@ -10,6 +10,14 @@
 <MudStack Class="main-section courses" Style="width: 100%;">
     <SiteTitle>@SiteTitle.Name</SiteTitle>
 
+    <MudStack>
+        <MudText Typo="Typo.h4" Align="Align.Center" Style="font-weight: bold; font-family: unica; width: 100%;">SPACED REPETITION</MudText>
+        <MudStack Row=true>
+            <MultiSelect @ref=@_typeSelect Name="Type" Values=@_itemTypes />
+            <MultiSelect @ref=@_modeSelect Name="Mode" Values=@_modes />
+        </MudStack>
+        <MudButton Variant=@Variant.Filled DisableElevation=true OnClick=@OnRehearseNowButtonClick Style="background: orangered; color: white;">Rehearse Now</MudButton>
+    </MudStack>
     <MudStack Style="margin-top: 25px; display: flex; flex-direction: column; gap: 50px;">
         <MudGrid>
             @*<MudText Typo="Typo.h4" Align="Align.Center" Style="font-weight: bold; font-family: unica; width: 100%;">TODAY</MudText>*@
@@ -18,13 +26,13 @@
                     <MudItem xs=6>
                         <MudPaper Elevation=0 Class="d-flex flex-column align-center mud-width-full" Style="justify-content: space-evenly; height: 120px; font-family: unica; background: rgb(234, 234, 234);">
                             <MudText Typo="Typo.h3" Align="Align.Center" Style="font-weight: bold; font-family: unica;">@_dto.TotalRehearseItems</MudText>
-                            <MudText Typo="Typo.body1" Align="Align.Center">Total Rehearse Items</MudText>
+                            <MudText Typo="Typo.body1" Align="Align.Center">Rehearse Items</MudText>
                         </MudPaper>
                     </MudItem>
                     <MudItem xs=6>
                         <MudPaper Elevation=0 Class="d-flex flex-column align-center mud-width-full" Style="justify-content: space-evenly; height: 120px; font-family: unica; background: rgb(234, 234, 234);">
                             <MudText Typo="Typo.h3" Align="Align.Center" Style="font-weight: bold; font-family: unica;">@_dto.TotalRehearseCollections</MudText>
-                            <MudText Typo="Typo.body1" Align="Align.Center">Total Rehearse Collections</MudText>
+                            <MudText Typo="Typo.body1" Align="Align.Center">Rehearse Collections</MudText>
                         </MudPaper>
                     </MudItem>
                     @*<MudItem xs=4>
@@ -36,39 +44,30 @@
                 </MudGrid>
             </MudItem>
         </MudGrid>
-        @*<MudGrid>
-            <MudText Typo="Typo.h4" Align="Align.Center" Style="font-weight: bold; font-family: unica; width: 100%;">TODAY</MudText>
+        <MudGrid>
             <MudItem xs="12">
                 <MudGrid Justify=@Justify.SpaceEvenly>
                     <MudItem xs=4>
-                        <MudPaper Class="d-flex flex-column align-center mud-width-full" Style="justify-content: space-evenly; height: 120px; font-family: unica;">
-                            <MudText Typo="Typo.h3" Align="Align.Center" Style="font-weight: bold; font-family: unica;">7</MudText>
-                            <MudText Typo="Typo.body1" Align="Align.Center">Items Left Out</MudText>
+                        <MudPaper Elevation=0 Class="d-flex flex-column align-center mud-width-full" Style="justify-content: space-evenly; height: 120px; font-family: unica; background: rgb(234, 234, 234);">
+                            <MudText Typo="Typo.h3" Align="Align.Center" Style="font-weight: bold; font-family: unica;">@_dto.TotalNewItems</MudText>
+                            <MudText Typo="Typo.body1" Align="Align.Center">New Items</MudText>
                         </MudPaper>
                     </MudItem>
                     <MudItem xs=4>
-                        <MudPaper Class="d-flex flex-column align-center mud-width-full" Style="justify-content: space-evenly; height: 120px;">
-                            <MudText Typo="Typo.h3" Align="Align.Center" Style="font-weight: bold; font-family: unica;">92</MudText>
-                            <MudText Typo="Typo.body1" Align="Align.Center">Items Left Out</MudText>
+                        <MudPaper Elevation=0 Class="d-flex flex-column align-center mud-width-full" Style="justify-content: space-evenly; height: 120px; font-family: unica; background: red; color: white;">
+                            <MudText Typo="Typo.h3" Align="Align.Center" Style="font-weight: bold; font-family: unica;">@_dto.FailedItems</MudText>
+                            <MudText Typo="Typo.body1" Align="Align.Center">Failed Items</MudText>
                         </MudPaper>
                     </MudItem>
                     <MudItem xs=4>
-                        <MudPaper Class="d-flex flex-column align-center mud-width-full" Style="justify-content: space-evenly; height: 120px; font-family: unica;">
-                            <MudText Typo="Typo.h3" Align="Align.Center" Style="font-weight: bold; font-family: unica;">30</MudText>
-                            <MudText Typo="Typo.body1" Align="Align.Center">Items To Rehearse</MudText>
+                        <MudPaper Elevation=0 Class="d-flex flex-column align-center mud-width-full" Style="justify-content: space-evenly; height: 120px; font-family: unica; background: rgb(234, 234, 234);">
+                            <MudText Typo="Typo.h3" Align="Align.Center" Style="font-weight: bold; font-family: unica;">@_dto.RehearseItemsForTodayExceptNew</MudText>
+                            <MudText Typo="Typo.body1" Align="Align.Center">To Rehearse Today</MudText>
                         </MudPaper>
                     </MudItem>
                 </MudGrid>
             </MudItem>
-        </MudGrid>*@
-        <MudStack>
-            <MudText Typo="Typo.h4" Align="Align.Center" Style="font-weight: bold; font-family: unica; width: 100%;">SPACED REPETITION</MudText>
-            <MudStack Row=true>
-                <MultiSelect @ref=@_typeSelect Name="Type" Values=@_itemTypes />
-                <MultiSelect @ref=@_modeSelect Name="Mode" Values=@_modes />
-            </MudStack>
-            <MudButton Variant=@Variant.Filled DisableElevation=true OnClick=@OnRehearseNowButtonClick>Rehearse Now</MudButton>
-        </MudStack>
+        </MudGrid>
     </MudStack>
     
 

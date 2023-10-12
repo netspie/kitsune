@@ -72,7 +72,7 @@ public class GetRehearseItemListQueryHandler : IQueryHandler<GetSpacedRehearseIt
         var itemsHint = new BsonDocument(new Dictionary<string, object>()
         {
             { nameof(RehearseItem.Owner), 1 },
-            { nameof(RehearseItem.RepsInterval), 1 },
+            { nameof(RehearseItem.NextRehearseUtcTime), 1 },
             { nameof(RehearseItem.ItemType), 1 },
             { nameof(RehearseItem.Mode), 1 },
         });

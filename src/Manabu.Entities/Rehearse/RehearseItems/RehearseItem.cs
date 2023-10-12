@@ -1,5 +1,6 @@
 ﻿using Corelibs.Basic.DDD;
 using Corelibs.Basic.Encryption;
+using Corelibs.Basic.Time;
 using Manabu.Entities.Content.Users;
 using Manabu.Entities.Shared;
 
@@ -22,6 +23,7 @@ public class RehearseItem : Entity<RehearseItemId>, IAggregateRoot<RehearseItemI
     public int RepsInterval { get; private set; }
     public float EFactor { get; private set; } = DefaultEFactor; // default
     public DateTime LastRehearsedUtcTime { get; private set; }
+    public DateTime NextRehearseUtcTime { get; private set; }
 
     public RehearseItem(
         RehearseItemId id,
@@ -55,6 +57,8 @@ public class RehearseItem : Entity<RehearseItemId>, IAggregateRoot<RehearseItemI
         RepsTotal++;
         RepsInternal = repsInternal;
         RepsInterval = repsInterval;
+
+        NextRehearseUtcTime = (DateTime.UtcNow + TimeSpan.FromDays(repsInterval)).ToMorning();
 
         return true;
     }

@@ -9,4 +9,8 @@ public record GetRehearseViewQueryResponse(RehearseViewDTO Content);
 
 public record RehearseViewDTO(
     int TotalRehearseItems,
-    int TotalRehearseCollections);
+    int TotalRehearseCollections,
+    int TotalNewItems,
+    int FailedItems,
+    int RehearseItemsForTodayExceptNew,
+    int TotalItemsForToday);
