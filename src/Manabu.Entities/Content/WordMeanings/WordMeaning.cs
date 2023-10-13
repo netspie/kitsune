@@ -10,7 +10,7 @@ public class WordMeaning : Entity<WordMeaningId>, IAggregateRoot<WordMeaningId>
     public List<string> Translations { get; private set; }
     public string HiraganaWriting { get; private set; }
     public string PitchAccent { get; private set; }
-    public bool? KanjiWritingPreffered { get; private set; }
+    public bool? KanjiWritingPreferred { get; private set; }
 
     public WordMeaning(string name)
     {

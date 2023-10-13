@@ -1,0 +1,114 @@
+﻿@using Corelibs.Basic.Reflection;
+@using Corelibs.Basic.Collections;
+@using Manabu.UseCases.Content.Courses;
+@using Manabu.UseCases.Content.Lessons;
+@using Microsoft.AspNetCore.Components.Authorization;
+
+@inherits CoreComponent
+
+<MudStack Class="main-section vocabulary" Style="width: 100%;">
+    <SiteTitle>@SiteTitle.Name</SiteTitle>
+
+    <MudDataGrid Items="@Elements" Filterable="true" FilterMode="@_filterMode" FilterCaseSensitivity="@_caseSensitivity">
+        <Columns>
+            <PropertyColumn Property="x => x.Number" Title="Nr" Filterable="false" />
+            <PropertyColumn Property="x => x.Sign" />
+            <PropertyColumn Property="x => x.Name" />
+            <PropertyColumn Property="x => x.Position" Filterable="false" />
+            <PropertyColumn Property="x => x.Molar" Title="Molar mass" />
+            <PropertyColumn Property="x => x.Group" Title="Category" />
+        </Columns>
+        <PagerContent>
+            <MudDataGridPager T="Element" />
+        </PagerContent>
+    </MudDataGrid>
+
+    <div class="d-flex flex-wrap mt-4">
+        <MudRadioGroup T="DataGridFilterMode" @bind-SelectedOption="@_filterMode">
+            <MudRadio Dense="true" Option="@DataGridFilterMode.Simple" Color="Color.Primary">Simple</MudRadio>
+            <MudRadio Dense="true" Option="@DataGridFilterMode.ColumnFilterMenu" Color="Color.Tertiary">Column Menu</MudRadio>
+            <MudRadio Dense="true" Option="@DataGridFilterMode.ColumnFilterRow">Column Row</MudRadio>
+        </MudRadioGroup>
+    </div>
+
+    <div class="d-flex flex-wrap mt-4">
+        <MudRadioGroup T="DataGridFilterCaseSensitivity" @bind-SelectedOption="@_caseSensitivity">
+            <MudRadio Dense="true" Option="@DataGridFilterCaseSensitivity.Default" Color="Color.Primary">Default Case Sensitivity</MudRadio>
+            <MudRadio Dense="true" Option="@DataGridFilterCaseSensitivity.CaseInsensitive" Color="Color.Tertiary">Case Insensitive</MudRadio>
+        </MudRadioGroup>
+    </div>
+
+    @if (_isAdmin)
+    {
+        <MudSwitch @bind-Checked=@_isEdit Label="Edit Mode" Color="Color.Info" />
+    }
+
+</MudStack>
+
+@code {
+    public record Element(int Number, string Sign, string Name, string Position, double Molar, string Group);
+
+    IEnumerable<Element> Elements = new List<Element>();
+    DataGridFilterMode _filterMode = DataGridFilterMode.Simple;
+    DataGridFilterCaseSensitivity _caseSensitivity = DataGridFilterCaseSensitivity.Default;
+
+    protected override async void OnInitialized()
+    {
+        var elements = new List<Element>
+        {
+            new(1, "H", "Hydrogen", "1st", 1.008, "Nonmetal"),
+            new(2, "He", "Helium", "2nd", 4.0026, "Noble Gas"),
+            new(3, "Li", "Lithium", "3rd", 6.94, "Alkali Metal"),
+            new(4, "Be", "Beryllium", "4th", 9.0122, "Alkaline Earth Metal"),
+            new(5, "B", "Boron", "5th", 10.81, "Metalloid"),
+            new(6, "C", "Carbon", "6th", 12.011, "Nonmetal"),
+            new(7, "N", "Nitrogen", "7th", 14.007, "Nonmetal"),
+            new(8, "O", "Oxygen", "8th", 15.999, "Nonmetal"),
+            new(9, "F", "Fluorine", "9th", 18.998, "Halogen"),
+            new(10, "Ne", "Neon", "10th", 20.180, "Noble Gas"),
+            new(11, "Na", "Sodium", "11th", 22.990, "Alkali Metal"),
+            new(12, "Mg", "Magnesium", "12th", 24.305, "Alkaline Earth Metal"),
+            new(13, "Al", "Aluminum", "13th", 26.982, "Metal"),
+            new(14, "Si", "Silicon", "14th", 28.085, "Metalloid"),
+            new(15, "P", "Phosphorus", "15th", 30.974, "Nonmetal"),
+            new(16, "S", "Sulfur", "16th", 32.06, "Nonmetal"),
+            new(17, "Cl", "Chlorine", "17th", 35.45, "Halogen"),
+            new(18, "Ar", "Argon", "18th", 39.948, "Noble Gas"),
+            new(19, "K", "Potassium", "19th", 39.098, "Alkali Metal"),
+            new(20, "Ca", "Calcium", "20th", 40.078, "Alkaline Earth Metal"),
+            new(21, "Sc", "Scandium", "21st", 44.956, "Transition Metal"),
+            new(22, "Ti", "Titanium", "22nd", 47.867, "Transition Metal"),
+            new(23, "V", "Vanadium", "23rd", 50.942, "Transition Metal"),
+            new(24, "Cr", "Chromium", "24th", 51.996, "Transition Metal"),
+            new(25, "Mn", "Manganese", "25th", 54.938, "Transition Metal"),
+            new(26, "Fe", "Iron", "26th", 55.845, "Transition Metal"),
+            new(27, "Co", "Cobalt", "27th", 58.933, "Transition Metal"),
+            new(28, "Ni", "Nickel", "28th", 58.693, "Transition Metal"),
+            new(29, "Cu", "Copper", "29th", 63.546, "Transition Metal"),
+            new(30, "Zn", "Zinc", "30th", 65.38, "Transition Metal"),
+            new(31, "Ga", "Gallium", "31st", 69.723, "Metal"),
+            new(32, "Ge", "Germanium", "32nd", 72.630, "Metalloid"),
+            new(33, "As", "Arsenic", "33rd", 74.922, "Metalloid"),
+            new(34, "Se", "Selenium", "34th", 78.971, "Nonmetal"),
+            new(35, "Br", "Bromine", "35th", 79.904, "Halogen"),
+            new(36, "Kr", "Krypton", "36th", 83.798, "Noble Gas"),
+        };
+
+        Elements = elements;
+    }
+
+    [Inject] public State.SiteTitle SiteTitle { get; set; }
+
+    protected override async Task OnInitializedAsyncImpl()
+    {
+        SiteTitle.Rename("VOCABULARY");
+        
+        await RefreshViewModel();
+    }
+
+    protected override async Task RefreshViewModel()
+    {
+        //var response = await QueryExecutor.Execute<GetCourseQuery, GetCourseQueryResponse>(
+        //    new GetCourseQuery(CourseId));
+    }
+}
