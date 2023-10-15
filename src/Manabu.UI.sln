@@ -29,6 +29,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{4416614A
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Corelibs.Basic.Tests", "..\..\Corelibs.Basic\Corelibs.Basic\Corelibs.Basic.Tests\Corelibs.Basic.Tests.csproj", "{1D52442C-489A-4986-9CFC-DD888B1F45EE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kitsune.WordConverter", "Kitsune.WordConverter\Kitsune.WordConverter.csproj", "{6517F99E-6CA3-40E6-89FB-77746142BC29}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -109,6 +111,14 @@ Global
 		{1D52442C-489A-4986-9CFC-DD888B1F45EE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1D52442C-489A-4986-9CFC-DD888B1F45EE}.Release|x64.ActiveCfg = Release|Any CPU
 		{1D52442C-489A-4986-9CFC-DD888B1F45EE}.Release|x64.Build.0 = Release|Any CPU
+		{6517F99E-6CA3-40E6-89FB-77746142BC29}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6517F99E-6CA3-40E6-89FB-77746142BC29}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6517F99E-6CA3-40E6-89FB-77746142BC29}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{6517F99E-6CA3-40E6-89FB-77746142BC29}.Debug|x64.Build.0 = Debug|Any CPU
+		{6517F99E-6CA3-40E6-89FB-77746142BC29}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6517F99E-6CA3-40E6-89FB-77746142BC29}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6517F99E-6CA3-40E6-89FB-77746142BC29}.Release|x64.ActiveCfg = Release|Any CPU
+		{6517F99E-6CA3-40E6-89FB-77746142BC29}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

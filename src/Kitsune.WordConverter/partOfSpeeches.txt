@@ -1,0 +1,23 @@
+numeral
+counter
+pronoun
+conjunction
+interjection
+in compounds
+prefix
+suffix
+expression
+noun
+proper noun
+verbal noun
+independent noun
+adverb
+intransitive verb
+godan verb
+transitive verb
+ichidan verb
+する verb
+adjective
+い adjective
+な adjective
+の adjective
