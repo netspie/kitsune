@@ -3,13 +3,16 @@ using Manabu.Entities.Content.WordMeanings;
 using Manabu.Entities.Content.Words;
 using MongoDB.Driver;
 using Newtonsoft.Json;
-using System.Diagnostics;
 using WanikaniTest.Models;
 
 string jsonFilePath = "../../../words.json";
 string jsonString = File.ReadAllText(jsonFilePath);
 
 var words = JsonConvert.DeserializeObject<VocabularyItemDTO[]>(jsonString);
+
+var Auxiliary_MeaningsMoreThan0 = words.Where(w => w.Data.Auxiliary_Meanings.Length > 0).ToList();
+var multipleMeaningAndReadingWords = words.Where(w => w.Data.Readings.Length > 1).ToList();
+var wordsGroupedByMeaningsLength = words.GroupBy(w => w.Data.Meanings.Length).OrderBy(w => w.Key).ToList();
 
 var partOfSpeechesNames = File.ReadAllLines("../../../partOfSpeeches.txt");
 var wordsByPartOfSpeeches = new List<WordCluster>();
@@ -51,12 +54,32 @@ var wordMeaningRepo = new MongoDbRepository<WordMeaning, WordMeaningId>(mongoCon
 var mm = mainVerbs.Where(m => m.Data.Readings.Length > 1).ToArray();
 foreach (var verb in mainVerbs)
 {
+    var meaning = verb.Data.Meanings.Where(m => m.Primary == true).FirstOrDefault();
+    if (meaning is null)
+        continue;
+
+    var reading = verb.Data.Meanings.Where(m => m.Primary == true).FirstOrDefault();
+    if (reading is null)
+        continue;
+
+    var wordMeaningIdStr = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
+    var wordMeaning = new WordMeaning(
+        id: new WordMeaningId(wordMeaningIdStr),
+        original: verb.Data.Slug,
+        translations: new List<string> { meaning.Meaning.ToLower() }, 
+        personas: null,
+        hiraganaWritings: new() { new WordMeaning.HiraganaWriting("reading") });
+
+    var partsOfSpeeches = verb.Data.Parts_Of_Speech.ToPartsOfSpeech();
     var wordIdStr = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
-    foreach (var meaning in verb.Data.Meanings)
-    {
-        var wordMeaningIdStr = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
-        var wordMeaning = new WordMeaning(new WordMeaningId(wordMeaningIdStr), 0, verb.Data.Slug, new List<string> { meaning.Meaning.ToLower() });
-    }
+    var word = new Word(
+        id: new WordId(wordIdStr),
+        value: verb.Data.Slug,
+        partsOfSpeech: partsOfSpeeches.partOfSpeeches,
+        meanings: new() { wordMeaning.Id },
+        properties: partsOfSpeeches.properties,
+        lexeme: null);
+
     //var word = new Word(new WordId(base64Guid), 0, verb.Data.Slug, PartOfSpeech.Verb,)
 }
 
@@ -67,8 +90,32 @@ public record WordCluster(string Type, VocabularyItemDTO[] Items)
 
 public static class PartOfSpeechExtensions
 {
-    public static PartOfSpeech? ToPartOfSpeech(this string str) => str switch
+    public static (List<PartOfSpeech> partOfSpeeches, List<WordProperty> properties) ToPartsOfSpeech(this string[] strs)
     {
-        _ => null
-    };
+        var partsOfSpeech = new List<PartOfSpeech>();
+        var properties = new List<WordProperty>();
+
+        // VERBS
+        if (strs.Any(str => str.Contains("verb")))
+            partsOfSpeech.Add(PartOfSpeech.Verb);
+
+        if (strs.Any(str => str.Contains("godan")))
+            properties.Add(VerbConjugationType.Godan);
+        else
+        if (strs.Any(str => str.Contains("ichidan")))
+            properties.Add(VerbConjugationType.Ichidan);
+        else
+        if (strs.Any(str => str.Contains("する")))
+            properties.Add(VerbConjugationType.Suru);
+        else
+            properties.Add(VerbConjugationType.Irregular);
+
+        if (strs.Any(str => str.Contains("transitive")))
+            properties.Add(VerbTransitivity.Transitive);
+        else
+        if (strs.Any(str => str.Contains("intransitive")))
+            properties.Add(VerbTransitivity.Intransitive);
+
+        return (partsOfSpeech, properties);
+    }
 }
