@@ -2,9 +2,11 @@
 using Corelibs.MongoDB;
 using Manabu.Entities.Content.WordMeanings;
 using Manabu.Entities.Content.Words;
+using Manabu.Entities.Rehearse.RehearseItems;
 using MongoDB.Driver;
 using Newtonsoft.Json;
 using System.Text.RegularExpressions;
+using System.Xml.Linq;
 using WanikaniTest.Models;
 
 string jsonFilePath = "../../../words.json";
@@ -46,12 +48,12 @@ Console.WriteLine($"{allVerbsDistinct.Count()} distinct verbs");
 
 var mongoConnection = new MongoConnection("Kitsune_dev");
 var conn = Environment.GetEnvironmentVariable("KitsuneDatabaseConn");
-var mongoClient = new MongoClient(conn);
-mongoConnection.Database = mongoClient.GetDatabase(mongoConnection.DatabaseName);
-mongoConnection.Session = await mongoClient.StartSessionAsync();
 
-var wordRepo = new MongoDbRepository<Word, WordId>(mongoConnection, Word.DefaultCollectionName);
-var wordMeaningRepo = new MongoDbRepository<WordMeaning, WordMeaningId>(mongoConnection, WordMeaning.DefaultCollectionName);
+var client = new MongoClient(conn);
+var database = client.GetDatabase("Kitsune_dev");
+
+var wordCol = database.GetCollection<Word>(Word.DefaultCollectionName);
+var wordMeaningsCol = database.GetCollection<WordMeaning>(WordMeaning.DefaultCollectionName);
 
 var mm = mainVerbs.Where(m => m.Data.Readings.Length > 1).ToArray();
 foreach (var verb in mainVerbs)
@@ -83,8 +85,28 @@ foreach (var verb in mainVerbs)
         properties: partsOfSpeeches.properties,
         lexeme: null);
 
-    //var word = new Word(new WordId(base64Guid), 0, verb.Data.Slug, PartOfSpeech.Verb,)
+    try
+    {
+        await wordCol.InsertOneAsync(word);
+        Console.WriteLine($"Written word: {wordMeaning.Translations[0]}");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error writing word: {wordMeaning.Translations[0]}\n");
+    }
+
+    try
+    {
+        await wordMeaningsCol.InsertOneAsync(wordMeaning);
+        Console.WriteLine($"Written word meaning: {wordMeaning.Translations[0]}");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error writing word meaning: {wordMeaning.Translations[0]}\n");
+    }
 }
+
+Console.WriteLine("Saved All");
 
 public record WordCluster(string Type, VocabularyItemDTO[] Items)
 {

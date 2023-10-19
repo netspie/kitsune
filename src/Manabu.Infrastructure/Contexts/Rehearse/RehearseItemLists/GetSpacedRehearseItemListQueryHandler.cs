@@ -41,7 +41,7 @@ public class GetRehearseItemListQueryHandler : IQueryHandler<GetSpacedRehearseIt
         // ITEMS ASAP - Items to failed rehearse, which should be review as soon as possible
         var itemsAsapCollection = _mongoConnection.Database.GetCollection<RehearseItemAsap>(RehearseItemAsap.DefaultCollectionName);
         var itemsAsapFilter = Builders<RehearseItemAsap>.Filter.Eq("Owner", userId);
-        var itemsAsapProjection = Builders<RehearseItemAsap>.Projection.Include(x => x.Id).Include(x => x.ItemId).Include(x => x.ItemType).Include(x => x.Mode); ;
+        var itemsAsapProjection = Builders<RehearseItemAsap>.Projection.Include(x => x.Id).Include(x => x.ItemId).Include(x => x.ItemType).Include(x => x.Mode);
         var itemsAsapDocs = await itemsAsapCollection
             .Find(itemsAsapFilter)
             .Project(itemsAsapProjection)

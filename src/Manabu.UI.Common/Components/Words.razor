@@ -57,6 +57,6 @@
 
         _dto = response.Content;
 
-        Elements = _dto.Words.Select(w => new Element(w.Value, w.PartOfSpeech, w.Meaning)).ToList();
+        Elements = _dto.Words.Select(w => new Element(w.Value, w.Meaning, w.PartOfSpeech)).ToList();
     }
 }
