@@ -10,7 +10,7 @@
 <MudStack Class="main-section vocabulary" Style="width: 100%;">
     <SiteTitle>@SiteTitle.Name</SiteTitle>
 
-    <MudDataGrid @ref=@_mudDataGrid Items="@Elements" Filterable="true" Bordered=false>
+    <MudDataGrid Items="@Elements" Filterable="true" Bordered=false Hover=true RowClick=@OnWordClick T="Element">
         <Columns>
             <PropertyColumn Property="x => x.Word" Filterable="false" />
             <PropertyColumn Property="x => x.Meaning" />
@@ -29,9 +29,9 @@
 </MudStack>
 
 @code {
-    public record Element(string Word, string Meaning, string PartOfSpeech);
+    public record Element(string Id, string Word, string Meaning, string PartOfSpeech);
 
-    IEnumerable<Element> Elements = new List<Element>();
+    List<Element> Elements = new List<Element>();
 
     private MudDataGrid<Element> _mudDataGrid;
     private WordsDTO _dto;
@@ -50,6 +50,11 @@
         await RefreshViewModel();
     }
 
+    private async Task OnWordClick(DataGridRowClickEventArgs<Element> args)
+    {
+        Navigation.NavigateTo($"words/{args.Item.Id}");
+    }
+
     protected override async Task RefreshViewModel()
     {
         var response = await QueryExecutor.Execute<GetWordsQuery, GetWordsQueryResponse>(
@@ -57,6 +62,6 @@
 
         _dto = response.Content;
 
-        Elements = _dto.Words.Select(w => new Element(w.Value, w.Meaning, w.PartOfSpeech)).ToList();
+        Elements = _dto.Words.Select(w => new Element(w.Id, w.Value, w.Meaning, w.PartOfSpeech)).ToList();
     }
 }
