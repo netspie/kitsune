@@ -1,0 +1,81 @@
+﻿@using Corelibs.Basic.Reflection;
+@using Corelibs.Basic.Collections;
+@using Manabu.UseCases.Content.Courses;
+@using Manabu.UseCases.Content.Lessons;
+@using Microsoft.AspNetCore.Components.Authorization;
+
+@inherits CoreComponent
+
+<MudStack Class="main-section word-meaning" Style="width: 100%;">
+    
+    <SiteTitle>@SiteTitle.Name</SiteTitle>
+    <MudBreadcrumbs Items=@_breadcrumbs Style="padding-left: 0; font-size: 12px" />
+
+    <TextField 
+        IsReadonly=@(!IsEdit)
+        Value="私" />
+
+    <EditableList
+        Name="Parts Of Speech"
+        IsReadonly=@(!IsEdit)
+        NoIndents=true
+        TreeItems=@_partOfSpeechItems />
+
+    <EditableList
+        Name="Translations"
+        IsReadonly=@(!IsEdit)
+        NoIndents=true
+        TreeItems=@_translationsItems />
+
+    <TextField 
+        Label="Pitch Accent"
+        IsReadonly=@(!IsEdit)
+        Value="_-_" />
+
+    <TextField 
+        Label="Writing Preference"
+        IsReadonly=@(!IsEdit)
+        Value="Kana Alone" />
+
+    @if (_isAdmin)
+    {
+        <MudSwitch @bind-Checked=@_isEdit Label="Edit Mode" Color="Color.Info" />
+    }
+
+</MudStack>
+
+@code {
+    [Parameter] public string WordMeaningId { get; set; }
+    [Inject] public State.SiteTitle SiteTitle { get; set; }
+
+    private List<BreadcrumbItem> _breadcrumbs = new();
+
+    private List<EditableList.TreeItemData> _partOfSpeechItems = new()
+    {
+        new("Verb"),
+        new("Godan"),
+    };
+
+    private List<EditableList.TreeItemData> _translationsItems = new()
+    {
+        new("I"),
+        new("me"),
+    };
+
+    protected override async Task OnInitializedAsyncImpl()
+    {
+        SiteTitle.Rename("Word Meaning".ToUpper());
+        
+        _breadcrumbs.Add(new("Words", href: "/words"));
+        _breadcrumbs.Add(new($"私", href: $"/words/xysda786asf"));
+        _breadcrumbs.Add(new($"Meanings", href: "", disabled: true));
+
+        await RefreshViewModel();
+    }
+
+    protected override async Task RefreshViewModel()
+    {
+        //var response = await QueryExecutor.Execute<GetCourseQuery, GetCourseQueryResponse>(
+        //    new GetCourseQuery(CourseId));
+    }
+}

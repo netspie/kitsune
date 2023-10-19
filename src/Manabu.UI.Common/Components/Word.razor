@@ -1,0 +1,63 @@
+﻿@using Corelibs.Basic.Reflection;
+@using Corelibs.Basic.Collections;
+@using Manabu.UseCases.Content.Courses;
+@using Manabu.UseCases.Content.Lessons;
+@using Microsoft.AspNetCore.Components.Authorization;
+
+@inherits CoreComponent
+
+<MudStack Class="main-section word" Style="width: 100%;">
+    <SiteTitle>@SiteTitle.Name</SiteTitle>
+
+    <TextField 
+        IsReadonly=@(!IsEdit)
+        Value="私" />
+
+    <EditableList
+        Name="Parts Of Speech"
+        IsReadonly=@(!IsEdit)
+        NoIndents=true
+        TreeItems=@_partOfSpeechItems />
+
+    <EditableList
+        Name="Meanings"
+        IsReadonly=@(!IsEdit)
+        NoIndents=true
+        TreeItems=@_meaningsItems />
+
+    @if (_isAdmin)
+    {
+        <MudSwitch @bind-Checked=@_isEdit Label="Edit Mode" Color="Color.Info" />
+    }
+
+</MudStack>
+
+@code {
+    [Parameter] public string WordId { get; set; }
+    [Inject] public State.SiteTitle SiteTitle { get; set; }
+
+    private List<EditableList.TreeItemData> _partOfSpeechItems = new()
+    {
+        new("Verb"),
+        new("Godan"),
+    };
+
+    private List<EditableList.TreeItemData> _meaningsItems = new()
+    {
+        new("I"),
+        new("me"),
+    };
+
+    protected override async Task OnInitializedAsyncImpl()
+    {
+        SiteTitle.Rename("Word");
+        
+        await RefreshViewModel();
+    }
+
+    protected override async Task RefreshViewModel()
+    {
+        //var response = await QueryExecutor.Execute<GetCourseQuery, GetCourseQueryResponse>(
+        //    new GetCourseQuery(CourseId));
+    }
+}

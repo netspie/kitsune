@@ -1,0 +1,7 @@
+﻿@page "/word-meanings/{id}"
+
+<Manabu.UI.Common.Components.WordMeaning WordMeaningId=@Id />
+
+@code {
+    [Parameter] public string Id { get; set; }
+}

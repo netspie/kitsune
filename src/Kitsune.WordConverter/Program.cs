@@ -1,8 +1,10 @@
-﻿using Corelibs.MongoDB;
+﻿using Corelibs.Basic.Collections;
+using Corelibs.MongoDB;
 using Manabu.Entities.Content.WordMeanings;
 using Manabu.Entities.Content.Words;
 using MongoDB.Driver;
 using Newtonsoft.Json;
+using System.Text.RegularExpressions;
 using WanikaniTest.Models;
 
 string jsonFilePath = "../../../words.json";
@@ -58,20 +60,21 @@ foreach (var verb in mainVerbs)
     if (meaning is null)
         continue;
 
-    var reading = verb.Data.Meanings.Where(m => m.Primary == true).FirstOrDefault();
+    var reading = verb.Data.Readings.Where(m => m.Primary == true).FirstOrDefault();
     if (reading is null)
         continue;
 
-    var wordMeaningIdStr = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
+    var wordIdStr = IdCreator.Create();
+    var wordMeaningIdStr = IdCreator.Create();
+
     var wordMeaning = new WordMeaning(
         id: new WordMeaningId(wordMeaningIdStr),
+        wordId: new WordId(wordIdStr),
         original: verb.Data.Slug,
         translations: new List<string> { meaning.Meaning.ToLower() }, 
-        personas: null,
-        hiraganaWritings: new() { new WordMeaning.HiraganaWriting("reading") });
+        hiraganaWritings: new() { new WordMeaning.HiraganaWriting(reading.Reading) });
 
     var partsOfSpeeches = verb.Data.Parts_Of_Speech.ToPartsOfSpeech();
-    var wordIdStr = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
     var word = new Word(
         id: new WordId(wordIdStr),
         value: verb.Data.Slug,
@@ -86,6 +89,16 @@ foreach (var verb in mainVerbs)
 public record WordCluster(string Type, VocabularyItemDTO[] Items)
 {
     public override string ToString() => Type;
+}
+
+public static class IdCreator
+{
+    public static string Create() =>
+        Regex.Replace(
+            Convert.ToBase64String(
+                Guid.NewGuid().ToByteArray()), 
+            "[^a-zA-Z0-9]", 
+            "");
 }
 
 public static class PartOfSpeechExtensions
