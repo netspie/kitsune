@@ -4,10 +4,13 @@ using Mediator;
 namespace Manabu.UseCases.Content.Words;
 
 public record GetWordsQuery(
-    int Limit = 10,
-    RangeDTO? Range = null,
+    RangeArg? Range,
     SortArg[]? SortArgs = null,
     FilterArg[]? FilterArgs = null) : IQuery<Result<GetWordsQueryResponse>>;
+
+public record RangeArg(
+    int Start,
+    int Limit);
 
 public record SortArg(
     string Field,
@@ -21,8 +24,7 @@ public record GetWordsQueryResponse(WordsDTO Content);
 
 public record WordsDTO(
     WordDTO[] Words,
-    RangeDTO Range,
-    bool IsThereMoreWords);
+    RangeDTO Range);
 
 public record WordDTO(
     string Id,
@@ -31,5 +33,6 @@ public record WordDTO(
     string PartOfSpeech);
 
 public record RangeDTO(
+    int TotalCount,
     int Start,
-    int? End = null);
+    int Limit);

@@ -7,17 +7,37 @@
 
 @inherits CoreComponent
 
+@if (_dto is null) { return; }
+
 <MudStack Class="main-section vocabulary" Style="width: 100%;">
     <SiteTitle>@SiteTitle.Name</SiteTitle>
 
-    <MudDataGrid Items="@Elements" Filterable="true" Bordered=false Hover=true RowClick=@OnWordClick T="Element">
+    <MudDataGrid @ref=_mudDataGrid Items="@_elements" Filterable="true" Bordered=false Hover=true RowClick=@OnWordClick T="WordItem" Outlined=false RowsPerPage=@Limit> 
         <Columns>
             <PropertyColumn Property="x => x.Word" Filterable="false" />
             <PropertyColumn Property="x => x.Meaning" />
-            <PropertyColumn Property="x => x.PartOfSpeech" />
+            <PropertyColumn Property="x => x.PartOfSpeech" Title="Part of Speech"/>
         </Columns>
         <PagerContent>
-            <MudDataGridPager T="Element" />
+            <MudStack Row=true Style="width: 100%;">
+                <MudStack Row=true Style="width: 100%; display: flex; justify-content: right;">
+                    <div class="mud-table-pagination-caption">
+                        <div class="mud-table-page-number-information">
+                            <span>@_dto.Range.Start</span>
+                            -
+                            <span>@(_dto.Range.Limit + _dto.Range.Start)</span>
+                            of
+                            <span>@(_dto.Range.TotalCount)</span>
+                        </div>
+                    </div>
+                </MudStack>
+                <div style="display: flex; justify-content: right;">
+                    <MudIconButton Class="mud-flip-x-rtl" Icon=@Icons.Material.Outlined.KeyboardDoubleArrowLeft @onclick=@OnNextWordPage aria-label="Previous page" />
+                    <MudIconButton Class="mud-flip-x-rtl" Icon=@Icons.Material.Outlined.KeyboardArrowLeft @onclick=@OnPrevWordPage aria-label="First page" />
+                    <MudIconButton Class="mud-flip-x-rtl" Icon=@Icons.Material.Outlined.KeyboardArrowRight @onclick=@OnNextWordPage aria-label="Previous page" />
+                    <MudIconButton Class="mud-flip-x-rtl" Icon=@Icons.Material.Outlined.KeyboardDoubleArrowRight @onclick=@OnNextWordPage aria-label="Previous page" />
+                </div>
+            </MudStack>
         </PagerContent>
     </MudDataGrid>
 
@@ -29,19 +49,21 @@
 </MudStack>
 
 @code {
-    public record Element(string Id, string Word, string Meaning, string PartOfSpeech);
+    [Inject] public State.SiteTitle SiteTitle { get; set; }
 
-    List<Element> Elements = new List<Element>();
+    private const int Limit = 10;
 
-    private MudDataGrid<Element> _mudDataGrid;
-    private WordsDTO _dto;
+    private List<WordItem> _elements = new();
+
+    private MudDataGrid<WordItem>? _mudDataGrid;
+    private WordsDTO? _dto;
+
+    private RangeArg _rangeArg = new(0, Limit);
 
     protected override void OnAfterRender(bool firstRender)
     {
         Console.WriteLine(_mudDataGrid);
     }
-
-    [Inject] public State.SiteTitle SiteTitle { get; set; }
 
     protected override async Task OnInitializedAsyncImpl()
     {
@@ -50,18 +72,32 @@
         await RefreshViewModel();
     }
 
-    private async Task OnWordClick(DataGridRowClickEventArgs<Element> args)
+    private async Task OnWordClick(DataGridRowClickEventArgs<WordItem> args)
     {
         Navigation.NavigateTo($"words/{args.Item.Id}");
+    }
+
+    private async Task OnPrevWordPage()
+    {
+        _rangeArg = new RangeArg(Math.Max(_rangeArg.Start - _rangeArg.Limit, 0), _rangeArg.Limit);
+        await RefreshViewModel();
+    }
+
+    private async Task OnNextWordPage()
+    {
+        _rangeArg = new RangeArg(_rangeArg.Start + _rangeArg.Limit, _rangeArg.Limit);
+        await RefreshViewModel();
     }
 
     protected override async Task RefreshViewModel()
     {
         var response = await QueryExecutor.Execute<GetWordsQuery, GetWordsQueryResponse>(
-            new GetWordsQuery());
+            new GetWordsQuery(_rangeArg));
 
         _dto = response.Content;
 
-        Elements = _dto.Words.Select(w => new Element(w.Id, w.Value, w.Meaning, w.PartOfSpeech)).ToList();
+        _elements = _dto.Words.Select(w => new WordItem(w.Id, w.Value, w.Meaning, w.PartOfSpeech)).ToList();
     }
+
+    public record WordItem(string Id, string Word, string Meaning, string PartOfSpeech);
 }

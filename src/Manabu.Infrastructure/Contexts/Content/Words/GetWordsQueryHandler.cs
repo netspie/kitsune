@@ -2,13 +2,10 @@
 using Corelibs.MongoDB;
 using Manabu.Entities.Content.WordMeanings;
 using Manabu.Entities.Content.Words;
-using Manabu.Entities.Rehearse.RehearseItems;
-using Manabu.Entities.Shared;
 using Manabu.UseCases.Content.Words;
 using Mediator;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using static Manabu.Infrastructure.Contexts.RehearseItemLists.GetRehearseItemListQueryHandler;
 
 namespace Manabu.Infrastructure.CQRS.Content.Lessons;
 
@@ -34,29 +31,37 @@ public class GetWordsQueryHandler : IQueryHandler<GetWordsQuery, Result<GetWords
         var wordsHintDict = new Dictionary<string, object>();
         var wordsHint = new BsonDocument(wordsHintDict);
 
+        var range = query.Range ?? new RangeArg(0, MaxItemLimit);
+        var limit = Math.Min(range.Limit, MaxItemLimit);
         //if (query.SortArgs)
         //wordsHint.Add
 
-        var wordsProjection = Builders<Word>.Projection.Include(x => x.Id).Include(x => x.Value).Include(x => x.PartsOfSpeech).Include(x => x.Meanings);
+        var filter = Builders<Word>.Filter.Empty;
 
+        var wordsProjection = Builders<Word>.Projection.Include(x => x.Id).Include(x => x.Value).Include(x => x.PartsOfSpeech).Include(x => x.Meanings);
+        var totalCount = await wordsCollection.CountDocumentsAsync(filter);
         var words = await wordsCollection
             .Aggregate(new AggregateOptions() { })
             .Project(wordsProjection)
+            .Skip(range.Start)
             .Lookup<WordMeaning, LookupResult>(
                 foreignCollectionName: WordMeaning.DefaultCollectionName,
                 localField: nameof(Word.Meanings),
                 foreignField: "_id",
-                @as: nameof(LookupResult.MeaningsX))
-            .Limit(Math.Min(query.Limit, MaxItemLimit))
+                @as: nameof(LookupResult.MeaningsJoined))
+            .Limit(limit)
             .ToListAsync();
 
         return result.With(new GetWordsQueryResponse(
             new WordsDTO(
-                Words: words.Select(w => new WordDTO(w.Id.Value, w.Value, w.MeaningsX.FirstOrDefault()?.Translations?.FirstOrDefault(), w.PartsOfSpeech.FirstOrDefault()?.Value)).ToArray(),
-                Range: null,
-                IsThereMoreWords: true)));
+                Words: words.Select(w => new WordDTO(
+                    w.Id.Value, 
+                    w.Value,
+                    w.MeaningsJoined[0].Translations[0],
+                    w.PartsOfSpeech[0].Value)).ToArray(),
+                Range: new RangeDTO((int) totalCount, range.Start, limit))));
     }
 
     public record WordProjection(WordId Id, string Value, List<PartOfSpeech> PartsOfSpeech, WordMeaningId[] Meanings);
-    public record LookupResult(WordId Id, string Value, List<PartOfSpeech> PartsOfSpeech, WordMeaningId[] Meanings, WordMeaning[] MeaningsX);
+    public record LookupResult(WordId Id, string Value, List<PartOfSpeech> PartsOfSpeech, WordMeaningId[] Meanings, WordMeaning[] MeaningsJoined);
 }
