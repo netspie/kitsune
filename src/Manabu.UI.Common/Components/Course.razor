@@ -147,7 +147,8 @@
 
     private async Task OnItemClick(EditableList.TreeItemData item)
     {
-        Navigation.NavigateTo($"lessons/{item.Id}");
+        if (item.Type == "lesson") 
+            Navigation.NavigateTo($"lessons/{item.Id}"); 
     }
 
     private async Task<bool> ExecuteUpdateCommand(Func<CourseDetailsDTO> createDto)
