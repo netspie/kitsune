@@ -4,6 +4,7 @@
 @using Manabu.UseCases.Content.Lessons;
 @using Manabu.UseCases.Content.Words;
 @using Microsoft.AspNetCore.Components.Authorization;
+@using Microsoft.JSInterop;
 
 @inherits CoreComponent
 
@@ -12,9 +13,12 @@
 <MudStack Class="main-section vocabulary" Style="width: 100%;">
     <SiteTitle>@SiteTitle.Name</SiteTitle>
 
-    <MudDataGrid @ref=_mudDataGrid Items="@_elements" Filterable="true" Bordered=false Hover=true RowClick=@OnWordClick T="WordItem" Outlined=false RowsPerPage=@Limit> 
+    <SortAndFilterBar SortProperties=@SortProperties OnSortValueChanged=@OnSortValueChanged />
+    <MudDataGrid @ref=_mudDataGrid Items="@_elements" Filterable="true" Bordered=false Hover=true RowClick=@OnWordClick T="WordItem" Outlined=false RowsPerPage=@Limit Elevation=0> 
         <Columns>
-            <PropertyColumn Property="x => x.Word" Filterable="false" />
+            <PropertyColumn Property="x => x.Word" Filterable="false" ValueChanged=@(EventCallback.Factory.Create(this, (WordItem item) => OnValueChanged(item)))>
+                
+            </PropertyColumn>
             <PropertyColumn Property="x => x.Meaning" />
             <PropertyColumn Property="x => x.PartOfSpeech" Title="Part of Speech"/>
         </Columns>
@@ -25,17 +29,17 @@
                         <div class="mud-table-page-number-information">
                             <span>@_dto.Range.Start</span>
                             -
-                            <span>@(_dto.Range.Limit + _dto.Range.Start)</span>
+                            <span>@(Math.Min(_dto.Range.Limit + _dto.Range.Start, _dto.Range.TotalCount))</span>
                             of
                             <span>@(_dto.Range.TotalCount)</span>
                         </div>
                     </div>
                 </MudStack>
                 <div style="display: flex; justify-content: right;">
-                    <MudIconButton Class="mud-flip-x-rtl" Icon=@Icons.Material.Outlined.KeyboardDoubleArrowLeft @onclick=@OnNextWordPage aria-label="Previous page" />
+                    <MudIconButton Class="mud-flip-x-rtl" Icon=@Icons.Material.Outlined.KeyboardDoubleArrowLeft @onclick=@OnFirstWordPage aria-label="Previous page" />
                     <MudIconButton Class="mud-flip-x-rtl" Icon=@Icons.Material.Outlined.KeyboardArrowLeft @onclick=@OnPrevWordPage aria-label="First page" />
                     <MudIconButton Class="mud-flip-x-rtl" Icon=@Icons.Material.Outlined.KeyboardArrowRight @onclick=@OnNextWordPage aria-label="Previous page" />
-                    <MudIconButton Class="mud-flip-x-rtl" Icon=@Icons.Material.Outlined.KeyboardDoubleArrowRight @onclick=@OnNextWordPage aria-label="Previous page" />
+                    <MudIconButton Class="mud-flip-x-rtl" Icon=@Icons.Material.Outlined.KeyboardDoubleArrowRight @onclick=@OnLastWordPage aria-label="Previous page" />
                 </div>
             </MudStack>
         </PagerContent>
@@ -50,6 +54,7 @@
 
 @code {
     [Inject] public State.SiteTitle SiteTitle { get; set; }
+    [Inject] public IJSRuntime JSRuntime { get; set; }
 
     private const int Limit = 10;
 
@@ -59,11 +64,9 @@
     private WordsDTO? _dto;
 
     private RangeArg _rangeArg = new(0, Limit);
+    private SortArg[]? _sortArgs = null;
 
-    protected override void OnAfterRender(bool firstRender)
-    {
-        Console.WriteLine(_mudDataGrid);
-    }
+    private string[] SortProperties = new[] { "Word" };
 
     protected override async Task OnInitializedAsyncImpl()
     {
@@ -89,10 +92,33 @@
         await RefreshViewModel();
     }
 
+    private async Task OnFirstWordPage()
+    {
+        _rangeArg = new RangeArg(0, _rangeArg.Limit);
+        await RefreshViewModel();
+    }
+
+    private async Task OnLastWordPage()
+    {
+        _rangeArg = new RangeArg(Math.Max(_dto.Range.TotalCount - _rangeArg.Limit, 0), _dto.Range.Limit);
+        await RefreshViewModel();
+    }
+
+    private async Task OnValueChanged(WordItem item)
+    {
+        Console.WriteLine("");
+    }
+
+    private async Task OnSortValueChanged(string value)
+    {
+        _sortArgs = value is null or [] ? null : new[] { new SortArg(value) };
+        await RefreshViewModel();
+    }
+
     protected override async Task RefreshViewModel()
     {
         var response = await QueryExecutor.Execute<GetWordsQuery, GetWordsQueryResponse>(
-            new GetWordsQuery(_rangeArg));
+            new GetWordsQuery(_rangeArg, _sortArgs));
 
         _dto = response.Content;
 

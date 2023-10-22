@@ -1,0 +1,54 @@
+﻿<div>
+    <MudSelect @ref=_sortSelect T="string" Label="Sort By" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter" FullWidth=false ValueChanged=@OnSortValueChangedInternal
+        Style="width: 200px; min-width: 200px; max-width: 200px;">
+        @foreach (var value in _sortValues)
+        {
+            <MudSelectItem T="string" Value="@value" />
+        }
+    </MudSelect>
+
+    @*<MudSelect @ref=_filterSelect T="string" Label="Filter By" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter" FullWidth=false
+        Style="width: fit-content;">
+        @foreach (var value in _filterValues)
+        {
+            <MudSelectItem T="string" Value="@value" />
+        }
+    </MudSelect>*@
+</div>
+
+@code {
+    private static readonly string Nothing = "None";
+
+    [Parameter] public string[] SortProperties { get; set; } = Array.Empty<string>();
+    private string[] _sortValues = new[] { Nothing };
+    private MudSelect<string>? _sortSelect;
+
+    [Parameter] public string[] FilterProperties { get; set; } = Array.Empty<string>();
+    private string[] _filterValues = new[] { Nothing };
+    private MudSelect<string>? _filterSelect;
+    [Parameter] public EventCallback<string> OnSortValueChanged { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+            return;
+
+        if (_sortSelect is not null)
+        {
+            _sortValues = _sortValues.Concat(SortProperties).ToArray();
+            _sortSelect.SelectedValues = new string[] { _sortValues.FirstOrDefault() };
+        }
+
+        if (_filterSelect is not null)
+        {
+            _filterValues = _filterValues.Concat(FilterProperties).ToArray();
+            _filterSelect.SelectedValues = new string[] { _filterValues.FirstOrDefault() };
+        }
+    }
+
+    private async Task OnSortValueChangedInternal(string value)
+    {
+        value = value == Nothing ? null : value;
+        await OnSortValueChanged.InvokeAsync(value);
+    }
+}

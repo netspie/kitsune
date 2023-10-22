@@ -1,7 +1,9 @@
 ﻿using Corelibs.Basic.Blocks;
+using Corelibs.Basic.Collections;
 using Corelibs.MongoDB;
 using Manabu.Entities.Content.WordMeanings;
 using Manabu.Entities.Content.Words;
+using Manabu.Entities.Rehearse.RehearseItems;
 using Manabu.UseCases.Content.Words;
 using Mediator;
 using MongoDB.Bson;
@@ -29,19 +31,20 @@ public class GetWordsQueryHandler : IQueryHandler<GetWordsQuery, Result<GetWords
         var wordsFilter = Builders<Word>.Filter.Empty;
 
         var wordsHintDict = new Dictionary<string, object>();
+        if (!query.SortArgs.IsNullOrEmpty())
+            wordsHintDict.Add(nameof(Word.Value), 1);
+
         var wordsHint = new BsonDocument(wordsHintDict);
 
         var range = query.Range ?? new RangeArg(0, MaxItemLimit);
         var limit = Math.Min(range.Limit, MaxItemLimit);
-        //if (query.SortArgs)
-        //wordsHint.Add
 
         var filter = Builders<Word>.Filter.Empty;
 
         var wordsProjection = Builders<Word>.Projection.Include(x => x.Id).Include(x => x.Value).Include(x => x.PartsOfSpeech).Include(x => x.Meanings);
         var totalCount = await wordsCollection.CountDocumentsAsync(filter);
         var words = await wordsCollection
-            .Aggregate(new AggregateOptions() { })
+            .Aggregate(new AggregateOptions() { Hint = wordsHint })
             .Project(wordsProjection)
             .Skip(range.Start)
             .Lookup<WordMeaning, LookupResult>(

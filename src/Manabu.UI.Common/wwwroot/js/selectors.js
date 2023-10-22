@@ -33,4 +33,3 @@ function EditableList_removeMenuIconPadding(parentId) {
         });
     });
 }
-    
