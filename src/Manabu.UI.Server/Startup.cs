@@ -11,6 +11,9 @@ using FluentValidation.AspNetCore;
 using Manabu.Entities.Content._Shared;
 using Manabu.Entities.Content.Audios;
 using Manabu.Entities.Content.Events;
+using Manabu.Entities.Content.Words;
+using Manabu.Entities.Rehearse.RehearseEntities;
+using Manabu.Entities.Rehearse.RehearseItems;
 using Manabu.Infrastructure;
 using Manabu.Infrastructure.Contexts.Rehearse;
 using Manabu.Infrastructure.Contexts.Rehearse._EventHandlers;
@@ -25,8 +28,11 @@ using Manabu.UI.Server.Data;
 using Manabu.UseCases.Content;
 using Manabu.UseCases.Content.Flashcards;
 using Mediator;
+using MongoDB.Driver;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Security.Claims;
+using System.Xml.Linq;
 
 namespace Manabu.UI.Server;
 
@@ -35,10 +41,11 @@ public static class Startup
     public static void InitializeApp(this IServiceCollection services, IWebHostEnvironment environment)
     {
         var commonUIAssembly = typeof(App).Assembly;
-        var entitiesAssembly = typeof(Manabu.Entities.Content.Users.User).Assembly;
-        var useCasesAssembly = typeof(Manabu.UseCases.Content.Users.CreateUserCommand).Assembly;
+        var entitiesAssembly = typeof(Entities.Content.Users.User).Assembly;
+        var useCasesAssembly = typeof(UseCases.Content.Users.CreateUserCommand).Assembly;
 
         var mongoConnectionString = MongoConfig.ConnectionString;
+        var databaseName = MongoConfig.GetDatabaseName(environment.IsDevelopment);
 
         services.AddBlazoredLocalStorage();
 
@@ -68,7 +75,8 @@ public static class Startup
 
         services.AddMediator(opts => opts.ServiceLifetime = ServiceLifetime.Scoped);
 
-        services.AddRepositories(environment, entitiesAssembly, mongoConnectionString);
+        services.AddRepositories(environment, entitiesAssembly, mongoConnectionString, databaseName);
+        CreateIndexes(mongoConnectionString, databaseName);
         services.AddSingleton<IMediaStorage<Audio>>(sp => new LocalMediaStorage<Audio>(
             $"/media/audio", $"/media/audio"));
 
@@ -107,13 +115,33 @@ public static class Startup
         this IServiceCollection services, 
         IWebHostEnvironment environment, 
         Assembly assembly,
-        string connectionString)
+        string connectionString,
+        string databaseName)
     {
-        var databaseName = environment.IsDevelopment() ? "Kitsune_dev" : "Kitsune_prod";
-
         MongoConventionPackExtensions.AddIgnoreConventionPack();
-
         services.AddMongoRepositories(assembly, connectionString, databaseName);
+    }
+
+    public static async Task CreateIndexes(
+        string connectionString,
+        string databaseName)
+    {
+        var client = new MongoClient(connectionString);
+        var database = client.GetDatabase(databaseName);
+
+        await database.CreateIndex<BaseDomainEvent>("events", keys => keys.Ascending(x => x.Timestamp));
+
+        await database.CreateIndex<RehearseItem>(RehearseItem.DefaultCollectionName, 
+            keys => keys.Ascending(x => x.Owner).Ascending(x => x.NextRehearseUtcTime).Ascending(x => x.ItemType).Ascending(x => x.Mode));
+
+        await database.CreateIndex<RehearseItemAsap>(RehearseItemAsap.DefaultCollectionName,
+            keys => keys.Ascending(x => x.Owner));
+
+        await database.CreateIndex<RehearseEntity>(RehearseEntity.DefaultCollectionName,
+            keys => keys.Ascending(x => x.Owner).Ascending(x => x.IsItem));
+
+        await database.CreateIndex<Word>(Word.DefaultCollectionName,
+            keys => keys.Ascending(x => x.Value));
     }
 
     private static void AddRehearseProcessors(IServiceCollection services, Assembly entitiesAssembly)
