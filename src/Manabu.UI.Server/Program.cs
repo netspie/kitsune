@@ -55,7 +55,7 @@ builder.Services.AddServerSideBlazor().AddMicrosoftIdentityConsentHandler();
 builder.Services.AddMudServices();
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.InitializeApp(builder.Environment);
+await builder.Services.InitializeApp(builder.Environment);
 
 var app = builder.Build();
 

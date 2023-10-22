@@ -28,7 +28,12 @@ using Manabu.UI.Server.Data;
 using Manabu.UseCases.Content;
 using Manabu.UseCases.Content.Flashcards;
 using Mediator;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
+using Newtonsoft.Json;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Security.Claims;
@@ -38,7 +43,7 @@ namespace Manabu.UI.Server;
 
 public static class Startup
 {
-    public static void InitializeApp(this IServiceCollection services, IWebHostEnvironment environment)
+    public static async Task InitializeApp(this IServiceCollection services, IWebHostEnvironment environment)
     {
         var commonUIAssembly = typeof(App).Assembly;
         var entitiesAssembly = typeof(Entities.Content.Users.User).Assembly;
@@ -76,7 +81,12 @@ public static class Startup
         services.AddMediator(opts => opts.ServiceLifetime = ServiceLifetime.Scoped);
 
         services.AddRepositories(environment, entitiesAssembly, mongoConnectionString, databaseName);
-        CreateIndexes(mongoConnectionString, databaseName);
+        await CreateIndexes(mongoConnectionString, databaseName);
+
+        BsonClassMap.RegisterClassMap<VerbTransitivity>();
+        BsonClassMap.RegisterClassMap<VerbConjugationType>();
+        BsonClassMap.RegisterClassMap<AdjectiveConjugationType>();
+
         services.AddSingleton<IMediaStorage<Audio>>(sp => new LocalMediaStorage<Audio>(
             $"/media/audio", $"/media/audio"));
 
