@@ -3,13 +3,12 @@ using Corelibs.Basic.Collections;
 using Corelibs.MongoDB;
 using Manabu.Entities.Content.WordMeanings;
 using Manabu.Entities.Content.Words;
-using Manabu.Entities.Rehearse.RehearseItems;
 using Manabu.UseCases.Content.Words;
 using Mediator;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
-namespace Manabu.Infrastructure.CQRS.Content.Lessons;
+namespace Manabu.Infrastructure.CQRS.Content.Words;
 
 public class GetWordsQueryHandler : IQueryHandler<GetWordsQuery, Result<GetWordsQueryResponse>>
 {

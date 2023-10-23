@@ -26,7 +26,8 @@
         Name="Meanings"
         IsReadonly=@(!IsEdit)
         NoIndents=true
-        TreeItems=@_meaningsItems />
+        TreeItems=@_meaningsItems 
+        OnItemClick=@OnItemClick />
 
     @if (_isAdmin)
     {
@@ -50,6 +51,11 @@
         await RefreshViewModel();
     }
 
+    private async Task OnItemClick(EditableList.TreeItemData item)
+    {
+        Navigation.NavigateTo($"word-meanings/{item.Id}");
+    }
+
     protected override async Task RefreshViewModel()
     {
         var response = await QueryExecutor.Execute<GetWordQuery, GetWordQueryResponse>(
@@ -58,6 +64,6 @@
         _dto = response.Content;
 
         _partOfSpeechItems = _dto.PartOfSpeches.Select(p => new EditableList.TreeItemData(p)).ToList();
-        _meaningsItems = _dto.Meanings.Select(m => new EditableList.TreeItemData(m)).ToList();
+        _meaningsItems = _dto.Meanings.Select(m => new EditableList.TreeItemData(m.Id, m.Value)).ToList();
     }
 }

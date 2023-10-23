@@ -2,9 +2,12 @@
 @using Corelibs.Basic.Collections;
 @using Manabu.UseCases.Content.Courses;
 @using Manabu.UseCases.Content.Lessons;
+@using Manabu.UseCases.Content.WordMeanings;
 @using Microsoft.AspNetCore.Components.Authorization;
 
 @inherits CoreComponent
+
+@if (_dto is null) { return; }
 
 <MudStack Class="main-section word-meaning" Style="width: 100%;">
     
@@ -13,13 +16,13 @@
 
     <TextField 
         IsReadonly=@(!IsEdit)
-        Value="私" />
+        Value=@_dto.Value />
 
-    <EditableList
+    @*<EditableList
         Name="Parts Of Speech"
         IsReadonly=@(!IsEdit)
         NoIndents=true
-        TreeItems=@_partOfSpeechItems />
+        TreeItems=@_partOfSpeechItems />*@
 
     <EditableList
         Name="Translations"
@@ -30,12 +33,12 @@
     <TextField 
         Label="Pitch Accent"
         IsReadonly=@(!IsEdit)
-        Value="_-_" />
+        Value=@_dto.PitchAccent />
 
     <TextField 
         Label="Writing Preference"
         IsReadonly=@(!IsEdit)
-        Value="Kana Alone" />
+        Value=@(_dto.KanjiWritingPreferred ? "Kanji and Kana" : "Kana Alone") />
 
     @if (_isAdmin)
     {
@@ -48,26 +51,18 @@
     [Parameter] public string WordMeaningId { get; set; }
     [Inject] public State.SiteTitle SiteTitle { get; set; }
 
+    private WordMeaningDetailsDTO? _dto;
     private List<BreadcrumbItem> _breadcrumbs = new();
 
-    private List<EditableList.TreeItemData> _partOfSpeechItems = new()
-    {
-        new("Verb"),
-        new("Godan"),
-    };
-
-    private List<EditableList.TreeItemData> _translationsItems = new()
-    {
-        new("I"),
-        new("me"),
-    };
+    private List<EditableList.TreeItemData> _partOfSpeechItems;
+    private List<EditableList.TreeItemData> _translationsItems;
 
     protected override async Task OnInitializedAsyncImpl()
     {
         SiteTitle.Rename("Word Meaning".ToUpper());
-        
+
         _breadcrumbs.Add(new("Words", href: "/words"));
-        _breadcrumbs.Add(new($"私", href: $"/words/xysda786asf"));
+        _breadcrumbs.Add(new($"{_dto.Value}", href: $"/words/{_dto.WordId}"));
         _breadcrumbs.Add(new($"Meanings", href: "", disabled: true));
 
         await RefreshViewModel();
@@ -75,7 +70,10 @@
 
     protected override async Task RefreshViewModel()
     {
-        //var response = await QueryExecutor.Execute<GetCourseQuery, GetCourseQueryResponse>(
-        //    new GetCourseQuery(CourseId));
+        var response = await QueryExecutor.Execute<GetWordMeaningQuery, GetWordMeaningQueryResponse>(
+            new GetWordMeaningQuery(WordMeaningId));
+
+        _dto = response.Content;
+        _translationsItems = _dto.Translations.Select(p => new EditableList.TreeItemData(p)).ToList();
     }
 }

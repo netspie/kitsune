@@ -11,5 +11,9 @@ public record GetWordQueryResponse(WordDetailsDTO Content);
 public record WordDetailsDTO(
     string WordId,
     string Value,
-    string[] Meanings,
+    WordMeaningDTO[] Meanings,
     string[] PartOfSpeches);
+
+public record WordMeaningDTO(
+    string Id,
+    string Value);
