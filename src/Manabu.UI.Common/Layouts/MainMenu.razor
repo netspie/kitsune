@@ -2,15 +2,38 @@
 @using Microsoft.AspNetCore.Components.Authorization;
 
 <div class="hmenu">
-    <MudPaper Class="hmenu-paper">
+    <MudPaper Class="hmenu-paper" Style="display: flex;">
         <MudToolBar class="hmenu-toolbar" Style="align-items: center; width: 100%;">
             <MudLink Href="" Style="text-decoration: none; padding-right: 25px; font-size:20px; font-weight: bold; font-family: gentle; color: darkorange !important;">KITSUNE</MudLink>
-            @for (int i = 0; i < _buttons.Count; i++)
+            @for (int i = 0; i < _leftButtons.Count; i++)
             {
-                var button = _buttons[i];
+                var button = _leftButtons[i];
                 @if (button.Buttons is null)
                 {
                     <MudButton OnClick=@(arg => OnMenuItemButtonClick(arg, button)) Href=@button.Href Style="border-radius: 0; font-weight: bold; font-family: unica; font-size: 15px; height: 100%;">@button.Name</MudButton>
+                }
+                else
+                {
+                    <MudMenu Label=@button.Name ActivationEvent="@MouseEvent.MouseOver">
+                        <ChildContent>
+                            @foreach (var nButton in button.Buttons)
+                            {
+                                <MudMenuItem OnClick=@(arg => OnMenuItemButtonClick(arg, button)) Href=@nButton.Href>@nButton.Name</MudMenuItem>
+                            }
+                        </ChildContent>
+                    </MudMenu>
+                }
+            }
+        </MudToolBar>
+        <MudToolBar class="hmenu-toolbar" Style="align-items: center;">
+            @for (int i = 0; i < _rightButtons.Count; i++)
+            {
+                var button = _rightButtons[i];
+                @if (button.Buttons is null)
+                {
+                    <MudButton OnClick=@(arg => OnMenuItemButtonClick(arg, button)) Href=@button.Href Style="border-radius: 0; font-weight: bold; font-family: unica; font-size: 15px; height: 100%;">
+                        <span style=" white-space:nowrap; word-break:keep-all">@button.Name</span>
+                    </MudButton>
                 }
                 else
                 {
@@ -41,12 +64,30 @@
     <MudPaper Class=@($"vmenu-paper py-3 {_vmenuDisplayCssClass}") Width="150px" Elevation="0">
         <MudNavMenu Bordered="true" Style="display: flex;  flex-direction: column; align-items: start;">
             <MudLink Href="" Style="text-decoration: none; text-align: center; padding-left: 20px; padding-bottom: 15px; font-size:20px; font-weight: bold; font-family: gentle; color: darkorange !important;">KITSUNE</MudLink>
-            @foreach (var button in _buttons)
+            @foreach (var button in _leftButtons)
             {
                 @if (button.Buttons is null)
                 {
                     <MudButton OnClick=@(arg => OnMenuItemButtonClick(arg, button)) Href=@button.Href Style="padding-left: 20px; display: flex; justify-content: start; text-align: left; width:100%; border-radius: 0; font-weight: bold; font-family: unica;">
                         @button.Name
+                    </MudButton>
+                }
+                else
+                {
+                    <MudNavGroup Title=@button.Name>
+                        @foreach (var nButton in button.Buttons)
+                        {
+                            <MudNavLink OnClick=@(arg => OnMenuItemButtonClick(arg, button)) Href=@nButton.Href>@nButton.Name</MudNavLink>
+                        }
+                    </MudNavGroup>
+                }
+            }
+            @foreach (var button in _rightButtons)
+            {
+                @if (button.Buttons is null)
+                {
+                    <MudButton OnClick=@(arg => OnMenuItemButtonClick(arg, button)) Href=@button.Href Style=" padding-left: 20px; display: flex; justify-content: start; text-align: left; width:100%; border-radius: 0; font-weight: bold; font-family: unica;">
+                        <span style=" white-space:nowrap; word-break:keep-all">@button.Name</span>
                     </MudButton>
                 }
                 else
@@ -66,13 +107,16 @@
 @*<div class="menu-image"></div>*@
 
 @code {
+    [Inject] public IAuthenticationService Auth { get; set; }
+    [Inject] public NavigationManager Navigation { get; set; }
+    [Inject] public State.SiteTitle SiteTitle { get; set; }
+
     private bool _menuOn;
 
     private string _vmenuDisplayCssClass => _menuOn ? "" : "display-none";
 
-    [Inject] public IAuthenticationService Auth { get; set; }
-    [Inject] public NavigationManager Navigation { get; set; }
-    [Inject] public State.SiteTitle SiteTitle { get; set; }
+    private readonly List<Button> _leftButtons = new();
+    private readonly List<Button> _rightButtons = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -80,16 +124,16 @@
 
         if (await Auth.IsSignedIn() is false)
         {
-            _buttons.Add(new("Courses", "/courses"));
-            _buttons.Add(new("Contact", "/contact"));
-            _buttons.Add(new("Sign In"));
+            _leftButtons.Add(new("Courses", "/courses"));
+            _leftButtons.Add(new("Contact", "/contact"));
+            _rightButtons.Add(new("Sign In"));
         }
         else
         {
-            _buttons.Add(new("Rehearse", "/rehearse"));
-            _buttons.Add(new("Courses", "/courses"));
-            _buttons.Add(new("Contact", "/contact"));
-            _buttons.Add(new("Sign Out"));
+            _leftButtons.Add(new("Rehearse", "/rehearse"));
+            _leftButtons.Add(new("Courses", "/courses"));
+            _leftButtons.Add(new("Contact", "/contact"));
+            _rightButtons.Add(new("Sign Out"));
         }
     }
 
@@ -111,21 +155,6 @@
         await InvokeAsync(StateHasChanged);
     }
 
-    private List<Button> _buttons = new()
-    {
-        //new("Dashboard", "/dashboard"),
-
-        
-        //new("Linguistics", "/linguistics"),
-        //new("Media", "/media", new()
-        //{
-        //    new("Courses", "/courses"),
-        //    new("Lessons", "/lessons"),
-        //    new("Manga", "/manga"),
-        //    new("Anime", "/anime"),
-        //}),
-        //new("Flashcards", "/flashcards"),
-    };
 
     public Task OnOverlayClick()
     {
