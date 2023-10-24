@@ -68,16 +68,20 @@
             {
                 @if (button.Buttons is null)
                 {
-                    <MudButton OnClick=@(arg => OnMenuItemButtonClick(arg, button)) Href=@button.Href Style="padding-left: 20px; display: flex; justify-content: start; text-align: left; width:100%; border-radius: 0; font-weight: bold; font-family: unica;">
+                    <MudButton OnClick=@(arg => OnMenuItemButtonClick(arg, button)) Href=@button.Href 
+                        Style="padding-left: 20px; display: flex; justify-content: start; text-align: left; width:100%; border-radius: 0; font-weight: bold; font-family: unica;">
                         @button.Name
                     </MudButton>
                 }
                 else
                 {
-                    <MudNavGroup Title=@button.Name>
+                    <MudNavGroup Title=@button.Name Style="text-transform: uppercase; margin: 0; padding-top: 0px; padding-bottom: 0px;" HideExpandIcon=true>
                         @foreach (var nButton in button.Buttons)
                         {
-                            <MudNavLink OnClick=@(arg => OnMenuItemButtonClick(arg, button)) Href=@nButton.Href>@nButton.Name</MudNavLink>
+                            <MudNavLink OnClick=@(arg => OnMenuItemButtonClick(arg, button)) Href=@nButton.Href
+                                Style="text-transform: uppercase; margin: 0; padding-top: 0px; padding-bottom: 0px;">
+                                @nButton.Name
+                            </MudNavLink>
                         }
                     </MudNavGroup>
                 }
@@ -125,14 +129,20 @@
         if (await Auth.IsSignedIn() is false)
         {
             _leftButtons.Add(new("Courses", "/courses"));
-            _leftButtons.Add(new("Contact", "/contact"));
+            _rightButtons.Add(new("Contact", "/contact"));
             _rightButtons.Add(new("Sign In"));
         }
         else
         {
             _leftButtons.Add(new("Rehearse", "/rehearse"));
             _leftButtons.Add(new("Courses", "/courses"));
-            _leftButtons.Add(new("Contact", "/contact"));
+            _leftButtons.Add(new("Words", "/words", new()
+            {
+                new("Linguistics", "words/linguistics"),
+                new("Themes", "words/themes"),
+                new("JLPT", "words/jlpt"),
+            }));
+            _rightButtons.Add(new("Contact", "/contact"));
             _rightButtons.Add(new("Sign Out"));
         }
     }
