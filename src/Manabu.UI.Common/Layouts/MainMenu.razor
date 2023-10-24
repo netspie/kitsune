@@ -18,7 +18,9 @@
                         <ChildContent>
                             @foreach (var nButton in button.Buttons)
                             {
-                                <MudMenuItem OnClick=@(arg => OnMenuItemButtonClick(arg, button)) Href=@nButton.Href>@nButton.Name</MudMenuItem>
+                                <MudMenuItem OnClick=@(arg => OnMenuItemButtonClick(arg, button)) Href=@nButton.Href>
+                                    <span style="font-family: unica; text-transform: uppercase;">@nButton.Name</span>
+                                </MudMenuItem>
                             }
                         </ChildContent>
                     </MudMenu>
@@ -79,7 +81,7 @@
                         @foreach (var nButton in button.Buttons)
                         {
                             <MudNavLink OnClick=@(arg => OnMenuItemButtonClick(arg, button)) Href=@nButton.Href
-                                Style="text-transform: uppercase; margin: 0; padding-top: 0px; padding-bottom: 0px;">
+                                Style="text-transform: uppercase; margin: 0; padding-top: 0px; padding-bottom: 0px; font-family: unica;">
                                 @nButton.Name
                             </MudNavLink>
                         }
@@ -90,7 +92,7 @@
             {
                 @if (button.Buttons is null)
                 {
-                    <MudButton OnClick=@(arg => OnMenuItemButtonClick(arg, button)) Href=@button.Href Style=" padding-left: 20px; display: flex; justify-content: start; text-align: left; width:100%; border-radius: 0; font-weight: bold; font-family: unica;">
+                    <MudButton OnClick=@(arg => OnMenuItemButtonClick(arg, button)) Href=@button.Href Style="padding-left: 20px; display: flex; justify-content: start; text-align: left; width:100%; border-radius: 0; font-weight: bold; font-family: unica;">
                         <span style=" white-space:nowrap; word-break:keep-all">@button.Name</span>
                     </MudButton>
                 }
@@ -129,7 +131,14 @@
         if (await Auth.IsSignedIn() is false)
         {
             _leftButtons.Add(new("Courses", "/courses"));
-            _rightButtons.Add(new("Contact", "/contact"));
+            _leftButtons.Add(new("Words", "/words", new()
+            {
+                new("Bank", "/words"),
+                new("Linguistics", "/words/linguistics"),
+                new("Themes", "/words/themes"),
+                new("JLPT", "/words/jlpt"),
+            }));
+            _leftButtons.Add(new("Contact", "/contact"));
             _rightButtons.Add(new("Sign In"));
         }
         else
@@ -138,11 +147,12 @@
             _leftButtons.Add(new("Courses", "/courses"));
             _leftButtons.Add(new("Words", "/words", new()
             {
-                new("Linguistics", "words/linguistics"),
-                new("Themes", "words/themes"),
-                new("JLPT", "words/jlpt"),
+                new("Bank", "/words"),
+                new("Linguistics", "/words/linguistics"),
+                new("Themes", "/words/themes"),
+                new("JLPT", "/words/jlpt"),
             }));
-            _rightButtons.Add(new("Contact", "/contact"));
+            _leftButtons.Add(new("Contact", "/contact"));
             _rightButtons.Add(new("Sign Out"));
         }
     }
