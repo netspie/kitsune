@@ -19,11 +19,11 @@
         IsReadonly=@(!IsEdit)
         Value=@_dto.Value />
 
-    @*<EditableList
+    <EditableList
         Name="Parts Of Speech"
         IsReadonly=@(!IsEdit)
         NoIndents=true
-        TreeItems=@_partOfSpeechItems />*@
+        TreeItems=@_partOfSpeechItems />
 
     <EditableList
         Name="Translations"
@@ -76,5 +76,6 @@
 
         _dto = response.Content;
         _translationsItems = _dto.Translations.Select(p => new EditableList.TreeItemData(p)).ToList();
+        _partOfSpeechItems = _dto.PartOfSpeeches.Select(p => new EditableList.TreeItemData(p)).ToList();
     }
 }

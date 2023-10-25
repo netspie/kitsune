@@ -1,4 +1,5 @@
 ﻿using Corelibs.Basic.Blocks;
+using Corelibs.Basic.Collections;
 using Corelibs.MongoDB;
 using Manabu.Entities.Content.WordMeanings;
 using Manabu.Entities.Content.Words;
@@ -23,12 +24,25 @@ public class GetWordMeaningQueryHandler : IQueryHandler<GetWordMeaningQuery, Res
         var result = Result<GetWordMeaningQueryResponse>.Success();
 
         var wordMeaningsCollection = _mongoConnection.Database.GetCollection<WordMeaning>(WordMeaning.DefaultCollectionName);
-        var wm = await wordMeaningsCollection.Get<WordMeaning, WordMeaningId, WordMeaningProjection>(new WordMeaningId(query.WordMeaningId), b => b
+
+        var wordMeaningFilter = Builders<WordMeaning>.Filter.Eq(x => x.Id, new WordMeaningId(query.WordMeaningId));
+        var wordMeaningProjection = Builders<WordMeaning>.Projection
             .Exclude(x => x.Id)
             .Include(x => x.WordId)
             .Include(x => x.Original)
             .Include(x => x.Translations)
-            .Include(x => x.KanjiWritingPreferred));
+            .Include(x => x.KanjiWritingPreferred);
+
+        var wm = await wordMeaningsCollection
+            .Aggregate()
+            .Match(wordMeaningFilter)
+            .Project(wordMeaningProjection)
+            .Lookup<Word, LookupResult>(
+                foreignCollectionName: Word.DefaultCollectionName,
+                localField: nameof(WordMeaning.WordId),
+                foreignField: "_id",
+                @as: nameof(LookupResult.Words))
+            .FirstOrDefaultAsync();
 
         return result.With(new GetWordMeaningQueryResponse(
             new WordMeaningDetailsDTO(
@@ -36,7 +50,9 @@ public class GetWordMeaningQueryHandler : IQueryHandler<GetWordMeaningQuery, Res
                 query.WordMeaningId,
                 wm.Original,
                 wm.Translations,
-                null,
+                wm.Words[0].PartsOfSpeech
+                    .Select(p => p.Value)
+                    .Concat(wm.Words[0].Properties.SelectOrDefault(p => p.Value)).ToArray(),
                 wm.PitchAccent,
                 wm.KanjiWritingPreferred.HasValue ? wm.KanjiWritingPreferred.Value : true)));
     }
@@ -47,5 +63,13 @@ public class GetWordMeaningQueryHandler : IQueryHandler<GetWordMeaningQuery, Res
         string[] Translations,
         string PitchAccent,
         bool? KanjiWritingPreferred);
-        //List<PartOfSpeech> PartsOfSpeech);
+    //List<PartOfSpeech> PartsOfSpeech);
+
+    public record LookupResult(
+        WordId WordId,
+        string Original,
+        string[] Translations,
+        string PitchAccent,
+        bool? KanjiWritingPreferred,
+        Word[] Words);
 }

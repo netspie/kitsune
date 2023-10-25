@@ -32,7 +32,7 @@ public class Word : Entity<WordId>, IAggregateRoot<WordId>
 
 public class WordId : EntityId { public WordId(string value) : base(value) {} }
 
-public abstract record WordProperty;
+public abstract record WordProperty(string Value);
 
 public record PartOfSpeech(string Value)
 {
@@ -52,13 +52,13 @@ public record PartOfSpeech(string Value)
     public static readonly PartOfSpeech Name = new("name");
 }
 
-public record VerbTransitivity(string Value) : WordProperty
+public record VerbTransitivity(string Value) : WordProperty(Value)
 {
     public static readonly VerbTransitivity Transitive = new("transitive");
     public static readonly VerbTransitivity Intransitive = new("intransitive");
 }
 
-public record VerbConjugationType(string Value) : WordProperty
+public record VerbConjugationType(string Value) : WordProperty(Value)
 {
     public static readonly VerbConjugationType Godan = new("present");
     public static readonly VerbConjugationType Ichidan = new ("ichidan");
@@ -66,7 +66,7 @@ public record VerbConjugationType(string Value) : WordProperty
     public static readonly VerbConjugationType Suru = new ("suru");
 }
 
-public record AdjectiveConjugationType(string Value) : WordProperty
+public record AdjectiveConjugationType(string Value) : WordProperty(Value)
 {
     public static readonly VerbConjugationType I = new("i-adjective");
     public static readonly VerbConjugationType Na = new("na-adjective");
