@@ -33,6 +33,8 @@
             OnEdit=@OnDescriptionEdit />
     </MudStack>
 
+    <div style="margin-top: 15px"></div>
+
     <EditableList
         @ref=@_phrasesTreeView
         Name="Phrases"
@@ -52,7 +54,6 @@
             @{
                 var phraseItem = context as PhraseTreeItemData;
                 string indexStr = context.GetIndexStr(_phrasesTreeView.TreeItems);
-
                 <PhraseItem 
                     Id=@context.Id
                     IsReadonly=@(!IsEdit)

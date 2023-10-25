@@ -15,6 +15,7 @@
     <MudBreadcrumbs Items=@_breadcrumbs Style="padding-left: 0; font-size: 12px" />
 
     <TextField 
+        Label="Word"
         IsReadonly=@(!IsEdit)
         Value=@_dto.Value />
 
@@ -33,7 +34,7 @@
     <TextField 
         Label="Pitch Accent"
         IsReadonly=@(!IsEdit)
-        Value=@_dto.PitchAccent />
+        Value=@(_dto.PitchAccent ?? "None") />
 
     <TextField 
         Label="Writing Preference"

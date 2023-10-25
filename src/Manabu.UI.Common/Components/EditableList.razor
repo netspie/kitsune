@@ -3,8 +3,8 @@
 @using System.Reflection;
 @inject IJSRuntime JSRuntime
 
-<div class="edit-list" style=" margin-top: 25px;">
-    <MudStack id=@_itemId>
+<div class="edit-list" style="">
+    <MudStack id=@_itemId Style="gap: 0;">
         @{
             int paddingLeft = NoIndents ? 0 : 0;
         }
@@ -19,9 +19,10 @@
                     align-items: center;
                     width: 100%;
                     align-items: center;
+                    gap: 0;
                     justify-content: space-between;")>
                 
-                <MudText Typo=@Typo.h5 Style="text-transform: uppercase; justify-self: start; flex-grow: 1; flex-shrink: 1; font-weight: bold; font-family: unica;">@Name</MudText>
+                <MudText Style="font-size: 20px; text-transform: uppercase; justify-self: start; flex-grow: 1; flex-shrink: 1; font-weight: bold; font-family: unica; padding: 0; margin: 0;">@Name</MudText>
 
                 <div style="justify-self: end; display: flex; align-items: center; gap: 5px;">
                    @* <MudTooltip Text="Edit">

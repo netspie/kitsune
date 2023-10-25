@@ -1,12 +1,33 @@
-﻿div ::deep 
+﻿::deep
     .mud-input-control
-    .mud-input-control-input-container > 
+    .mud-input-control-input-container >
     .mud-input-label-inputcontrol {
-    font-weight: bold;
-    font-family: unica;
-    text-transform: uppercase;
-    color: rgb(50, 50, 50);
+        font-weight: bold;
+        font-family: unica;
+        text-transform: uppercase;
+        transform: unset;
+        color: rgb(50, 50, 50);
+        font-size: var(--size);
+        height: 50px;
+        min-height: 50px;
 }
 
-div ::deep .mud-input-root {
-}
+::deep
+    .mud-input-control
+    .mud-input-control-input-container >
+    .mud-shrink {
+        line-height: var(--lineHeight);
+        padding-top: 3px;
+        height: fit-content;
+    }
+
+::deep
+    .mud-input-control
+    .mud-input-control-input-container >
+    .mud-shrink
+    .mud-input-slot {
+        height: fit-content;
+        min-height: fit-content;
+        padding: 0;
+        margin: 0;
+    }

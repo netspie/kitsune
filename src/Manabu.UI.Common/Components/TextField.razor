@@ -1,5 +1,13 @@
 ﻿@inject ISnackbar Snackbar
 
+<style>
+    div {
+        --size: @(IsSmallLabel ? "12px" : "20px");
+        --lineHeight: @(IsSmallLabel ? "24px" : "40px");
+    }
+
+</style>
+
 <div>
     @if (IsEditing)
     {
@@ -34,6 +42,8 @@
 
     [Parameter] public OnEditDelegate OnEdit { get; set; }
     [Parameter] public Action OnBlur { get; set; }
+
+    [Parameter] public bool IsSmallLabel { get; set; }
 
     private string _dynamicText;
 

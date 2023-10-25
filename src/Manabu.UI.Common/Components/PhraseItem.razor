@@ -4,9 +4,11 @@
         string width = SpeakerName.IsNullOrEmpty() || SpeakerName.Length < 3 ? "50px" : "fit-content";
         <div style=@($"flex-grow: 0; width: {width}") @onclick:stopPropagation="true" @onclick:preventDefault="true">
 
-            <TextField Label="Speaker"
-                       Value=@SpeakerName
-                       OnEdit=@OnSpeakerSet />
+            <TextField 
+                IsSmallLabel=true
+                Label="Speaker"
+                Value=@SpeakerName
+                OnEdit=@OnSpeakerSet />
         </div>
     }
     else if (ShowSpeaker)
@@ -35,7 +37,8 @@
         string width = SpeakerTranslation.IsNullOrEmpty() || SpeakerTranslation.Length < 20 ? "140px" : "fit-content";
         <div style=@($"flex-grow: 0; width: {width}") @onclick:stopPropagation="true" @onclick:preventDefault="true">
 
-            <TextField Label="Speaker Translation"
+            <TextField IsSmallLabel=true
+                       Label="Speaker Translation"
                        Value=@SpeakerTranslation
                        OnEdit=@OnSpeakerTranslationSet/>
         </div>
@@ -60,7 +63,8 @@
         }
         else
         {
-            <TextField IsReadonly=@IsReadonly
+            <TextField IsSmallLabel=true
+                    IsReadonly=@IsReadonly
                        Label=@("Phrase")
                        Value=@Content
                        OnEdit=@OnSubmitPhraseInternal />
