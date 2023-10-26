@@ -20,6 +20,12 @@
         Value=@_dto.Value />
 
     <EditableList
+        Name="Translations"
+        IsReadonly=@(!IsEdit)
+        NoIndents=true
+        TreeItems=@_translationsItems />
+
+    <EditableList
         Name="Parts Of Speech"
         IsReadonly=@(!IsEdit)
         NoIndents=true
@@ -47,12 +53,6 @@
             }
         </CustomItemTemplate>
     </EditableList>
-
-    <EditableList
-        Name="Translations"
-        IsReadonly=@(!IsEdit)
-        NoIndents=true
-        TreeItems=@_translationsItems />
 
     <TextField 
         Label="Pitch Accent"

@@ -1,5 +1,5 @@
 ﻿@if (Items is null) { return; }
-<MudStack Row=true Style="padding: 0px;">
+<MudStack Row=true Style="padding: 0px; overflow: hidden;">
     @if (!IsReadonly)
     {
         foreach (var item in Items)

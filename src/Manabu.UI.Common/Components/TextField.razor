@@ -1,14 +1,15 @@
-﻿@inject ISnackbar Snackbar
+﻿@using System.Text.RegularExpressions;
+@inject ISnackbar Snackbar
 
 <style>
-    div {
+    @($"#{_id}") {
         --size: @(IsSmallLabel ? "12px" : "20px");
         --lineHeight: @(IsSmallLabel ? "24px" : "40px");
     }
 
 </style>
 
-<div>
+<div id=@_id>
     @if (IsEditing)
     {
         <MudTextField T="string"
@@ -45,7 +46,16 @@
 
     [Parameter] public bool IsSmallLabel { get; set; }
 
+    private readonly string _id = Get();
+
     private string _dynamicText;
+
+    private static string Get()
+    {
+        string path = Path.GetRandomFileName();
+        path = path.Replace(".", "");
+        return Regex.Replace(path.Substring(0, 8), "[0-9.]", "");
+    }
 
     protected override void OnInitialized()
     {
