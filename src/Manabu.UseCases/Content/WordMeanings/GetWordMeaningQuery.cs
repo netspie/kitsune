@@ -1,4 +1,5 @@
 ﻿using Corelibs.Basic.Blocks;
+using Manabu.Entities.Content.Words;
 using Mediator;
 
 namespace Manabu.UseCases.Content.WordMeanings;
@@ -15,5 +16,12 @@ public record WordMeaningDetailsDTO(
     string[] Translations,
     string[] PartOfSpeeches,
     string PitchAccent,
+    ReadingDTO[] Readings,
     bool KanjiWritingPreferred = true);
- 
+
+public record ReadingDTO(
+    string Value,
+    PersonaDTO[] Personas);
+
+public record PersonaDTO(PersonaItemDTO[] Properties);
+public record PersonaItemDTO(string Key, string Value);

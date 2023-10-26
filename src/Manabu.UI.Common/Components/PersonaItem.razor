@@ -1,0 +1,37 @@
+﻿@if (Items is null) { return; }
+<MudStack Row=true Style="padding: 0px;">
+    @if (!IsReadonly)
+    {
+        foreach (var item in Items)
+        {
+            string width = item.Value.IsNullOrEmpty() || item.Value.Length < 6 ? "50px" : "fit-content";
+            <div style=@($"flex-grow: 0; width: {width}") @onclick:stopPropagation="true" @onclick:preventDefault="true">
+                <TextField
+                    IsReadonly=IsReadonly
+                    IsSmallLabel=true
+                    Label=@item.Label
+                    Value=@item.Value />
+            </div>
+        }
+    }
+    else
+    {
+        foreach (var item in Items)
+        {
+            <MudField Label=@(NoLabels ? "" : @item.Label)
+                      Variant="Variant.Text"
+                      DisableUnderLine=true
+                      Style="font-weight: bold; flex-grow: 0;">
+                @item.Value
+            </MudField>
+        }
+    }
+</MudStack>
+
+@code {
+    [Parameter] public bool IsReadonly { get; set; }
+    [Parameter] public List<Item> Items { get; set; }
+    [Parameter] public bool NoLabels { get; set; } = false;
+
+    public record Item(string Label, string Value);
+}

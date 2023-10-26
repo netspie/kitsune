@@ -31,7 +31,8 @@ public class GetWordMeaningQueryHandler : IQueryHandler<GetWordMeaningQuery, Res
             .Include(x => x.WordId)
             .Include(x => x.Original)
             .Include(x => x.Translations)
-            .Include(x => x.KanjiWritingPreferred);
+            .Include(x => x.KanjiWritingPreferred)
+            .Include(x => x.HiraganaWritings);
 
         var wm = await wordMeaningsCollection
             .Aggregate()
@@ -54,6 +55,7 @@ public class GetWordMeaningQueryHandler : IQueryHandler<GetWordMeaningQuery, Res
                     .Select(p => p.Value)
                     .Concat(wm.Words[0].Properties.SelectOrDefault(p => p.Value)).ToArray(),
                 wm.PitchAccent,
+                null,
                 wm.KanjiWritingPreferred.HasValue ? wm.KanjiWritingPreferred.Value : true)));
     }
 
@@ -62,14 +64,15 @@ public class GetWordMeaningQueryHandler : IQueryHandler<GetWordMeaningQuery, Res
         string Original,
         string[] Translations,
         string PitchAccent,
-        bool? KanjiWritingPreferred);
-    //List<PartOfSpeech> PartsOfSpeech);
+        bool? KanjiWritingPreferred,
+        WordMeaning.HiraganaWriting[] HiraganaWritings);
 
     public record LookupResult(
         WordId WordId,
         string Original,
         string[] Translations,
         string PitchAccent,
-        bool? KanjiWritingPreferred,
+        bool? KanjiWritingPreferred, 
+        WordMeaning.HiraganaWriting[] HiraganaWritings,
         Word[] Words);
 }
