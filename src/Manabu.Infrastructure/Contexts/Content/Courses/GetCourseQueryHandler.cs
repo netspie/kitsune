@@ -31,7 +31,7 @@ public class GetCourseQueryHandler : IQueryHandler<GetCourseQuery, Result<GetCou
             return result.Fail();
 
         var lessonCollection = _mongoConnection.Database.GetCollection<Lesson>(Lesson.DefaultCollectionName);
-        if (course.Modules.Any())
+        if (course.Modules != null)
         {
             var lessonIDs = course.Modules.SelectMany(m => m.LessonIds).ToArray();
             var lessonItems = await lessonCollection.Get<Lesson, LessonId, LessonProjection>(lessonIDs, b => b.Include(p => p.Name));
