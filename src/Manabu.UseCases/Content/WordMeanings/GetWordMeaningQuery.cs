@@ -1,5 +1,4 @@
 ﻿using Corelibs.Basic.Blocks;
-using Manabu.Entities.Content.Words;
 using Mediator;
 
 namespace Manabu.UseCases.Content.WordMeanings;

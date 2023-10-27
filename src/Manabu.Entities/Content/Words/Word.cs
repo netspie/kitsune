@@ -79,27 +79,30 @@ public record InflectionType(string Value)
     public static readonly InflectionType Past = new("past");
 }
 
-public record PersonaProperty;
+public record PersonaProperty(string Value)
+{
+    public string Name => GetType().Name;
+}
 
-public record Age(string Value) : PersonaProperty
+public record Age(string Value) : PersonaProperty(Value)
 {
     public static readonly Age Young = new("young");
     public static readonly Age Old = new("old");
 }
 
-public record Gender(string Value) : PersonaProperty
+public record Gender(string Value) : PersonaProperty(Value)
 {
     public static readonly Gender Female = new("female");
     public static readonly Gender Male = new("male");
 }
 
-public record Dialect(string Value) : PersonaProperty
+public record Dialect(string Value) : PersonaProperty(Value)
 {
     public static readonly Gender Kansai = new("kansai");
     public static readonly Gender Kanto = new("kanto");
 }
 
-public record Formality(string Value) : PersonaProperty
+public record Formality(string Value) : PersonaProperty(Value)
 {
     public static readonly Gender Rude = new("rude");
     public static readonly Gender Informal = new("informal");

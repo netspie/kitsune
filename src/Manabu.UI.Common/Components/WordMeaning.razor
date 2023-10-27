@@ -31,28 +31,29 @@
         NoIndents=true
         TreeItems=@_partOfSpeechItems />
 
-    <EditableList 
-        Name="Readings"
-        IsReadonly=@(!IsEdit)
-        TreeItems=@_readingsItems
-        NoIndents=true>
+    @if (!_readingsItems.IsNullOrEmpty() || IsEdit)
+    {
+        <EditableList Name="Readings"
+                      IsReadonly=@(!IsEdit)
+                      TreeItems=@_readingsItems
+                      NoIndents=true>
 
-        <CustomItemTemplate>
-            @{
-                var readingItem = context;
-                @if (readingItem.Type == "persona")
-                {
-                    <PersonaItem 
-                        IsReadonly=@(!IsEdit)
-                        Items=@(readingItem.TreeItems.Select(i => new PersonaItem.Item(i.Id, i.Name)).ToList()) />
+            <CustomItemTemplate>
+                @{
+                    var readingItem = context;
+                    @if (readingItem.Type == "persona")
+                    {
+                        <PersonaItem IsReadonly=@(!IsEdit)
+                                 Items=@(readingItem.TreeItems.Select(i => new PersonaItem.Item(i.Id, i.Name)).ToList()) />
+                    }
+                    else if (readingItem.Type == "reading")
+                    {
+                        <span>@readingItem.Name</span>
+                    }
                 }
-                else if (readingItem.Type == "reading")
-                {
-                    <span>@readingItem.Name</span>
-                }
-            }
-        </CustomItemTemplate>
-    </EditableList>
+            </CustomItemTemplate>
+        </EditableList>
+    }
 
     <TextField 
         Label="Pitch Accent"
@@ -80,30 +81,7 @@
 
     private List<EditableList.TreeItemData> _partOfSpeechItems;
     private List<EditableList.TreeItemData> _translationsItems;
-    private List<EditableList.TreeItemData> _readingsItems = new()
-    {
-        new("わたし", new()
-        {
-            new("Persona 1", new()
-            {
-                new("Gender", "Female"),
-            }) { Type = "persona" },
-            new("Persona 2", new()
-            {
-                new("Gender", "Male"),
-                new("Formality", "Formal"),
-            }) { Type = "persona" }
-        }) { Type = "reading", IsExpanded = true },
-        new("わたくし", new()
-        {
-            new("Persona 1", new()
-            {
-                new("Gender", "Female"),
-                new("Age", "Young"),
-                new("Formality", "Informal"),
-            }) { Type = "persona"},
-        }) { Type = "reading", IsExpanded = true },
-    };
+    private List<EditableList.TreeItemData> _readingsItems;
 
     protected override async Task OnInitializedAsyncImpl()
     {
@@ -125,10 +103,12 @@
 
         _translationsItems = _dto.Translations.Select(p => new EditableList.TreeItemData(p)).ToList();
         _partOfSpeechItems = _dto.PartOfSpeeches.Select(p => new EditableList.TreeItemData(p)).ToList();
-        //_readingsItems = _dto.Readings.SelectOrDefault(r => new EditableList.TreeItemData(
-        //    r.Value,
-        //    r.Personas.SelectOrDefault((p, i) => new EditableList.TreeItemData(
-        //        $"Persona {i + 1}", 
-        //        p.Properties.SelectOrDefault(kv => new EditableList.TreeItemData($"{kv.Key}", kv.Value)).ToList())).ToList())).ToList();
+        _readingsItems = _dto.Readings.SelectOrDefault(r => new EditableList.TreeItemData(
+            r.Value,
+            r.Personas.SelectOrDefault((p, i) => new EditableList.TreeItemData(
+                $"Persona {i + 1}",
+                p.Properties.SelectOrDefault(kv => new EditableList.TreeItemData($"{kv.Key}", kv.Value) { IsExpanded = true }).ToList())
+                { IsExpanded = true, Type = "persona" }).ToList())
+            { IsExpanded = true, Type = "reading" }).ToList();
     }
 }

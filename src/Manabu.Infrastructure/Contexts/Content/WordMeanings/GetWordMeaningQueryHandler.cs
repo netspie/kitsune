@@ -45,6 +45,15 @@ public class GetWordMeaningQueryHandler : IQueryHandler<GetWordMeaningQuery, Res
                 @as: nameof(LookupResult.Words))
             .FirstOrDefaultAsync();
 
+        var readings = wm.HiraganaWritings.SelectOrDefault(w => 
+            new ReadingDTO(
+                w.Value, 
+                w.Properties.SelectOrDefault(p => 
+                    new PersonaDTO(p.Properties.SelectOrDefault(pp => 
+                        new PersonaItemDTO(pp.Name, pp.Value)).ToArray()))
+                .ToArray()))
+            .ToArray();
+
         return result.With(new GetWordMeaningQueryResponse(
             new WordMeaningDetailsDTO(
                 wm.WordId.Value,
@@ -55,7 +64,7 @@ public class GetWordMeaningQueryHandler : IQueryHandler<GetWordMeaningQuery, Res
                     .Select(p => p.Value)
                     .Concat(wm.Words[0].Properties.SelectOrDefault(p => p.Value)).ToArray(),
                 wm.PitchAccent,
-                null,
+                readings,
                 wm.KanjiWritingPreferred.HasValue ? wm.KanjiWritingPreferred.Value : true)));
     }
 
