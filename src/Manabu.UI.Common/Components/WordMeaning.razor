@@ -34,10 +34,15 @@
     @if (!_readingsItems.IsNullOrEmpty() || IsEdit)
     {
         <EditableList 
+            @ref=@_readingTreeList
             Name="Readings"
             IsReadonly=@(!IsEdit)
             TreeItems=@_readingsItems
-            NoIndents=true>
+            NoIndents=true
+            OnAddItem=@OnAddReading
+            OnRemoveItem=@OnRemoveReading
+            MenuItemsRoot=@MenuItemsRoot
+            MenuItemsPerType=@MenuItemsPerType >
 
             <CustomItemTemplate>
                 @{
@@ -99,6 +104,8 @@
 
     private List<EditableList.TreeItemData> _partOfSpeechItems;
     private List<EditableList.TreeItemData> _translationsItems;
+
+    private EditableList? _readingTreeList;
     private List<EditableList.TreeItemData> _readingsItems;
 
     protected override async Task OnInitializedAsyncImpl()
@@ -112,6 +119,46 @@
         await RefreshViewModel();
     }
 
+    private Dictionary<string, MenuItem[]> MenuItemsPerType = new()
+    {
+        {
+            "reading",
+            new MenuItem[]
+            {
+                MenuItems.AddChildAsLast with { Name = "Add Persona", IdSecondary = "addPersona"},
+                MenuItems.AddChildAsFirst with { Name = "Add Persona at Start", IdSecondary = "addPersona" },
+                MenuItems.AddSibling with { Name = "Add Reading", IdSecondary = "addReading"},
+            }
+        },
+        {
+            "persona",
+            new MenuItem[]
+            {
+                MenuItems.AddChildAsLast with { Name = "Add Persona Item", IdSecondary = "addPersonaItem"},
+                MenuItems.AddChildAsFirst with { Name = "Add Persona Item at Start", IdSecondary = "addPersonaItem" },
+                MenuItems.AddSibling with { Name = "Add Persona", IdSecondary = "addPersona"},
+                MenuItems.Remove with { Name = "Remove", IdSecondary = "removeLesson"},
+            }
+        }
+    };
+
+    private MenuItem[] MenuItemsRoot = new MenuItem[]
+    {
+        MenuItems.AddChildAsLast with { Name = "Add Reading", IdSecondary = "addReading"},
+        MenuItems.AddChildAsFirst with { Name = "Add Reading at Start", IdSecondary = "addReading" },
+    };
+
+    private Task<bool> OnAddReading(
+        EditableList.TreeItemData item, int index, MenuItem menuItem)
+    {
+        return UpdateReadings();
+    }
+
+    private Task<bool> OnRemoveReading(EditableList.TreeItemData item, MenuItem menuItem)
+    {
+        return UpdateReadings();
+    }
+
     private Task<bool> OnPitchAccentEdit(string text) =>
         ExecuteAdminViewAction(() => CommandExecutor.Execute(new UpdateWordMeaningCommand(
             WordMeaningId, PitchAccent: text)));
@@ -119,6 +166,20 @@
     private Task<bool> OnKanjiPreferenceChange(bool value) =>
         ExecuteAdminViewAction(() => CommandExecutor.Execute(new UpdateWordMeaningCommand(
             WordMeaningId, KanjiWritingPreference: value)));
+
+
+    private Task<bool> UpdateReadings()
+    {
+        var readings = _readingTreeList.TreeItems.Select(i =>
+            new ReadingArg(i.Name, i.TreeItems.SelectOrEmpty(p =>
+                new PersonaArg(p.TreeItems.SelectOrEmpty(pi =>
+                    new PersonaItemArg(pi.Id, pi.Name)).ToArray()))
+                .ToArray()))
+            .ToArray();
+
+        return ExecuteAdminViewAction(() => CommandExecutor.Execute(new UpdateWordMeaningCommand(
+            WordMeaningId, Readings: readings)));
+    }
 
     protected override async Task RefreshViewModel()
     {
