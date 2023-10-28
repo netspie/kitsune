@@ -66,7 +66,7 @@ public class GetFlashcardListQueryHandler : IQueryHandler<GetFlashcardListQuery,
             var lesson = await lessonRepository.Get(new LessonId(objectId.Value), result);
             var conversations = await conversationRepository.Get(lesson.Conversations ?? new(), result);
             
-            var convPhraseIds = conversations.SelectMany(c => c.Phrases.SelectOrDefault(p => p.Phrase)).ToArray();
+            var convPhraseIds = conversations.SelectMany(c => c.Phrases.SelectOrEmpty(p => p.Phrase)).ToArray();
             phraseIds.AddRange(convPhraseIds);
             phraseIds.AddRange(lesson.Phrases ?? new());
         }

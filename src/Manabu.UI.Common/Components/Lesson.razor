@@ -144,7 +144,7 @@
 
         _lesson = response?.Content;
 
-        _conversationTreeItems = _lesson?.Conversations?.SelectOrDefault((c, i) =>
+        _conversationTreeItems = _lesson?.Conversations?.SelectOrEmpty((c, i) =>
             new EditableList.TreeItemData(c.Id, c.Name, "conversation")).ToList();
     }
 

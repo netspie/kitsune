@@ -172,15 +172,15 @@
 
         _course = response?.Course;
 
-        _lessonsTreeItems = _course?.Modules?.SelectOrDefault((m, i) =>
-            new EditableList.TreeItemData($"m{i}", m.Name, "module", m.Lessons.SelectOrDefault(l =>
+        _lessonsTreeItems = _course?.Modules?.SelectOrEmpty((m, i) =>
+            new EditableList.TreeItemData($"m{i}", m.Name, "module", m.Lessons.SelectOrEmpty(l =>
                 new EditableList.TreeItemData(l.Id, l.Name, "lesson")).ToList(), isExpanded: true)).ToList() ?? new();
 
-        _lessonsRemovedTreeItems = _course?.LessonsRemoved?.SelectOrDefault((l, i) =>
+        _lessonsRemovedTreeItems = _course?.LessonsRemoved?.SelectOrEmpty((l, i) =>
                new EditableList.TreeItemData(l.Id, l.Name, "lesson")).ToList() ?? new();
 
-        _modulesRemovedTreeItems = _course?.ModulesRemoved?.SelectOrDefault((m, i) =>
-            new EditableList.TreeItemData($"m{i}", m.Name, "module", m.Lessons.SelectOrDefault(l =>
+        _modulesRemovedTreeItems = _course?.ModulesRemoved?.SelectOrEmpty((m, i) =>
+            new EditableList.TreeItemData($"m{i}", m.Name, "module", m.Lessons.SelectOrEmpty(l =>
                 new EditableList.TreeItemData(l.Id, l.Name, "lesson")).ToList())).ToList() ?? new();
     }
 

@@ -12,10 +12,10 @@ public class Phrase : Entity<PhraseId>, IAggregateRoot<PhraseId>
 
     public UserId Owner { get; private set; }
     public string Original { get; set; }
-    public List<string> Translations { get; set; }
-    public List<AudioId> Audios { get; set; }
-    public List<string> Contexts { get; set; }
-    public List<WordMeaningId> WordMeanings { get; private set; }
+    public List<string>? Translations { get; set; }
+    public List<AudioId>? Audios { get; set; }
+    public List<string>? Contexts { get; set; }
+    public List<WordMeaningId>? WordMeanings { get; private set; }
     public List<ConversationId>? Conversations { get; private set; }
 
     public Phrase(

@@ -16,7 +16,7 @@
 
     <TextField 
         Label="Word"
-        IsReadonly=@(!IsEdit)
+        IsReadonly=true
         Value=@_dto.Value />
 
     <EditableList
@@ -27,16 +27,17 @@
 
     <EditableList
         Name="Parts Of Speech"
-        IsReadonly=@(!IsEdit)
+        IsReadonly=true
         NoIndents=true
         TreeItems=@_partOfSpeechItems />
 
     @if (!_readingsItems.IsNullOrEmpty() || IsEdit)
     {
-        <EditableList Name="Readings"
-                      IsReadonly=@(!IsEdit)
-                      TreeItems=@_readingsItems
-                      NoIndents=true>
+        <EditableList 
+            Name="Readings"
+            IsReadonly=@(!IsEdit)
+            TreeItems=@_readingsItems
+            NoIndents=true>
 
             <CustomItemTemplate>
                 @{
@@ -55,15 +56,32 @@
         </EditableList>
     }
 
-    <TextField 
-        Label="Pitch Accent"
-        IsReadonly=@(!IsEdit)
-        Value=@(_dto.PitchAccent ?? "None") />
+    @if (!_dto.PitchAccent.IsNullOrEmpty() || IsEdit)
+    {
+        <TextField 
+            Label="Pitch Accent"
+            IsReadonly=@(!IsEdit)
+            Value=@(_dto.PitchAccent ?? "None") 
+            OnEdit=@OnPitchAccentEdit />
+    }
 
     <TextField 
         Label="Writing Preference"
         IsReadonly=@(!IsEdit)
-        Value=@(_dto.KanjiWritingPreferred ? "Kanji and Kana" : "Kana Alone") />
+        Value=@(_dto.KanjiWritingPreferred ? "Kanji and Kana" : "Kana Alone") 
+        OnEdit=@(text =>
+        {
+            bool value = false;
+               if (text == "Kanji and Kana" || text == "1")
+                value = true;
+            else
+               if (text == "Kana Alone" || text == "0")
+               value = false;
+            else
+                return Task.FromResult(false);
+
+            return OnKanjiPreferenceChange(value);
+        })/>
 
     @if (_isAdmin)
     {
@@ -94,6 +112,14 @@
         await RefreshViewModel();
     }
 
+    private Task<bool> OnPitchAccentEdit(string text) =>
+        ExecuteAdminViewAction(() => CommandExecutor.Execute(new UpdateWordMeaningCommand(
+            WordMeaningId, PitchAccent: text)));
+
+    private Task<bool> OnKanjiPreferenceChange(bool value) =>
+        ExecuteAdminViewAction(() => CommandExecutor.Execute(new UpdateWordMeaningCommand(
+            WordMeaningId, KanjiWritingPreference: value)));
+
     protected override async Task RefreshViewModel()
     {
         var response = await QueryExecutor.Execute<GetWordMeaningQuery, GetWordMeaningQueryResponse>(
@@ -103,11 +129,11 @@
 
         _translationsItems = _dto.Translations.Select(p => new EditableList.TreeItemData(p)).ToList();
         _partOfSpeechItems = _dto.PartOfSpeeches.Select(p => new EditableList.TreeItemData(p)).ToList();
-        _readingsItems = _dto.Readings.SelectOrDefault(r => new EditableList.TreeItemData(
+        _readingsItems = _dto.Readings.SelectOrEmpty(r => new EditableList.TreeItemData(
             r.Value,
-            r.Personas.SelectOrDefault((p, i) => new EditableList.TreeItemData(
+            r.Personas.SelectOrEmpty((p, i) => new EditableList.TreeItemData(
                 $"Persona {i + 1}",
-                p.Properties.SelectOrDefault(kv => new EditableList.TreeItemData($"{kv.Key}", kv.Value) { IsExpanded = true }).ToList())
+                p.Properties.SelectOrEmpty(kv => new EditableList.TreeItemData($"{kv.Key}", kv.Value) { IsExpanded = true }).ToList())
                 { IsExpanded = true, Type = "persona" }).ToList())
             { IsExpanded = true, Type = "reading" }).ToList();
     }

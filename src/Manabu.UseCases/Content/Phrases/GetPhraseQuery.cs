@@ -46,8 +46,8 @@ public class GetPhraseQueryHandler : IQueryHandler<GetPhraseQuery, Result<GetPhr
             new GetPhraseQueryResponse(
                 new(phrase.Id.Value,
                     phrase.Original,
-                    phrase.Translations.ToArrayOrDefault(),
-                    phrase.Contexts.ToArrayOrDefault(),
+                    phrase.Translations.ToArrayOrEmpty(),
+                    phrase.Contexts.ToArrayOrEmpty(),
                     audios.Select(a => new AudioDTO(a.Id.Value, a.Href)).ToArray())));
     }
 }

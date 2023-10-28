@@ -215,13 +215,13 @@
 
         _phrase = response?.Content;
 
-        _translationTreeItems = _phrase?.Translations?.SelectOrDefault(t =>
+        _translationTreeItems = _phrase?.Translations?.SelectOrEmpty(t =>
             new EditableList.TreeItemData(t, t, "translation")).ToList();
 
-        _contextTreeItems = _phrase?.Contexts?.SelectOrDefault(c =>
+        _contextTreeItems = _phrase?.Contexts?.SelectOrEmpty(c =>
             new EditableList.TreeItemData(c, c, "context")).ToList();
 
-        _audioTreeItems = _phrase?.Audios?.SelectOrDefault(a =>
+        _audioTreeItems = _phrase?.Audios?.SelectOrEmpty(a =>
             new EditableList.TreeItemData(a.Id, a.Href, "audio")).ToList();
     }
 }

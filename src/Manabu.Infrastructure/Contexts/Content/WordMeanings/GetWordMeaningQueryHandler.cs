@@ -32,6 +32,7 @@ public class GetWordMeaningQueryHandler : IQueryHandler<GetWordMeaningQuery, Res
             .Include(x => x.Original)
             .Include(x => x.Translations)
             .Include(x => x.KanjiWritingPreferred)
+            .Include(x => x.PitchAccent)
             .Include(x => x.HiraganaWritings);
 
         var wm = await wordMeaningsCollection
@@ -45,11 +46,11 @@ public class GetWordMeaningQueryHandler : IQueryHandler<GetWordMeaningQuery, Res
                 @as: nameof(LookupResult.Words))
             .FirstOrDefaultAsync();
 
-        var readings = wm.HiraganaWritings.SelectOrDefault(w => 
+        var readings = wm.HiraganaWritings.SelectOrEmpty(w => 
             new ReadingDTO(
                 w.Value, 
-                w.Properties.SelectOrDefault(p => 
-                    new PersonaDTO(p.Properties.SelectOrDefault(pp => 
+                w.Properties.SelectOrEmpty(p => 
+                    new PersonaDTO(p.Properties.SelectOrEmpty(pp => 
                         new PersonaItemDTO(pp.Name, pp.Value)).ToArray()))
                 .ToArray()))
             .ToArray();
@@ -62,7 +63,7 @@ public class GetWordMeaningQueryHandler : IQueryHandler<GetWordMeaningQuery, Res
                 wm.Translations,
                 wm.Words[0].PartsOfSpeech
                     .Select(p => p.Value)
-                    .Concat(wm.Words[0].Properties.SelectOrDefault(p => p.Value)).ToArray(),
+                    .Concat(wm.Words[0].Properties.SelectOrEmpty(p => p.Value)).ToArray(),
                 wm.PitchAccent,
                 readings,
                 wm.KanjiWritingPreferred.HasValue ? wm.KanjiWritingPreferred.Value : true)));

@@ -223,7 +223,7 @@
 
         _conversation = response?.Content;
 
-        _phrasesTreeItems = _conversation?.Phrases?.SelectOrDefault((p, i) =>
+        _phrasesTreeItems = _conversation?.Phrases?.SelectOrEmpty((p, i) =>
             new PhraseTreeItemData(p.Id, p.Original, p.Speaker, p.SpeakerTranslation)).ToList();
     }
 

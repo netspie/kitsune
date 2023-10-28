@@ -39,7 +39,7 @@ public class GetConversationQueryHandler : IQueryHandler<GetConversationQuery, R
 
         var phrasesMode = new LearningPropertyType(query.PhrasesMode);
 
-        var phrasesIds = conversation.Phrases.SelectOrDefault(p => p.Phrase).ToList();
+        var phrasesIds = conversation.Phrases.SelectOrEmpty(p => p.Phrase).ToList();
         var phrases = await _phraseRepository.Get(phrasesIds, result);
         var lessons = await _lessonRepository.Get(conversation.Lessons ?? new(), result);
 
