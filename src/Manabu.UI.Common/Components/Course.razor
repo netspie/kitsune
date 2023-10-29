@@ -1,5 +1,6 @@
 ﻿@using Corelibs.Basic.Reflection;
 @using Corelibs.Basic.Collections;
+@using Manabu.UseCases.Content.Conversations;
 @using Manabu.UseCases.Content.Courses;
 @using Manabu.UseCases.Content.Lessons;
 @using Microsoft.AspNetCore.Components.Authorization;
@@ -43,6 +44,7 @@
             MenuItemsRoot=@MenuItemsRoot
             MenuItemsPerType=@MenuItemsPerType 
             OnRemoveItem=@OnRemoveFromModuleItems
+            OnMoveItem=@OnMovePhraseItem
             NoIndents=true
             NumberPrefix=true/>
     </MudPaper>
@@ -123,6 +125,10 @@
         return await RefreshView();
     }
 
+    private async Task<bool> OnMovePhraseItem(EditableList.TreeItemData item, int index, MenuItem menuItem) =>
+        await ExecuteAdminViewAction(() => CommandExecutor.Execute(
+          new ReorderCourseModuleCommand(item.Name, CourseId, index)));
+
     private async Task<bool> OnRemoveFromModuleItems(EditableList.TreeItemData item, MenuItem menuItem)
     {
         if (menuItem.IdSecondary == "removeLesson")
@@ -195,6 +201,8 @@
             "module", 
             new MenuItem[]
             {
+                MenuItems.MoveDown,
+                MenuItems.MoveUp,
                 MenuItems.AddChildAsLast with { Name = "Add Lesson", IdSecondary = "addLesson"},
                 MenuItems.AddChildAsFirst with { Name = "Add Lesson at Start", IdSecondary = "addLesson" },
                 MenuItems.AddSibling with { Name = "Add Module", IdSecondary = "addModule"},

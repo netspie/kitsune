@@ -87,6 +87,20 @@ public class Course : Entity<CourseId>, IAggregateRoot<CourseId>
         return true;
     }
 
+    public bool ReorderModules(string name, int index)
+    {
+        var moduleData = Modules.FirstOrDefault(p => p.Name == name);
+        if (moduleData is null)
+            return false;
+
+        if (!Modules.Remove(moduleData))
+            return false;
+
+        Modules.InsertClamped(moduleData, index);
+
+        return true;
+    }
+
     public bool HasContent() =>
         !Modules.IsNullOrEmpty() ||
         !LessonsRemoved.IsNullOrEmpty() ||
