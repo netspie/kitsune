@@ -100,6 +100,11 @@ public class Course : Entity<CourseId>, IAggregateRoot<CourseId>
 
         return true;
     }
+    
+    
+    
+    
+    
 
     public bool HasContent() =>
         !Modules.IsNullOrEmpty() ||
