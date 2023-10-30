@@ -1,4 +1,5 @@
 ﻿using Corelibs.Basic.Blocks;
+using Corelibs.Basic.Collections;
 using Corelibs.Basic.Repository;
 using FluentValidation;
 using Manabu.Entities.Content.Courses;
@@ -18,14 +19,20 @@ public class ReorderCourseCommandHandler : ICommandHandler<ReorderCourseCommand,
     {
         var result = Result.Success();
 
-        var course = await _courseRepository.Get(new CourseId(command.CourseId), result);
+        var courses = await _courseRepository.GetAllAsync();
         if (!result.ValidateSuccessAndValues())
             return result.Fail();
+        var seekedCourse = courses.FirstOrDefault(x => x.Id == new CourseId(command.CourseId));
 
-        if (!course.ReorderCourses(command.CourseId, command.Index))
-            return result.Fail();
-
-        await _courseRepository.Save(course, result);
+        //move logic 
+        var courseList = courses.ToList();
+        courseList.Remove(seekedCourse);
+        courseList.Insert(command.Index,seekedCourse);
+        foreach (var item in courseList)
+        {
+            await _courseRepository.Save(item, result);
+        }
+      
         return result;
     }
 }
