@@ -68,17 +68,25 @@ public static class PersonaPropertyConverter
 
     public static PersonaProperty? ToPersonaProperty(this PersonaItemArg persona)
     {
-        if (persona.Key == nameof(Age))
-            return new Age(persona.Value);
+        var value = persona.Value.ToLower();
 
-        if (persona.Key == nameof(Gender))
-            return new Gender(persona.Value);
+        if (value == Age.Old.Value ||
+            value == Age.Young.Value)
+            return new Age(value);
 
-        if (persona.Key == nameof(Dialect))
-            return new Dialect(persona.Value);
+        if (value == Gender.Male.Value ||
+            value == Gender.Female.Value)
+            return new Gender(value);
 
-        if (persona.Key == nameof(Formality))
-            return new Formality(persona.Value);
+        if (value == Dialect.Kansai.Value ||
+            value == Dialect.Kanto.Value)
+            return new Dialect(value);
+
+        if (value == Formality.Rude.Value ||
+            value == Formality.Formal.Value ||
+            value == Formality.Informal.Value ||
+            value == Formality.HumbleHonorific.Value)
+            return new Formality(value);
 
         return null;
     }

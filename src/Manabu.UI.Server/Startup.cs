@@ -87,6 +87,11 @@ public static class Startup
         BsonClassMap.RegisterClassMap<VerbConjugationType>();
         BsonClassMap.RegisterClassMap<AdjectiveConjugationType>();
 
+        BsonClassMap.RegisterClassMap<Age>();
+        BsonClassMap.RegisterClassMap<Gender>();
+        BsonClassMap.RegisterClassMap<Dialect>();
+        BsonClassMap.RegisterClassMap<Formality>();
+
         services.AddSingleton<IMediaStorage<Audio>>(sp => new LocalMediaStorage<Audio>(
             $"/media/audio", $"/media/audio"));
 
