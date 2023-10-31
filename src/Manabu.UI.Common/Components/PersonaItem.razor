@@ -2,8 +2,9 @@
 <MudStack Row=true Style="padding: 0px; overflow: hidden;">
     @if (!IsReadonly)
     {
-        foreach (var item in Items)
+        for (int i = 0; i < Items.Count; i++)
         {
+            var item = Items[i];
             string width = item.Value.IsNullOrEmpty() || item.Value.Length < 6 ? "50px" : "fit-content";
             <div style=@($"flex-grow: 0; width: {width}") @onclick:stopPropagation="true" @onclick:preventDefault="true">
                 <TextField
@@ -12,6 +13,11 @@
                     Label=@item.Label
                     Value=@item.Value />
             </div>
+
+            var actualIndex = i;
+            <MudIconButton Icon=@Icons.Material.Outlined.Close 
+                Style="align-self: end;"
+                OnClick=@(() => OnRemove.InvokeAsync(new(ReadingIndex, ParentIndex, actualIndex))) />
         }
     }
     else
@@ -29,9 +35,13 @@
 </MudStack>
 
 @code {
+    [Parameter] public int ReadingIndex { get; set; }
+    [Parameter] public int ParentIndex { get; set; }
     [Parameter] public bool IsReadonly { get; set; }
     [Parameter] public List<Item> Items { get; set; }
     [Parameter] public bool NoLabels { get; set; } = false;
+    [Parameter] public EventCallback<RemoveEventArg> OnRemove { get; set; }
 
     public record Item(string Label, string Value);
+    public record RemoveEventArg(int ReadingIndex, int PersonaIndex, int PersonaItemIndex);
 }
