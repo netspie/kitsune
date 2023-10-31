@@ -1,5 +1,6 @@
 ﻿using Corelibs.Basic.Blocks;
 using Corelibs.Basic.Collections;
+using Corelibs.Basic.Functional;
 using Corelibs.Basic.Repository;
 using FluentValidation;
 using Manabu.Entities.Content.WordMeanings;
@@ -38,6 +39,25 @@ public class UpdateWordMeaningCommandHandler : ICommandHandler<UpdateWordMeaning
                                 p.Properties.ToPersonaProperties()))
                         .ToList()))
                 .ToList();
+
+
+        foreach (var reading in wordMeaning?.HiraganaWritings)
+        {
+            if (reading is null || reading.Properties is null)
+                return result.Fail();
+
+            foreach (var persona in reading.Properties)
+            {
+                if (persona is null || persona.Properties is null)
+                    return result.Fail();
+
+                foreach (var item in persona.Properties)
+                {
+                    if (item is null)
+                        return result.Fail();
+                }
+            }
+        }
 
         await _wordMeaningRepository.Save(wordMeaning, result);
 
