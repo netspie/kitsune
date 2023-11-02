@@ -69,5 +69,5 @@ public class GetLessonQueryHandler : IQueryHandler<GetLessonQuery, Result<GetLes
                     Learned: rehearseEntityCount > 0,
                     courses.OrderBy(c => lesson.Courses.IndexOf(c.Id)).Select(c => new CourseDTO(c.Id.Value, c.Name)).ToArray(),
                     conversations.OrderBy(c => lesson.Conversations.IndexOf(c.Id)).Select(c => new ConversationDTO(c.Id.Value, c.Name)).ToArray())));
-    }
+    } 
 }
