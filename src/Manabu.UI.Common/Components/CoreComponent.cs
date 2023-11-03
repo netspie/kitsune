@@ -34,6 +34,8 @@ public abstract class CoreComponent : ComponentBase
 
     protected sealed override async Task OnInitializedAsync()
     {
+        await BeforeInitializedAsyncImpl();
+
         _isSignedIn = await Auth.IsSignedIn();
         if (_isSignedIn)
             _isAdmin = await Auth.IsAdmin();
@@ -42,6 +44,7 @@ public abstract class CoreComponent : ComponentBase
         await OnInitializedAsyncImpl();
     }
 
+    protected virtual Task BeforeInitializedAsyncImpl() => Task.CompletedTask;
     protected virtual Task OnInitializedAsyncImpl() => Task.CompletedTask;
     protected virtual Task OnAfterRenderAsyncImpl(bool firstRender) => Task.CompletedTask;
 

@@ -1,0 +1,112 @@
+﻿@inherits CoreComponent
+
+<div class="main-section courses" style="width: 100%;">
+    <SiteTitle>@SiteTitle.Name</SiteTitle>
+
+    <MudGrid>
+        <MudItem xs="12">
+            <MudGrid Justify=@Justify.SpaceEvenly>
+                <MudItem xs=6>
+                    <MudPaper @onclick=@(arg => Navigation.NavigateTo("/words/linguistics/particles"))  Elevation=0 Class="d-flex flex-column align-center mud-width-full card" Style="justify-content: space-evenly; height: 100px; font-family: unica; cursor: pointer;">
+                        <MudText Typo="Typo.h5" Align="Align.Center" Style="font-weight: bold; font-family: unica; text-transform: uppercase;">Particles</MudText>
+                        <MudText Typo="Typo.body1" Align="Align.Center">助詞</MudText>
+                    </MudPaper>
+                </MudItem>
+                <MudItem xs=6>
+                    <MudPaper  @onclick=@(arg => Navigation.NavigateTo("/words/linguistics/pronouns")) Elevation=0 Class="d-flex flex-column align-center mud-width-full card" Style="justify-content: space-evenly; height: 100px; font-family: unica; cursor: pointer;">
+                        <MudText Typo="Typo.h5" Align="Align.Center" Style="font-weight: bold; font-family: unica; text-transform: uppercase;">Pronouns</MudText>
+                        <MudText Typo="Typo.body1" Align="Align.Center" >代名詞</MudText>
+                    </MudPaper>
+                </MudItem>
+            </MudGrid>
+            <MudGrid Justify=@Justify.SpaceEvenly>
+                <MudItem xs=6>
+                    <MudPaper  @onclick=@(arg => Navigation.NavigateTo("/words/linguistics/adjectives")) Elevation=0 Class="d-flex flex-column align-center mud-width-full card" Style="justify-content: space-evenly; height: 100px; font-family: unica; cursor: pointer;">
+                        <MudText Typo="Typo.h5" Align="Align.Center" Style="font-weight: bold; font-family: unica; text-transform: uppercase;">Adjectives</MudText>
+                        <MudText Typo="Typo.body1" Align="Align.Center">形容詞</MudText>
+                    </MudPaper>
+                </MudItem>
+                <MudItem xs=6>
+                    <MudPaper  @onclick=@(arg => Navigation.NavigateTo("/words/linguistics/verbs"))  Elevation=0 Class="d-flex flex-column align-center mud-width-full card" Style="justify-content: space-evenly; height: 100px; font-family: unica; cursor: pointer;">
+                        <MudText Typo="Typo.h5" Align="Align.Center" Style="font-weight: bold; font-family: unica; text-transform: uppercase;">Verbs</MudText>
+                        <MudText Typo="Typo.body1" Align="Align.Center" >動詞</MudText>
+                    </MudPaper>
+                </MudItem>
+            </MudGrid>
+            <MudGrid Justify=@Justify.SpaceEvenly>
+                <MudItem xs=6>
+                    <MudPaper  @onclick=@(arg => Navigation.NavigateTo("/words/linguistics/nouns")) Elevation=0 Class="d-flex flex-column align-center mud-width-full card" Style="justify-content: space-evenly; height: 100px; font-family: unica; cursor: pointer;">
+                        <MudText Typo="Typo.h5" Align="Align.Center" Style="font-weight: bold; font-family: unica; text-transform: uppercase;">Nouns</MudText>
+                        <MudText Typo="Typo.body1" Align="Align.Center">名詞</MudText>
+                    </MudPaper>
+                </MudItem>
+                <MudItem xs=6>
+                    <MudPaper @onclick=@(arg => Navigation.NavigateTo("/words/linguistics/coonjunctions"))  Elevation=0 Class="d-flex flex-column align-center mud-width-full card" Style="justify-content: space-evenly; height: 100px; font-family: unica; cursor: pointer;">
+                        <MudText Typo="Typo.h5" Align="Align.Center" Style="font-weight: bold; font-family: unica; text-transform: uppercase;">Conjunctions</MudText>
+                        <MudText Typo="Typo.body1" Align="Align.Center" >接続詞</MudText>
+                    </MudPaper>
+                </MudItem>
+            </MudGrid>
+            <MudGrid Justify=@Justify.SpaceEvenly>
+                <MudItem xs=6>
+                    <MudPaper  @onclick=@(arg => Navigation.NavigateTo("/words/linguistics/auxilary-verbs")) Elevation=0 Class="d-flex flex-column align-center mud-width-full card" Style="justify-content: space-evenly; height: 100px; font-family: unica; cursor: pointer;">
+                        <MudText Typo="Typo.h5" Align="Align.Center" Style="font-weight: bold; font-family: unica; text-transform: uppercase;">Auxilary Verbs</MudText>
+                        <MudText Typo="Typo.body1" Align="Align.Center">助動詞</MudText>
+                    </MudPaper>
+                </MudItem>
+                <MudItem xs=6>
+                    <MudPaper  @onclick=@(arg => Navigation.NavigateTo("/words/linguistics/numerals")) Elevation=0 Class="d-flex flex-column align-center mud-width-full card" Style="justify-content: space-evenly; height: 100px; font-family: unica; cursor: pointer;">
+                        <MudText Typo="Typo.h5" Align="Align.Center" Style="font-weight: bold; font-family: unica; text-transform: uppercase;">Numerals</MudText>
+                        <MudText Typo="Typo.body1" Align="Align.Center" >数字</MudText>
+                    </MudPaper>
+                </MudItem>
+            </MudGrid>
+            <MudGrid Justify=@Justify.SpaceEvenly>
+                <MudItem xs=6>
+                    <MudPaper  @onclick=@(arg => Navigation.NavigateTo("/words/linguistics/prepositions")) Elevation=0 Class="d-flex flex-column align-center mud-width-full card" Style="justify-content: space-evenly; height: 100px; font-family: unica; cursor: pointer;">
+                        <MudText Typo="Typo.h5" Align="Align.Center" Style="font-weight: bold; font-family: unica; text-transform: uppercase;">Prepositions</MudText>
+                        <MudText Typo="Typo.body1" Align="Align.Center">前置詞</MudText>
+                    </MudPaper>
+                </MudItem>
+                <MudItem xs=6>
+                    <MudPaper @onclick=@(arg => Navigation.NavigateTo("/words/linguistics/classifiers")) Elevation=0 Class="d-flex flex-column align-center mud-width-full card" Style="justify-content: space-evenly; height: 100px; font-family: unica; cursor: pointer;">
+                        <MudText Typo="Typo.h5" Align="Align.Center" Style="font-weight: bold; font-family: unica; text-transform: uppercase;">Classifiers</MudText>
+                        <MudText Typo="Typo.body1" Align="Align.Center" >類別詞</MudText>
+                    </MudPaper>
+                </MudItem>
+            </MudGrid>
+            <MudGrid Justify=@Justify.SpaceEvenly>
+                <MudItem xs=6>
+                    <MudPaper  @onclick=@(arg => Navigation.NavigateTo("/words/linguistics/adverbs")) Elevation=0 Class="d-flex flex-column align-center mud-width-full card" Style="justify-content: space-evenly; height: 100px; font-family: unica; cursor: pointer;">
+                        <MudText Typo="Typo.h5" Align="Align.Center" Style="font-weight: bold; font-family: unica; text-transform: uppercase;">Adverbs</MudText>
+                        <MudText Typo="Typo.body1" Align="Align.Center">副詞</MudText>
+                    </MudPaper>
+                </MudItem>
+                <MudItem xs=6>
+                    <MudPaper  @onclick=@(arg => Navigation.NavigateTo("/words/linguistics/interjections")) Elevation=0 Class="d-flex flex-column align-center mud-width-full card" Style="justify-content: space-evenly; height: 100px; font-family: unica; cursor: pointer;">
+                        <MudText Typo="Typo.h5" Align="Align.Center" Style="font-weight: bold; font-family: unica; text-transform: uppercase;">Interjections</MudText>
+                        <MudText Typo="Typo.body1" Align="Align.Center" >相槌</MudText>
+                    </MudPaper>
+                </MudItem>
+            </MudGrid>
+            <MudGrid Justify=@Justify.SpaceEvenly>
+                <MudItem xs=12>
+                    <MudPaper Elevation=0 Class="d-flex flex-column align-center mud-width-full card" @onclick=@(arg => Navigation.NavigateTo("/words/linguistics/names"))
+                                Style="justify-content: space-evenly; height: 100px; font-family: unica; cursor: pointer;">
+                        <MudText Typo="Typo.h5" Align="Align.Center" Style="font-weight: bold; font-family: unica; text-transform: uppercase;">Names</MudText>
+                        <MudText Typo="Typo.body1" Align="Align.Center">名前</MudText>
+                    </MudPaper>
+                </MudItem>
+            </MudGrid>
+        </MudItem>
+    </MudGrid>
+</div>
+
+@code {
+    [Inject] public State.SiteTitle SiteTitle { get; set; }
+
+    protected override async Task OnInitializedAsyncImpl()
+    {
+        SiteTitle.Rename("LINGUISTICS");
+    }
+}

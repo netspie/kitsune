@@ -43,8 +43,8 @@ public class UpdateWordMeaningCommandHandler : ICommandHandler<UpdateWordMeaning
 
         foreach (var reading in wordMeaning?.HiraganaWritings)
         {
-            if (reading is null || reading.Properties is null)
-                return result.Fail();
+            if (reading.Properties is null)
+                break;
 
             foreach (var persona in reading.Properties)
             {

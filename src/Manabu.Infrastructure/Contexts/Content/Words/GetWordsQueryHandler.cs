@@ -39,6 +39,9 @@ public class GetWordsQueryHandler : IQueryHandler<GetWordsQuery, Result<GetWords
         var limit = Math.Min(range.Limit, MaxItemLimit);
 
         var filter = Builders<Word>.Filter.Empty;
+        if (!query.FilterArgs.IsNullOrEmpty())
+            foreach (var arg in query.FilterArgs)
+                filter &= Builders<Word>.Filter.Eq(x => x.PartsOfSpeech[0].Value, arg.Value);
 
         var wordsProjection = Builders<Word>.Projection.Include(x => x.Id).Include(x => x.Value).Include(x => x.PartsOfSpeech).Include(x => x.Meanings);
         var totalCount = await wordsCollection.CountDocumentsAsync(filter);

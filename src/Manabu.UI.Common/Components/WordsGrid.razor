@@ -1,26 +1,24 @@
-﻿@using Corelibs.Basic.Reflection;
-@using Corelibs.Basic.Collections;
-@using Manabu.UseCases.Content.Courses;
-@using Manabu.UseCases.Content.Lessons;
-@using Manabu.UseCases.Content.Words;
-@using Microsoft.AspNetCore.Components.Authorization;
-@using Microsoft.JSInterop;
+﻿@using Manabu.UseCases.Content.Words;
 
 @inherits CoreComponent
 
 @if (_dto is null) { return; }
 
-<MudStack Class="main-section vocabulary" Style="width: 100%;">
-    <SiteTitle>@SiteTitle.Name</SiteTitle>
-
-    <SortAndFilterBar SortProperties=@SortProperties OnSortValueChanged=@OnSortValueChanged />
-    <MudDataGrid @ref=_mudDataGrid Items="@_elements" Filterable="true" Bordered=false Hover=true RowClick=@OnWordClick T="WordItem" Outlined=false RowsPerPage=@Limit Elevation=0> 
+<div>
+    <MudDataGrid @ref=_mudDataGrid Items="@_elements" Filterable="true" Bordered=false Hover=true RowClick=@OnWordClick T="WordItem" Outlined=false RowsPerPage=@Limit Elevation=0>
         <Columns>
-            <PropertyColumn Property="x => x.Word" Filterable="false" ValueChanged=@(EventCallback.Factory.Create(this, (WordItem item) => OnValueChanged(item)))>
-                
-            </PropertyColumn>
-            <PropertyColumn Property="x => x.Meaning" />
-            <PropertyColumn Property="x => x.PartOfSpeech" Title="Part of Speech"/>
+            @if ((Columns & Column.Word) != 0)
+            {
+               <PropertyColumn Property="x => x.Word" Filterable="false" ValueChanged=@(EventCallback.Factory.Create(this, (WordItem item) => OnValueChanged(item))) /> 
+            }
+            @if ((Columns & Column.Meaning) != 0)
+            {
+                <PropertyColumn Property="x => x.Meaning" />
+            }
+            @if ((Columns & Column.PartOfSpeech) != 0)
+            {
+                <PropertyColumn Property="x => x.PartOfSpeech" Title="Part of Speech" />
+            }
         </Columns>
         <PagerContent>
             <MudStack Row=true Style="width: 100%;">
@@ -44,33 +42,34 @@
             </MudStack>
         </PagerContent>
     </MudDataGrid>
-
-    @if (_isAdmin)
-    {
-        <MudSwitch @bind-Checked=@_isEdit Label="Edit Mode" Color="Color.Info" />
-    }
-
-</MudStack>
+</div>
 
 @code {
-    [Inject] public State.SiteTitle SiteTitle { get; set; }
-    [Inject] public IJSRuntime JSRuntime { get; set; }
+    [Parameter] public Column? Columns { get; set; }
+    [Parameter] public PartOfSpeech? PartOfSpeeches { get; set; }
 
-    private const int Limit = 10;
-
-    private List<WordItem> _elements = new();
-
-    private MudDataGrid<WordItem>? _mudDataGrid;
     private WordsDTO? _dto;
 
     private RangeArg _rangeArg = new(0, Limit);
     private SortArg[]? _sortArgs = null;
+    private FilterArg[]? _filterArgs = null;
 
-    private string[] SortProperties = new[] { "Word" };
+    private const int Limit = 10;
+    private List<WordItem> _elements = new();
 
-    protected override async Task OnInitializedAsyncImpl()
+    private MudDataGrid<WordItem>? _mudDataGrid;
+
+    protected override async Task BeforeInitializedAsyncImpl()
     {
-        SiteTitle.Rename("VOCABULARY");
+        var filterArgs = new List<FilterArg>();
+
+        if ((PartOfSpeeches & PartOfSpeech.Verb) != 0)
+            filterArgs.Add(new("PartsOfSpeech", "verb"));
+
+        if ((PartOfSpeeches & PartOfSpeech.Noun) != 0)
+            filterArgs.Add(new("PartsOfSpeech", "noun"));
+        
+        _filterArgs = filterArgs.ToArray();
     }
 
     private async Task OnWordClick(DataGridRowClickEventArgs<WordItem> args)
@@ -107,21 +106,37 @@
         Console.WriteLine("");
     }
 
-    private async Task OnSortValueChanged(string value)
-    {
-        _sortArgs = value is null or [] ? null : new[] { new SortArg(value) };
-        await RefreshViewModel();
-    }
-
     protected override async Task RefreshViewModel()
     {
         var response = await QueryExecutor.Execute<GetWordsQuery, GetWordsQueryResponse>(
-            new GetWordsQuery(_rangeArg, _sortArgs));
+            new GetWordsQuery(_rangeArg, _sortArgs, _filterArgs));
 
         _dto = response.Content;
 
         _elements = _dto.Words.Select(w => new WordItem(w.Id, w.Value, w.Meaning, w.PartOfSpeech)).ToList();
     }
 
-    public record WordItem(string Id, string Word, string Meaning, string PartOfSpeech);
+    public record WordItem(
+        string Id, 
+        string? Word = null, 
+        string? Meaning = null,
+        string? PartOfSpeech = null);
+
+    [Flags]
+    public enum Column
+    {
+        Word,
+        Meaning,
+        PartOfSpeech,
+        Property,
+        Properties,
+    }
+
+    [Flags]
+    public enum PartOfSpeech
+    {
+        Verb,
+        Noun,
+        Particle,
+    }
 }

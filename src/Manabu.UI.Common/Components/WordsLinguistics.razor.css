@@ -1,0 +1,7 @@
+﻿div ::deep .card {
+    background: rgb(234, 234, 234);
+}
+
+div ::deep .card:hover {
+    background: rgb(200, 200, 200);
+}

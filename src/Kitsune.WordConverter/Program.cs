@@ -29,6 +29,10 @@ var intransitiveVerbs = wordsByPartOfSpeeches.FirstOrDefault(p => p.Type == "int
 var ichidanVerbs = wordsByPartOfSpeeches.FirstOrDefault(p => p.Type == "ichidan verb");
 var suruVerbs = wordsByPartOfSpeeches.FirstOrDefault(p => p.Type == "する verb");
 
+var numerals = wordsByPartOfSpeeches.FirstOrDefault(p => p.Type == "numeral");
+
+return;
+
 var allVerbs = godanVerbs.Items.Concat(
     transitiveVerbs.Items.Concat(
         intransitiveVerbs.Items.Concat(
