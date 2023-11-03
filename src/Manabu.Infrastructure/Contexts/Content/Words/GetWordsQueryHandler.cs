@@ -47,6 +47,7 @@ public class GetWordsQueryHandler : IQueryHandler<GetWordsQuery, Result<GetWords
         var totalCount = await wordsCollection.CountDocumentsAsync(filter);
         var words = await wordsCollection
             .Aggregate(new AggregateOptions() { Hint = wordsHint })
+            .Match(filter)
             .Project(wordsProjection)
             .Skip(range.Start)
             .Lookup<WordMeaning, LookupResult>(

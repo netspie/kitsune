@@ -1,3 +1,20 @@
 ﻿@page "/words/linguistics/verbs"
 
-<Manabu.UI.Common.Components.WordsLinguisticsVerbs />
+@using Manabu.UI.Common.Components;
+
+@inherits CoreComponent
+
+<div class="main-section courses" style="width: 100%;">
+    <SiteTitle>@SiteTitle.Name</SiteTitle>
+    <WordsGrid 
+        PartOfSpeeches=@WordsGrid.PartOfSpeech.Verb />
+</div>
+
+@code {
+    [Inject] public State.SiteTitle SiteTitle { get; set; }
+
+    protected override async Task OnInitializedAsyncImpl()
+    {
+        SiteTitle.Rename("VERBS");
+    }
+}

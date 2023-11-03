@@ -1,8 +1,13 @@
-﻿@inherits CoreComponent
+﻿@page "/words/linguistics/numerals"
+
+@using Manabu.UI.Common.Components;
+
+@inherits CoreComponent
 
 <div class="main-section courses" style="width: 100%;">
     <SiteTitle>@SiteTitle.Name</SiteTitle>
-    <WordsGrid />
+    <WordsGrid
+        PartOfSpeeches=@WordsGrid.PartOfSpeech.Numeral />
 </div>
 
 @code {
@@ -10,6 +15,6 @@
 
     protected override async Task OnInitializedAsyncImpl()
     {
-        SiteTitle.Rename("VERBS");
+        SiteTitle.Rename("NUMERALS");
     }
 }

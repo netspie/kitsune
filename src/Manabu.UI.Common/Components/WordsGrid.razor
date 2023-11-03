@@ -5,6 +5,7 @@
 @if (_dto is null) { return; }
 
 <div>
+    <SortAndFilterBar SortProperties=@SortProperties OnSortValueChanged=@OnSortValueChanged />
     <MudDataGrid @ref=_mudDataGrid Items="@_elements" Filterable="true" Bordered=false Hover=true RowClick=@OnWordClick T="WordItem" Outlined=false RowsPerPage=@Limit Elevation=0>
         <Columns>
             @if ((Columns & Column.Word) != 0)
@@ -45,7 +46,8 @@
 </div>
 
 @code {
-    [Parameter] public Column? Columns { get; set; }
+    [Parameter]
+    public Column? Columns { get; set; } = Column.Word | Column.Meaning;
     [Parameter] public PartOfSpeech? PartOfSpeeches { get; set; }
 
     private WordsDTO? _dto;
@@ -59,6 +61,8 @@
 
     private MudDataGrid<WordItem>? _mudDataGrid;
 
+    private string[] SortProperties = new[] { "Word" };
+
     protected override async Task BeforeInitializedAsyncImpl()
     {
         var filterArgs = new List<FilterArg>();
@@ -68,6 +72,9 @@
 
         if ((PartOfSpeeches & PartOfSpeech.Noun) != 0)
             filterArgs.Add(new("PartsOfSpeech", "noun"));
+
+        if ((PartOfSpeeches & PartOfSpeech.Numeral) != 0)
+            filterArgs.Add(new("PartsOfSpeech", "numeral"));
         
         _filterArgs = filterArgs.ToArray();
     }
@@ -106,6 +113,12 @@
         Console.WriteLine("");
     }
 
+    private async Task OnSortValueChanged(string value)
+    {
+        _sortArgs = value is null or [] ? null : new[] { new SortArg(value) };
+        await RefreshViewModel();
+    }
+
     protected override async Task RefreshViewModel()
     {
         var response = await QueryExecutor.Execute<GetWordsQuery, GetWordsQueryResponse>(
@@ -125,18 +138,19 @@
     [Flags]
     public enum Column
     {
-        Word,
-        Meaning,
-        PartOfSpeech,
-        Property,
-        Properties,
+        Word = 1,
+        Meaning = 2,
+        PartOfSpeech = 4,
+        Property = 8,
+        Properties = 16,
     }
 
     [Flags]
     public enum PartOfSpeech
     {
-        Verb,
-        Noun,
-        Particle,
+        Verb = 1,
+        Noun = 2,
+        Particle = 4,
+        Numeral = 8,
     }
 }

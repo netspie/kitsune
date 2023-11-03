@@ -31,7 +31,7 @@ var suruVerbs = wordsByPartOfSpeeches.FirstOrDefault(p => p.Type == "する verb
 
 var numerals = wordsByPartOfSpeeches.FirstOrDefault(p => p.Type == "numeral");
 
-return;
+//return;
 
 var allVerbs = godanVerbs.Items.Concat(
     transitiveVerbs.Items.Concat(
@@ -50,67 +50,74 @@ Console.WriteLine($"{transitiveVerbsRest.Length} transitive verbs verbs");
 Console.WriteLine($"{intransitiveVerbsRest.Length} intransitive verbs verbs");
 Console.WriteLine($"{allVerbsDistinct.Count()} distinct verbs");
 
-var mongoConnection = new MongoConnection("Kitsune_dev");
-var conn = Environment.GetEnvironmentVariable("KitsuneDatabaseConn");
+//await Store(mainVerbs);
+await Store(numerals.Items);
 
-var client = new MongoClient(conn);
-var database = client.GetDatabase("Kitsune_dev");
-
-var wordCol = database.GetCollection<Word>(Word.DefaultCollectionName);
-var wordMeaningsCol = database.GetCollection<WordMeaning>(WordMeaning.DefaultCollectionName);
-
-var mm = mainVerbs.Where(m => m.Data.Readings.Length > 1).ToArray();
-foreach (var verb in mainVerbs)
+async static Task Store(IEnumerable<VocabularyItemDTO> words)
 {
-    var meaning = verb.Data.Meanings.Where(m => m.Primary == true).FirstOrDefault();
-    if (meaning is null)
-        continue;
+    var mongoConnection = new MongoConnection("Kitsune_dev");
+    var conn = "mongodb://localhost:27017/";
 
-    var reading = verb.Data.Readings.Where(m => m.Primary == true).FirstOrDefault();
-    if (reading is null)
-        continue;
+    var client = new MongoClient(conn);
+    var database = client.GetDatabase("Kitsune_dev");
 
-    var wordIdStr = IdCreator.Create();
-    var wordMeaningIdStr = IdCreator.Create();
+    var wordCol = database.GetCollection<Word>(Word.DefaultCollectionName);
+    var wordMeaningsCol = database.GetCollection<WordMeaning>(WordMeaning.DefaultCollectionName);
 
-    var wordMeaning = new WordMeaning(
-        id: new WordMeaningId(wordMeaningIdStr),
-        wordId: new WordId(wordIdStr),
-        original: verb.Data.Slug,
-        translations: new List<string> { meaning.Meaning.ToLower() }, 
-        hiraganaWritings: new() { new WordMeaning.HiraganaWriting(reading.Reading) });
+    var mm = words.Where(m => m.Data.Readings.Length > 1).ToArray();
 
-    var partsOfSpeeches = verb.Data.Parts_Of_Speech.ToPartsOfSpeech();
-    var word = new Word(
-        id: new WordId(wordIdStr),
-        value: verb.Data.Slug,
-        partsOfSpeech: partsOfSpeeches.partOfSpeeches,
-        meanings: new() { wordMeaning.Id },
-        properties: partsOfSpeeches.properties,
-        lexeme: null);
-
-    try
+    foreach (var verb in words)
     {
-        await wordCol.InsertOneAsync(word);
-        Console.WriteLine($"Written word: {wordMeaning.Translations[0]}");
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"Error writing word: {wordMeaning.Translations[0]}\n");
+        var meaning = verb.Data.Meanings.Where(m => m.Primary == true).FirstOrDefault();
+        if (meaning is null)
+            continue;
+
+        var reading = verb.Data.Readings.Where(m => m.Primary == true).FirstOrDefault();
+        if (reading is null)
+            continue;
+
+        var wordIdStr = IdCreator.Create();
+        var wordMeaningIdStr = IdCreator.Create();
+
+        var wordMeaning = new WordMeaning(
+            id: new WordMeaningId(wordMeaningIdStr),
+            wordId: new WordId(wordIdStr),
+            original: verb.Data.Slug,
+            translations: new List<string> { meaning.Meaning.ToLower() },
+            hiraganaWritings: new() { new WordMeaning.HiraganaWriting(reading.Reading) });
+
+        var partsOfSpeeches = verb.Data.Parts_Of_Speech.ToPartsOfSpeech();
+        var word = new Word(
+            id: new WordId(wordIdStr),
+            value: verb.Data.Slug,
+            partsOfSpeech: partsOfSpeeches.partOfSpeeches,
+            meanings: new() { wordMeaning.Id },
+            properties: partsOfSpeeches.properties,
+            lexeme: null);
+
+        try
+        {
+            await wordCol.InsertOneAsync(word);
+            Console.WriteLine($"Written word: {wordMeaning.Translations[0]}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error writing word: {wordMeaning.Translations[0]}\n");
+        }
+
+        try
+        {
+            await wordMeaningsCol.InsertOneAsync(wordMeaning);
+            Console.WriteLine($"Written word meaning: {wordMeaning.Translations[0]}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error writing word meaning: {wordMeaning.Translations[0]}\n");
+        }
     }
 
-    try
-    {
-        await wordMeaningsCol.InsertOneAsync(wordMeaning);
-        Console.WriteLine($"Written word meaning: {wordMeaning.Translations[0]}");
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"Error writing word meaning: {wordMeaning.Translations[0]}\n");
-    }
+    Console.WriteLine("Saved All");
 }
-
-Console.WriteLine("Saved All");
 
 public record WordCluster(string Type, VocabularyItemDTO[] Items)
 {
@@ -154,6 +161,10 @@ public static class PartOfSpeechExtensions
         else
         if (strs.Any(str => str.Contains("intransitive")))
             properties.Add(VerbTransitivity.Intransitive);
+
+        // NUMERALS
+        if (strs.Any(str => str.Contains("numeral")))
+            partsOfSpeech.Add(PartOfSpeech.Numeral);
 
         return (partsOfSpeech, properties);
     }
