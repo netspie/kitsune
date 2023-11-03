@@ -3,6 +3,7 @@
 @using Corelibs.Basic.Collections;
 @using Corelibs.Basic.Storage;
 @using Manabu.Entities.Content.Audios;
+@using Manabu.Entities.Shared;
 @using Manabu.UseCases.Content.Conversations;
 @using Manabu.UseCases.Content.Lessons;
 @using Manabu.UseCases.Content.Phrases;
@@ -17,6 +18,10 @@
     <SiteTitle>@SiteTitle.Name</SiteTitle>
 
     <MudBreadcrumbs Items=@_breadcrumbs Style="padding-left: 0; font-size: 12px" />
+
+    <LearnButton LearningObjectId=@PhraseId
+                 LearningObjectType=@LearningItemType.Phrase.Value
+                 IsAlreadyAdded=_phrase.Learned/>
 
     <TextField 
         Label="Original"
