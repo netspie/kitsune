@@ -37,6 +37,10 @@ body {
     gap: 15px;
 }
 
+.mud-popover-overflow-flip-onopen {
+    top: 50px !important;
+}
+
 @media only screen and (max-width: 600px) {
     .main-section {
         margin-top: 60px;
