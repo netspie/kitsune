@@ -1,4 +1,5 @@
-﻿using Corelibs.Basic.Auth;
+﻿using System.Security.Claims;
+using Corelibs.Basic.Auth;
 using Corelibs.Basic.Blocks;
 using Corelibs.Basic.Repository;
 using Corelibs.MongoDB;
@@ -12,9 +13,8 @@ using Manabu.Entities.Shared;
 using Manabu.UseCases.Content.Lessons;
 using Mediator;
 using MongoDB.Driver;
-using System.Security.Claims;
 
-namespace Manabu.Infrastructure.CQRS.Content.Lessons;
+namespace Manabu.Infrastructure.Contexts.Content.Lessons;
 
 public class GetLessonQueryHandler : IQueryHandler<GetLessonQuery, Result<GetLessonQueryResponse>>
 {
