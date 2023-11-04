@@ -3,7 +3,7 @@
 public static class MongoConfig
 {
     public static string? ConnectionString =>
-        "mongodb+srv://admin:j6Nk%2AS%40R54dG@cluster0.raga6o9.mongodb.net";
+        Environment.GetEnvironmentVariable("KitsuneDatabaseConn") ?? "mongodb://localhost:27017/";
 
     public static string? GetDatabaseName(Func<bool> isDevelopment) => 
         isDevelopment() ? "Kitsune_dev" : "Kitsune_prod";
