@@ -19,21 +19,35 @@ public class ReorderCourseCommandHandler : ICommandHandler<ReorderCourseCommand,
     {
         var result = Result.Success();
 
-        var courses = await _courseRepository.GetAllAsync();
         if (!result.ValidateSuccessAndValues())
-            return result.Fail();
-        var seekedCourse = courses.FirstOrDefault(x => x.Id == new CourseId(command.CourseId));
-
-        //move logic 
-        var courseList = courses.ToList();
-        courseList.Remove(seekedCourse);
-        courseList.Insert(command.Index,seekedCourse);
-        foreach (var item in courseList)
         {
-            await _courseRepository.Save(item, result);
+            return result.Fail();
         }
-      
+
+        var courses = await _courseRepository.GetAllAsync();
+        var seekedCourseId = new CourseId(command.CourseId);
+        var seekedCourse = courses.FirstOrDefault(x => x.Id == seekedCourseId);
+        var currentCoursePosition = courses.FirstOrDefault(x => x.Order == command.Index);
+
+        if (seekedCourse != null && currentCoursePosition != null)
+        {
+            // Swap the order values between seekedCourse and currentCoursePosition
+            var tempOrder = seekedCourse.Order;
+            seekedCourse.Order = currentCoursePosition.Order;
+            currentCoursePosition.Order = tempOrder;
+
+            foreach (var course in courses)
+            {
+                await _courseRepository.Save(course, result);
+            }
+        }
+        else
+        {
+            result.Fail("Invalid course or index provided.");
+        }
+
         return result;
+
     }
 }
 

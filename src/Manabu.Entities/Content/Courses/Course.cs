@@ -19,6 +19,7 @@ public class Course : Entity<CourseId>, IAggregateRoot<CourseId>
     public List<Module> ModulesRemoved { get; set; }
     public bool IsOfficial { get; set; }
     public bool IsArchived { get; set; }
+    public int Order { get; set; }
 
     public Course(
         string name,
