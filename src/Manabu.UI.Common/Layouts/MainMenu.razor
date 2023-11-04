@@ -14,7 +14,7 @@
                 }
                 else
                 {
-                    <MudMenu Label=@button.Name ActivationEvent="@MouseEvent.MouseOver">
+                    <MudMenu Label=@button.Name ActivationEvent="@MouseEvent.MouseOver" Style="height: 100%;">
                         <ChildContent>
                             @foreach (var nButton in button.Buttons)
                             {
