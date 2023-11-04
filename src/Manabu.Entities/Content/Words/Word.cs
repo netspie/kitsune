@@ -68,9 +68,14 @@ public record VerbConjugationType(string Value) : WordProperty(Value)
 
 public record AdjectiveConjugationType(string Value) : WordProperty(Value)
 {
-    public static readonly VerbConjugationType I = new("i-adjective");
-    public static readonly VerbConjugationType Na = new("na-adjective");
-    public static readonly VerbConjugationType No = new("no-adjective");
+    public static readonly AdjectiveConjugationType I = new("i-adjective");
+    public static readonly AdjectiveConjugationType Na = new("na-adjective");
+    public static readonly AdjectiveConjugationType No = new("no-adjective");
+}
+
+public record NounType(string Value) : WordProperty(Value)
+{
+    public static readonly NounType Verbal = new("verbal-noun");
 }
 
 public record InflectionType(string Value)

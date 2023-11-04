@@ -31,6 +31,8 @@ public class VocabularyItemDataDTO
     public int Lesson_Position { get; set; }
     public int Spaced_Repetition_System_Id { get; set; }
 
+    public override string ToString() =>
+        $"{Slug} - {Readings[0].Reading} - {Meanings[0].Meaning}";
 }
 
 [Serializable]

@@ -5,7 +5,7 @@
 
     <MudGrid>
         <MudItem xs="12">
-            <MudGrid Justify=@Justify.SpaceEvenly>
+            @*<MudGrid Justify=@Justify.SpaceEvenly>
                 <MudItem xs=6>
                     <MudPaper @onclick=@(arg => Navigation.NavigateTo("/words/linguistics/particles"))  Elevation=0 Class="d-flex flex-column align-center mud-width-full card" Style="justify-content: space-evenly; height: 100px; font-family: unica; cursor: pointer;">
                         <MudText Typo="Typo.h5" Align="Align.Center" Style="font-weight: bold; font-family: unica; text-transform: uppercase;">Particles</MudText>
@@ -18,26 +18,26 @@
                         <MudText Typo="Typo.body1" Align="Align.Center" >代名詞</MudText>
                     </MudPaper>
                 </MudItem>
-            </MudGrid>
+            </MudGrid>*@
             <MudGrid Justify=@Justify.SpaceEvenly>
-                <MudItem xs=6>
-                    <MudPaper  @onclick=@(arg => Navigation.NavigateTo("/words/linguistics/adjectives")) Elevation=0 Class="d-flex flex-column align-center mud-width-full card" Style="justify-content: space-evenly; height: 100px; font-family: unica; cursor: pointer;">
-                        <MudText Typo="Typo.h5" Align="Align.Center" Style="font-weight: bold; font-family: unica; text-transform: uppercase;">Adjectives</MudText>
-                        <MudText Typo="Typo.body1" Align="Align.Center">形容詞</MudText>
-                    </MudPaper>
-                </MudItem>
                 <MudItem xs=6>
                     <MudPaper  @onclick=@(arg => Navigation.NavigateTo("/words/linguistics/verbs"))  Elevation=0 Class="d-flex flex-column align-center mud-width-full card" Style="justify-content: space-evenly; height: 100px; font-family: unica; cursor: pointer;">
                         <MudText Typo="Typo.h5" Align="Align.Center" Style="font-weight: bold; font-family: unica; text-transform: uppercase;">Verbs</MudText>
                         <MudText Typo="Typo.body1" Align="Align.Center" >動詞</MudText>
                     </MudPaper>
                 </MudItem>
-            </MudGrid>
-            <MudGrid Justify=@Justify.SpaceEvenly>
                 <MudItem xs=6>
-                    <MudPaper  @onclick=@(arg => Navigation.NavigateTo("/words/linguistics/nouns")) Elevation=0 Class="d-flex flex-column align-center mud-width-full card" Style="justify-content: space-evenly; height: 100px; font-family: unica; cursor: pointer;">
+                    <MudPaper @onclick=@(arg => Navigation.NavigateTo("/words/linguistics/nouns")) Elevation=0 Class="d-flex flex-column align-center mud-width-full card" Style="justify-content: space-evenly; height: 100px; font-family: unica; cursor: pointer;">
                         <MudText Typo="Typo.h5" Align="Align.Center" Style="font-weight: bold; font-family: unica; text-transform: uppercase;">Nouns</MudText>
                         <MudText Typo="Typo.body1" Align="Align.Center">名詞</MudText>
+                    </MudPaper>
+                </MudItem>
+            </MudGrid>
+            @*<MudGrid Justify=@Justify.SpaceEvenly>
+                <MudItem xs=6>
+                    <MudPaper  @onclick=@(arg => Navigation.NavigateTo("/words/linguistics/adjectives")) Elevation=0 Class="d-flex flex-column align-center mud-width-full card" Style="justify-content: space-evenly; height: 100px; font-family: unica; cursor: pointer;">
+                        <MudText Typo="Typo.h5" Align="Align.Center" Style="font-weight: bold; font-family: unica; text-transform: uppercase;">Adjectives</MudText>
+                        <MudText Typo="Typo.body1" Align="Align.Center">形容詞</MudText>
                     </MudPaper>
                 </MudItem>
                 <MudItem xs=6>
@@ -46,22 +46,22 @@
                         <MudText Typo="Typo.body1" Align="Align.Center" >接続詞</MudText>
                     </MudPaper>
                 </MudItem>
-            </MudGrid>
+            </MudGrid>*@
             <MudGrid Justify=@Justify.SpaceEvenly>
-                <MudItem xs=6>
+                @*<MudItem xs=6>
                     <MudPaper  @onclick=@(arg => Navigation.NavigateTo("/words/linguistics/auxilary-verbs")) Elevation=0 Class="d-flex flex-column align-center mud-width-full card" Style="justify-content: space-evenly; height: 100px; font-family: unica; cursor: pointer;">
                         <MudText Typo="Typo.h5" Align="Align.Center" Style="font-weight: bold; font-family: unica; text-transform: uppercase;">Auxilary Verbs</MudText>
                         <MudText Typo="Typo.body1" Align="Align.Center">助動詞</MudText>
                     </MudPaper>
-                </MudItem>
-                <MudItem xs=6>
+                </MudItem>*@
+                <MudItem xs=12>
                     <MudPaper  @onclick=@(arg => Navigation.NavigateTo("/words/linguistics/numerals")) Elevation=0 Class="d-flex flex-column align-center mud-width-full card" Style="justify-content: space-evenly; height: 100px; font-family: unica; cursor: pointer;">
                         <MudText Typo="Typo.h5" Align="Align.Center" Style="font-weight: bold; font-family: unica; text-transform: uppercase;">Numerals</MudText>
                         <MudText Typo="Typo.body1" Align="Align.Center" >数字</MudText>
                     </MudPaper>
                 </MudItem>
             </MudGrid>
-            <MudGrid Justify=@Justify.SpaceEvenly>
+            @*<MudGrid Justify=@Justify.SpaceEvenly>
                 <MudItem xs=6>
                     <MudPaper  @onclick=@(arg => Navigation.NavigateTo("/words/linguistics/prepositions")) Elevation=0 Class="d-flex flex-column align-center mud-width-full card" Style="justify-content: space-evenly; height: 100px; font-family: unica; cursor: pointer;">
                         <MudText Typo="Typo.h5" Align="Align.Center" Style="font-weight: bold; font-family: unica; text-transform: uppercase;">Prepositions</MudText>
@@ -97,7 +97,7 @@
                         <MudText Typo="Typo.body1" Align="Align.Center">名前</MudText>
                     </MudPaper>
                 </MudItem>
-            </MudGrid>
+            </MudGrid>*@
         </MudItem>
     </MudGrid>
 </div>

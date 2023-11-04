@@ -4,8 +4,7 @@
     <SiteTitle>@SiteTitle.Name</SiteTitle>
 
     <WordsGrid
-        Columns=@(WordsGrid.Column.Word | WordsGrid.Column.Meaning | WordsGrid.Column.PartOfSpeech)
-        PartOfSpeeches=@WordsGrid.PartOfSpeech.Numeral />
+        Columns=@(WordsGrid.Column.Word | WordsGrid.Column.Meaning | WordsGrid.Column.PartOfSpeech) />
 
     @if (_isAdmin)
     {
@@ -15,6 +14,11 @@
 
 @code {
     [Inject] public State.SiteTitle SiteTitle { get; set; }
+
+    protected override async Task OnInitializedAsyncImpl()
+    {
+        SiteTitle.Rename("WORDS");
+    }
 
     public record WordItem(string Id, string Word, string Meaning, string PartOfSpeech);
 }

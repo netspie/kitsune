@@ -2,11 +2,9 @@
 using Corelibs.MongoDB;
 using Manabu.Entities.Content.WordMeanings;
 using Manabu.Entities.Content.Words;
-using Manabu.Entities.Rehearse.RehearseItems;
 using MongoDB.Driver;
 using Newtonsoft.Json;
 using System.Text.RegularExpressions;
-using System.Xml.Linq;
 using WanikaniTest.Models;
 
 string jsonFilePath = "../../../words.json";
@@ -23,35 +21,57 @@ var wordsByPartOfSpeeches = new List<WordCluster>();
 foreach (var partOfSpeech in partOfSpeechesNames)
     wordsByPartOfSpeeches.Add(new(partOfSpeech, words.Where(w => w.Data.Parts_Of_Speech.Contains(partOfSpeech)).ToArray()));
 
-var godanVerbs = wordsByPartOfSpeeches.FirstOrDefault(p => p.Type == "godan verb");
-var transitiveVerbs = wordsByPartOfSpeeches.FirstOrDefault(p => p.Type == "transitive verb");
-var intransitiveVerbs = wordsByPartOfSpeeches.FirstOrDefault(p => p.Type == "intransitive verb");
-var ichidanVerbs = wordsByPartOfSpeeches.FirstOrDefault(p => p.Type == "ichidan verb");
-var suruVerbs = wordsByPartOfSpeeches.FirstOrDefault(p => p.Type == "する verb");
+// --- VERBS ---
+//var godanVerbs = wordsByPartOfSpeeches.FirstOrDefault(p => p.Type == "godan verb");
+//var transitiveVerbs = wordsByPartOfSpeeches.FirstOrDefault(p => p.Type == "transitive verb");
+//var intransitiveVerbs = wordsByPartOfSpeeches.FirstOrDefault(p => p.Type == "intransitive verb");
+//var ichidanVerbs = wordsByPartOfSpeeches.FirstOrDefault(p => p.Type == "ichidan verb");
+//var suruVerbs = wordsByPartOfSpeeches.FirstOrDefault(p => p.Type == "する verb");
 
-var numerals = wordsByPartOfSpeeches.FirstOrDefault(p => p.Type == "numeral");
+//var allVerbs = godanVerbs.Items.Concat(
+//    transitiveVerbs.Items.Concat(
+//        intransitiveVerbs.Items.Concat(
+//            ichidanVerbs.Items.Concat(
+//                suruVerbs.Items))));
 
-//return;
+//var allVerbsDistinct = allVerbs.Distinct();
 
-var allVerbs = godanVerbs.Items.Concat(
-    transitiveVerbs.Items.Concat(
-        intransitiveVerbs.Items.Concat(
-            ichidanVerbs.Items.Concat(
-                suruVerbs.Items))));
-
-var allVerbsDistinct = allVerbs.Distinct();
-
-var mainVerbs = godanVerbs.Items.Concat(ichidanVerbs.Items.Concat(suruVerbs.Items));
-var transitiveVerbsRest = transitiveVerbs.Items.Where(v => !mainVerbs.Contains(v)).ToArray();
-var intransitiveVerbsRest = intransitiveVerbs.Items.Where(v => !mainVerbs.Contains(v)).ToArray();
-
-Console.WriteLine($"{mainVerbs.Count()} x verbs");
-Console.WriteLine($"{transitiveVerbsRest.Length} transitive verbs verbs");
-Console.WriteLine($"{intransitiveVerbsRest.Length} intransitive verbs verbs");
-Console.WriteLine($"{allVerbsDistinct.Count()} distinct verbs");
+//var mainVerbs = godanVerbs.Items.Concat(ichidanVerbs.Items.Concat(suruVerbs.Items));
+//var transitiveVerbsRest = transitiveVerbs.Items.Where(v => !mainVerbs.Contains(v)).ToArray();
+//var intransitiveVerbsRest = intransitiveVerbs.Items.Where(v => !mainVerbs.Contains(v)).ToArray();
 
 //await Store(mainVerbs);
-await Store(numerals.Items);
+
+// --- NUMERALS ---
+//var numerals = wordsByPartOfSpeeches.FirstOrDefault(p => p.Type == "numeral");
+//await Store(numerals.Items);
+var posDict = new Dictionary<string, List<VocabularyItemDataDTO>>();
+// --- NOUNS ---
+var nouns = wordsByPartOfSpeeches.FirstOrDefault(p => p.Type == "noun").Items.Where(i => 
+{
+    foreach (var p in i.Data.Parts_Of_Speech)
+        if (p != "noun")
+            if (!posDict.TryAdd(p, new() { i.Data }))
+                posDict[p].Add(i.Data);
+
+    var ps = i.Data.Parts_Of_Speech;
+    if (ps.Length == 1)
+        return true;
+
+    if (!ps.Contains("な adjective") ||
+        !ps.Contains("の adjective") ||
+        !ps.Contains("verbal noun"))
+        return false;
+
+    return true;
+
+}).ToArray();
+var nounsProper = wordsByPartOfSpeeches.FirstOrDefault(p => p.Type == "proper noun").Items.Where(i => !i.Data.Parts_Of_Speech.Contains("noun")).ToArray();
+var nounsVerbal  = wordsByPartOfSpeeches.FirstOrDefault(p => p.Type == "verbal noun").Items.Where(i => !i.Data.Parts_Of_Speech.Contains("noun")).ToArray();
+
+await Store(nouns);
+
+Console.WriteLine("End");
 
 async static Task Store(IEnumerable<VocabularyItemDTO> words)
 {
@@ -141,30 +161,44 @@ public static class PartOfSpeechExtensions
         var partsOfSpeech = new List<PartOfSpeech>();
         var properties = new List<WordProperty>();
 
-        // VERBS
-        if (strs.Any(str => str.Contains("verb")))
-            partsOfSpeech.Add(PartOfSpeech.Verb);
+        //// VERBS
+        //if (strs.Any(str => str.Contains("verb")))
+        //    partsOfSpeech.Add(PartOfSpeech.Verb);
 
-        if (strs.Any(str => str.Contains("godan")))
-            properties.Add(VerbConjugationType.Godan);
-        else
-        if (strs.Any(str => str.Contains("ichidan")))
-            properties.Add(VerbConjugationType.Ichidan);
-        else
-        if (strs.Any(str => str.Contains("する")))
-            properties.Add(VerbConjugationType.Suru);
-        else
-            properties.Add(VerbConjugationType.Irregular);
+        //if (strs.Any(str => str.Contains("godan")))
+        //    properties.Add(VerbConjugationType.Godan);
+        //else
+        //if (strs.Any(str => str.Contains("ichidan")))
+        //    properties.Add(VerbConjugationType.Ichidan);
+        //else
+        //if (strs.Any(str => str.Contains("する")))
+        //    properties.Add(VerbConjugationType.Suru);
+        //else
+        //    properties.Add(VerbConjugationType.Irregular);
 
-        if (strs.Any(str => str.Contains("transitive")))
-            properties.Add(VerbTransitivity.Transitive);
-        else
-        if (strs.Any(str => str.Contains("intransitive")))
-            properties.Add(VerbTransitivity.Intransitive);
+        //if (strs.Any(str => str.Contains("transitive")))
+        //    properties.Add(VerbTransitivity.Transitive);
+        //else
+        //if (strs.Any(str => str.Contains("intransitive")))
+        //    properties.Add(VerbTransitivity.Intransitive);
 
-        // NUMERALS
-        if (strs.Any(str => str.Contains("numeral")))
-            partsOfSpeech.Add(PartOfSpeech.Numeral);
+        //// NUMERALS
+        //if (strs.Any(str => str.Contains("numeral")))
+        //    partsOfSpeech.Add(PartOfSpeech.Numeral);
+
+        // NOUNS
+        if (strs.Any(str => str == "noun"))
+            partsOfSpeech.Add(PartOfSpeech.Noun);
+        if (strs.Any(str => str.Contains("adjective")))
+            partsOfSpeech.Add(PartOfSpeech.Adjective);
+
+        if (strs.Any(str => str.Contains("な adjective")))
+            properties.Add(AdjectiveConjugationType.Na);
+        if (strs.Any(str => str.Contains("の adjective")))
+            properties.Add(AdjectiveConjugationType.No);
+
+        if (strs.Any(str => str.Contains("verbal noun")))
+            properties.Add(NounType.Verbal);
 
         return (partsOfSpeech, properties);
     }

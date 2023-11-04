@@ -65,6 +65,14 @@
 
     protected override async Task BeforeInitializedAsyncImpl()
     {
+        InitializeFilterArgs();
+    }
+
+    private void InitializeFilterArgs()
+    {
+        if (PartOfSpeeches is null)
+            return;
+
         var filterArgs = new List<FilterArg>();
 
         if ((PartOfSpeeches & PartOfSpeech.Verb) != 0)
@@ -75,7 +83,7 @@
 
         if ((PartOfSpeeches & PartOfSpeech.Numeral) != 0)
             filterArgs.Add(new("PartsOfSpeech", "numeral"));
-        
+
         _filterArgs = filterArgs.ToArray();
     }
 
