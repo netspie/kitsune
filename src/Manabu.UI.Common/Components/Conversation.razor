@@ -19,6 +19,16 @@
 
     <MudBreadcrumbs Items=@_breadcrumbs Style="padding-left: 0; font-size: 12px" />
 
+
+    @if (_isSignedIn)
+    {
+        <LearnButton 
+            LearningObjectId=@ConversationId 
+            LearningObjectType=@LearningContainerType.Conversation.Value
+            IsAlreadyAdded=@_conversation.Learned />
+    }
+
+
     <MudStack>
         <TextField
             Label="Name"

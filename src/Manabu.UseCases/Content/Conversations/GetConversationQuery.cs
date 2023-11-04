@@ -48,6 +48,7 @@ public class GetConversationQueryHandler : IQueryHandler<GetConversationQuery, R
                 new(conversation.Id.Value,
                     conversation.Name,
                     conversation.Description,
+                    conversation.Learned,
                     lessons
                         .OrderBy(p => conversation.Lessons.IndexOf(p.Id))
                         .Select((l, i) => new LessonDTO(l.Id.Value, l.Name))
@@ -78,6 +79,7 @@ public record ConversationDetailsDTO(
     string Id,
     string Name,
     string Description,
+    bool Learned,
     LessonDTO[] Lessons,
     PhraseDTO[] Phrases);
 
