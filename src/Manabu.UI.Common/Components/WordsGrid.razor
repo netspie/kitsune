@@ -84,6 +84,9 @@
         if ((PartOfSpeeches & PartOfSpeech.Numeral) != 0)
             filterArgs.Add(new("PartsOfSpeech", "numeral"));
 
+        if ((PartOfSpeeches & PartOfSpeech.Adjective) != 0)
+            filterArgs.Add(new("PartsOfSpeech", "adjective"));
+
         _filterArgs = filterArgs.ToArray();
     }
 
@@ -160,5 +163,6 @@
         Noun = 2,
         Particle = 4,
         Numeral = 8,
+        Adjective = 16,
     }
 }

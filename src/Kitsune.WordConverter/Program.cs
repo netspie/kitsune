@@ -45,31 +45,61 @@ foreach (var partOfSpeech in partOfSpeechesNames)
 // --- NUMERALS ---
 //var numerals = wordsByPartOfSpeeches.FirstOrDefault(p => p.Type == "numeral");
 //await Store(numerals.Items);
+//var posDict = new Dictionary<string, List<VocabularyItemDataDTO>>();
+//// --- NOUNS ---
+//var nouns = wordsByPartOfSpeeches.FirstOrDefault(p => p.Type == "noun").Items.Where(i => 
+//{
+//    foreach (var p in i.Data.Parts_Of_Speech)
+//        if (p != "noun")
+//            if (!posDict.TryAdd(p, new() { i.Data }))
+//                posDict[p].Add(i.Data);
+
+//    var ps = i.Data.Parts_Of_Speech;
+//    if (ps.Length == 1)
+//        return true;
+
+//    if (!ps.Contains("な adjective") ||
+//        !ps.Contains("の adjective") ||
+//        !ps.Contains("verbal noun"))
+//        return false;
+
+//    return true;
+
+//}).ToArray();
+//var nounsProper = wordsByPartOfSpeeches.FirstOrDefault(p => p.Type == "proper noun").Items.Where(i => !i.Data.Parts_Of_Speech.Contains("noun")).ToArray();
+//var nounsVerbal  = wordsByPartOfSpeeches.FirstOrDefault(p => p.Type == "verbal noun").Items.Where(i => !i.Data.Parts_Of_Speech.Contains("noun")).ToArray();
+
+//await Store(nouns);
+
 var posDict = new Dictionary<string, List<VocabularyItemDataDTO>>();
-// --- NOUNS ---
-var nouns = wordsByPartOfSpeeches.FirstOrDefault(p => p.Type == "noun").Items.Where(i => 
+var adjectivesI = wordsByPartOfSpeeches.FirstOrDefault(p => p.Type == "い adjective")?.Items;
+var adjectivesNa = wordsByPartOfSpeeches.FirstOrDefault(p => p.Type == "な adjective")?.Items;
+var adjectivesNo = wordsByPartOfSpeeches.FirstOrDefault(p => p.Type == "の adjective")?.Items;
+var adjectivesR = wordsByPartOfSpeeches.FirstOrDefault(p => p.Type == "adjective")?.Items;
+
+var adjectivesAll = adjectivesI.Concat(adjectivesNa.Concat(adjectivesNo.Concat(adjectivesR))).ToArray();
+
+var adjectives = adjectivesAll.Where(i =>
 {
     foreach (var p in i.Data.Parts_Of_Speech)
-        if (p != "noun")
+        if (p != "adjective")
             if (!posDict.TryAdd(p, new() { i.Data }))
                 posDict[p].Add(i.Data);
 
     var ps = i.Data.Parts_Of_Speech;
-    if (ps.Length == 1)
-        return true;
 
-    if (!ps.Contains("な adjective") ||
-        !ps.Contains("の adjective") ||
-        !ps.Contains("verbal noun"))
+    if (ps.Contains("noun"))
+        return false;
+
+    if (!ps.Contains("な adjective") &&
+        !ps.Contains("い adjective"))
         return false;
 
     return true;
 
 }).ToArray();
-var nounsProper = wordsByPartOfSpeeches.FirstOrDefault(p => p.Type == "proper noun").Items.Where(i => !i.Data.Parts_Of_Speech.Contains("noun")).ToArray();
-var nounsVerbal  = wordsByPartOfSpeeches.FirstOrDefault(p => p.Type == "verbal noun").Items.Where(i => !i.Data.Parts_Of_Speech.Contains("noun")).ToArray();
 
-await Store(nouns);
+//await Store(adjectives);
 
 Console.WriteLine("End");
 
@@ -186,9 +216,7 @@ public static class PartOfSpeechExtensions
         //if (strs.Any(str => str.Contains("numeral")))
         //    partsOfSpeech.Add(PartOfSpeech.Numeral);
 
-        // NOUNS
-        if (strs.Any(str => str == "noun"))
-            partsOfSpeech.Add(PartOfSpeech.Noun);
+        // ADJ
         if (strs.Any(str => str.Contains("adjective")))
             partsOfSpeech.Add(PartOfSpeech.Adjective);
 
@@ -196,9 +224,8 @@ public static class PartOfSpeechExtensions
             properties.Add(AdjectiveConjugationType.Na);
         if (strs.Any(str => str.Contains("の adjective")))
             properties.Add(AdjectiveConjugationType.No);
-
-        if (strs.Any(str => str.Contains("verbal noun")))
-            properties.Add(NounType.Verbal);
+        if (strs.Any(str => str.Contains("い adjective")))
+            properties.Add(AdjectiveConjugationType.I);
 
         return (partsOfSpeech, properties);
     }
