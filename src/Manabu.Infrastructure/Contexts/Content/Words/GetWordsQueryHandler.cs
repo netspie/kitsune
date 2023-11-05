@@ -63,9 +63,9 @@ public class GetWordsQueryHandler : IQueryHandler<GetWordsQuery, Result<GetWords
                 Words: words.Select(w => new WordDTO(
                     w.Id.Value, 
                     w.Value,
-                    w.MeaningsJoined[0].Translations[0],
-                    w.PartsOfSpeech[0].Value,
-                    w.MeaningsJoined[0].HiraganaWritings[0].Value)).ToArray(),
+                    w.MeaningsJoined?.FirstOrDefault()?.Translations?.FirstOrDefault(),
+                    w.PartsOfSpeech?.FirstOrDefault()?.Value,
+                    w.MeaningsJoined?.FirstOrDefault()?.HiraganaWritings?.FirstOrDefault()?.Value)).ToArray(),
                 Range: new RangeDTO((int) totalCount, range.Start, limit))));
     }
 

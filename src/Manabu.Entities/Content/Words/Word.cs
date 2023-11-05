@@ -9,16 +9,16 @@ public class Word : Entity<WordId>, IAggregateRoot<WordId>
     public static string DefaultCollectionName { get; } = "words";
 
     public string Value { get; private set; }
-    public List<PartOfSpeech> PartsOfSpeech { get; init; }
-    public List<WordMeaningId> Meanings { get; private set; }
+    public List<PartOfSpeech>? PartsOfSpeech { get; init; }
+    public List<WordMeaningId>? Meanings { get; private set; }
     public List<WordProperty>? Properties { get; private set; }
     public WordLexemeId? Lexeme { get; private set; }
 
     public Word(
         WordId id,
         string value,
-        List<PartOfSpeech> partsOfSpeech,
-        List<WordMeaningId> meanings,
+        List<PartOfSpeech>? partsOfSpeech = null,
+        List<WordMeaningId>? meanings = null,
         List<WordProperty>? properties = null,
         WordLexemeId? lexeme = null) : base(id)
     {

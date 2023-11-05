@@ -47,8 +47,8 @@ public class GetWordQueryHandler : IQueryHandler<GetWordQuery, Result<GetWordQue
             new WordDetailsDTO(
                 query.WordId,
                 word.Value,
-                word.MeaningsJoined.Select(m => new WordMeaningDTO(m.Id.Value, m.Translations.AggregateOrDefault((x, y) => $"{x}, {y}"))).ToArray(),
-                word.PartsOfSpeech.Select(m => m.Value).ToArray())));
+                word.MeaningsJoined.SelectOrEmpty(m => new WordMeaningDTO(m.Id.Value, m.Translations.AggregateOrDefault((x, y) => $"{x}, {y}"))).ToArray(),
+                word.PartsOfSpeech.SelectOrEmpty(m => m.Value).ToArray())));
     }
 
     public record WordProjection(

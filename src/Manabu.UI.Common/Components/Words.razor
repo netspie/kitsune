@@ -1,10 +1,27 @@
-﻿@inherits CoreComponent
+﻿@using Manabu.UseCases.Content.Words;
+@inherits CoreComponent
+@inject ISnackbar Snackbar
 
 <MudStack Class="main-section vocabulary" Style="width: 100%;">
     <SiteTitle>@SiteTitle.Name</SiteTitle>
 
     <WordsGrid
         Columns=@(WordsGrid.Column.Word | WordsGrid.Column.Meaning | WordsGrid.Column.PartOfSpeech) />
+
+    @if (IsEdit)
+    {
+        <MudStack Row=true>
+            <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" Immediate="true"
+                          AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+            <MudButton HtmlTag="label"
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       OnClick=@OnAddWordButtonClick
+                       StartIcon="@Icons.Material.Filled.Add">
+                Add Word
+            </MudButton>
+        </MudStack>
+    }
 
     @if (_isAdmin)
     {
@@ -15,9 +32,26 @@
 @code {
     [Inject] public State.SiteTitle SiteTitle { get; set; }
 
+    private string _searchString;
+
     protected override async Task OnInitializedAsyncImpl()
     {
         SiteTitle.Rename("WORDS");
+    }
+
+    private async Task OnAddWordButtonClick()
+    {
+        if (_searchString.IsNullOrEmpty())
+            return;
+
+        var result = await ExecuteAdminViewAction(
+            () => CommandExecutor.Execute(
+                new CreateWordCommand(_searchString)));
+
+        if (result)
+            Snackbar.AddInfo("Word c reated!");
+        else
+            Snackbar.AddError("Couldn't create word");
     }
 
     public record WordItem(string Id, string Word, string Meaning, string PartOfSpeech);

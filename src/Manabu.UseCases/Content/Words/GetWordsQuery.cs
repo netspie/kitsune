@@ -29,9 +29,9 @@ public record WordsDTO(
 public record WordDTO(
     string Id,
     string Value,
-    string Meaning,
-    string PartOfSpeech,
-    string Reading);
+    string? Meaning,
+    string? PartOfSpeech,
+    string? Reading);
 
 public record RangeDTO(
     int TotalCount,
