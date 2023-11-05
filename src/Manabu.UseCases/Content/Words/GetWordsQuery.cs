@@ -30,7 +30,8 @@ public record WordDTO(
     string Id,
     string Value,
     string Meaning,
-    string PartOfSpeech);
+    string PartOfSpeech,
+    string Reading);
 
 public record RangeDTO(
     int TotalCount,

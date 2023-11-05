@@ -64,7 +64,8 @@ public class GetWordsQueryHandler : IQueryHandler<GetWordsQuery, Result<GetWords
                     w.Id.Value, 
                     w.Value,
                     w.MeaningsJoined[0].Translations[0],
-                    w.PartsOfSpeech[0].Value)).ToArray(),
+                    w.PartsOfSpeech[0].Value,
+                    w.MeaningsJoined[0].HiraganaWritings[0].Value)).ToArray(),
                 Range: new RangeDTO((int) totalCount, range.Start, limit))));
     }
 

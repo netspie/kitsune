@@ -12,6 +12,10 @@
             {
                <PropertyColumn Property="x => x.Word" Filterable="false" ValueChanged=@(EventCallback.Factory.Create(this, (WordItem item) => OnValueChanged(item))) /> 
             }
+            @if ((Columns & Column.Reading) != 0)
+            {
+                <PropertyColumn Property="x => x.Reading" Title="Reading" />
+            }
             @if ((Columns & Column.Meaning) != 0)
             {
                 <PropertyColumn Property="x => x.Meaning" />
@@ -46,8 +50,7 @@
 </div>
 
 @code {
-    [Parameter]
-    public Column? Columns { get; set; } = Column.Word | Column.Meaning;
+    [Parameter] public Column? Columns { get; set; } = Column.Word | Column.Reading | Column.Meaning;
     [Parameter] public PartOfSpeech? PartOfSpeeches { get; set; }
 
     private WordsDTO? _dto;
@@ -137,14 +140,15 @@
 
         _dto = response.Content;
 
-        _elements = _dto.Words.Select(w => new WordItem(w.Id, w.Value, w.Meaning, w.PartOfSpeech)).ToList();
+        _elements = _dto.Words.Select(w => new WordItem(w.Id, w.Value, w.Meaning, w.PartOfSpeech, w.Reading)).ToList();
     }
 
     public record WordItem(
         string Id, 
         string? Word = null, 
         string? Meaning = null,
-        string? PartOfSpeech = null);
+        string? PartOfSpeech = null,
+        string? Reading = null);
 
     [Flags]
     public enum Column
@@ -154,6 +158,7 @@
         PartOfSpeech = 4,
         Property = 8,
         Properties = 16,
+        Reading = 32
     }
 
     [Flags]
