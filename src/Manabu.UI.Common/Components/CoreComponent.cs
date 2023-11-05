@@ -1,9 +1,11 @@
 ﻿using Corelibs.Basic.Blocks;
 using Corelibs.Basic.UseCases;
 using Manabu.UI.Common.Auth;
+using Manabu.UI.Common.Extensions;
 using Manabu.UI.Common.Storage;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using MudBlazor;
 using System.Reflection;
 
 namespace Manabu.UI.Common.Components;
@@ -15,7 +17,8 @@ public abstract class CoreComponent : ComponentBase
     [Inject] public NavigationManager Navigation { get; set; }
     [Inject] public IAuthenticationService Auth { get; set; }
     [Inject] public IStorage Storage { get; set; }
-    
+    [Inject] public ISnackbar Snackbar { get; set; }
+
     protected bool _isSignedIn { get; private set; }
     protected bool _isAdmin { get; private set; }
 
@@ -83,6 +86,10 @@ public abstract class CoreComponent : ComponentBase
             return false;
 
         var result = await action();
+        if (result.IsSuccess)
+            Snackbar.AddInfo("Operation succeded!");
+        else
+            Snackbar.AddError("Operation failed!");
 
         await RefreshView();
 

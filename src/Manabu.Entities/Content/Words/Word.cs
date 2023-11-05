@@ -1,4 +1,5 @@
-﻿using Corelibs.Basic.DDD;
+﻿using Corelibs.Basic.Collections;
+using Corelibs.Basic.DDD;
 using Manabu.Entities.Content.WordLexemes;
 using Manabu.Entities.Content.WordMeanings;
 
@@ -27,6 +28,12 @@ public class Word : Entity<WordId>, IAggregateRoot<WordId>
         Meanings = meanings;
         Properties = properties;
         Lexeme = lexeme;
+    }
+
+    public void AddMeaning(WordMeaningId meaning, int index = int.MaxValue)
+    {
+        Meanings ??= new();
+        Meanings.InsertClamped(meaning, index);
     }
 }
 

@@ -202,8 +202,8 @@
 
         _dto = response.Content;
 
-        _translationsItems = _dto.Translations.Select(p => new EditableList.TreeItemData(p)).ToList();
-        _partOfSpeechItems = _dto.PartOfSpeeches.Select(p => new EditableList.TreeItemData(p)).ToList();
+        _translationsItems = _dto.Translations.SelectOrEmpty(p => new EditableList.TreeItemData(p)).ToList();
+        _partOfSpeechItems = _dto.PartOfSpeeches.SelectOrEmpty(p => new EditableList.TreeItemData(p)).ToList();
         _readingsItems = _dto.Readings.SelectOrEmpty(r => new EditableList.TreeItemData(
             r.Value,
             r.Personas.SelectOrEmpty((p, i) => new EditableList.TreeItemData(

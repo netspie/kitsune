@@ -28,6 +28,9 @@
         IsReadonly=@(!IsEdit)
         NoIndents=true
         TreeItems=@_meaningsItems 
+        MenuItemsRoot=@WordMeanings_MenuItemsRoot
+        MenuItemsPerType=@WordMeanings_MenuItemsPerType
+        OnAddItem=@OnAddWordMeaningItem
         OnItemClick=@OnItemClick />
 
     @if (_isAdmin)
@@ -57,6 +60,11 @@
         Navigation.NavigateTo($"word-meanings/{item.Id}");
     }
 
+    private Task<bool> OnAddWordMeaningItem(EditableList.TreeItemData item, int index, MenuItem menuItem) =>
+        ExecuteAdminViewAction(
+            () => CommandExecutor.Execute(
+                new CreateWordMeaningCommand(item.Name, WordId, index)));
+
     protected override async Task RefreshViewModel()
     {
         var response = await QueryExecutor.Execute<GetWordQuery, GetWordQueryResponse>(
@@ -67,4 +75,23 @@
         _partOfSpeechItems = _dto.PartOfSpeches.Select(p => new EditableList.TreeItemData(p)).ToList();
         _meaningsItems = _dto.Meanings.Select(m => new EditableList.TreeItemData(m.Id, m.Value)).ToList();
     }
+
+    private Dictionary<string, MenuItem[]> WordMeanings_MenuItemsPerType = new()
+    {
+        {
+            "word meaning",
+            new MenuItem[]
+            {
+                //MenuItems.MoveDown,
+                //MenuItems.MoveUp,
+                MenuItems.AddSibling with { Name = "Add Meaning", IdSecondary = "addMeaning"},
+            }
+        }
+    };
+
+    private MenuItem[] WordMeanings_MenuItemsRoot = new MenuItem[]
+    {
+        MenuItems.AddChildAsLast with { Name = "Add Meaning", IdSecondary = "addMeaning"},
+        MenuItems.AddChildAsFirst with { Name = "Add Meaning as First", IdSecondary = "addMeaning" },
+    };
 }

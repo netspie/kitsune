@@ -19,7 +19,7 @@ public class WordMeaning : Entity<WordMeaningId>, IAggregateRoot<WordMeaningId>
         WordId wordId,
         string original,
         List<string> translations,
-        List<HiraganaWriting> hiraganaWritings) : base(id)
+        List<HiraganaWriting>? hiraganaWritings = null) : base(id)
     {
         WordId = wordId;
         Original = original;

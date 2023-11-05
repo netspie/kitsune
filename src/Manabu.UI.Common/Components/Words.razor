@@ -1,6 +1,5 @@
 ﻿@using Manabu.UseCases.Content.Words;
 @inherits CoreComponent
-@inject ISnackbar Snackbar
 
 <MudStack Class="main-section vocabulary" Style="width: 100%;">
     <SiteTitle>@SiteTitle.Name</SiteTitle>
@@ -44,14 +43,10 @@
         if (_searchString.IsNullOrEmpty())
             return;
 
-        var result = await ExecuteAdminViewAction(
+        await ExecuteAdminViewAction(
             () => CommandExecutor.Execute(
                 new CreateWordCommand(_searchString)));
 
-        if (result)
-            Snackbar.AddInfo("Word c reated!");
-        else
-            Snackbar.AddError("Couldn't create word");
     }
 
     public record WordItem(string Id, string Word, string Meaning, string PartOfSpeech);
