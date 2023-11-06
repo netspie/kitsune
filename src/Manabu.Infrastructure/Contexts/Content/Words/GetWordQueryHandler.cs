@@ -30,7 +30,8 @@ public class GetWordQueryHandler : IQueryHandler<GetWordQuery, Result<GetWordQue
             .Exclude(x => x.Id)
             .Include(x => x.Value)
             .Include(x => x.PartsOfSpeech)
-            .Include(x => x.Meanings);
+            .Include(x => x.Meanings)
+            .Include(x => x.Properties);
 
         var word = await wordsCollection
             .Aggregate()
@@ -48,19 +49,21 @@ public class GetWordQueryHandler : IQueryHandler<GetWordQuery, Result<GetWordQue
                 query.WordId,
                 word.Value,
                 word.MeaningsJoined.SelectOrEmpty(m => new WordMeaningDTO(m.Id.Value, m.Translations.AggregateOrDefault((x, y) => $"{x}, {y}"))).ToArray(),
-                word.PartsOfSpeech.SelectOrEmpty(m => m.Value).ToArray())));
+                word.PartsOfSpeech.SelectOrEmpty(m => m.Value).ToArray(),
+                word.Properties.SelectOrEmpty(m => m.Value).ToArray())));
     }
 
     public record WordProjection(
         string Value, 
-        List<PartOfSpeech> PartsOfSpeech, 
+        List<PartOfSpeech> PartsOfSpeech,
         WordMeaningId[] Meanings,
-        WordProperty[]? Properties = null);
+        WordProperty[]? Properties);
 
     public record LookupResult(
         WordId Id, 
         string Value, 
         List<PartOfSpeech> PartsOfSpeech, 
-        WordMeaningId[] Meanings, 
+        WordMeaningId[] Meanings,
+        WordProperty[] Properties,
         WordMeaning[] MeaningsJoined);
 }

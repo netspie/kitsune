@@ -61,10 +61,8 @@ public class GetWordMeaningQueryHandler : IQueryHandler<GetWordMeaningQuery, Res
                 query.WordMeaningId,
                 wm.Original,
                 wm.Translations,
-                wm.Words?.FirstOrDefault()?
-                    .PartsOfSpeech?
-                    .SelectOrEmpty(p => p.Value)?
-                    .ConcatOrEmpty(wm.Words?.FirstOrDefault()?.Properties?.SelectOrEmpty(p => p.Value)).ToArray(),
+                wm.Words?.FirstOrDefault()?.PartsOfSpeech?.SelectOrEmpty(p => p.Value)?.ToArray(),
+                wm.Words?.FirstOrDefault()?.Properties?.SelectOrEmpty(p => p.Value).ToArray(),
                 wm.PitchAccent,
                 readings,
                 wm.KanjiWritingPreferred.HasValue ? wm.KanjiWritingPreferred.Value : true)));

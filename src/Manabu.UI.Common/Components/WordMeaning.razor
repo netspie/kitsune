@@ -14,10 +14,25 @@
     <SiteTitle>@SiteTitle.Name</SiteTitle>
     <MudBreadcrumbs Items=@_breadcrumbs Style="padding-left: 0; font-size: 12px" />
 
-    <TextField 
-        Label="Word"
-        IsReadonly=true
-        Value=@_dto.Value />
+    <MudStack Row=true>
+        <div style="width: 40px;">
+            <TextField 
+                Label="Word"
+                IsReadonly=true
+                Value=@_dto.Value />
+        </div>
+        
+        <MudStack Row=true Style="gap: 0;">
+            @foreach (var pos in _dto.PartOfSpeeches)
+            {
+                <MudChip DisableRipple=true Color=Color.Error Style="color: white; font-family: unica; text-transform: uppercase; height: 20px; font-weight: bold;">@pos</MudChip>
+            }
+            @foreach (var prop in _dto.Properties)
+            {
+                <MudChip DisableRipple=true Color=Color.Error Style="color: white; font-family: unica; text-transform: uppercase; height: 20px; font-weight: bold;">@prop</MudChip>
+            }
+        </MudStack>
+    </MudStack>
 
     <EditableList
         Name="Translations"
@@ -25,11 +40,20 @@
         NoIndents=true
         TreeItems=@_translationsItems />
 
-    <EditableList
-        Name="Parts Of Speech"
-        IsReadonly=true
-        NoIndents=true
-        TreeItems=@_partOfSpeechItems />
+    @if (IsEdit)
+    {
+        <EditableList
+            Name="Parts Of Speech"
+            IsReadonly=true
+            NoIndents=true
+            TreeItems=@_partOfSpeechItems />
+
+        <EditableList
+            Name="Other Properties"
+            IsReadonly=true
+            NoIndents=true
+            TreeItems=@_propertiesItems />
+    }
 
     @if (!_readingsItems.IsNullOrEmpty() || IsEdit)
     {
@@ -107,11 +131,13 @@
     private WordMeaningDetailsDTO? _dto;
     private List<BreadcrumbItem> _breadcrumbs = new();
 
-    private List<EditableList.TreeItemData> _partOfSpeechItems;
-    private List<EditableList.TreeItemData> _translationsItems;
+    private List<EditableList.TreeItemData>? _partOfSpeechItems;
+    private List<EditableList.TreeItemData>? _translationsItems;
 
     private EditableList? _readingTreeList;
-    private List<EditableList.TreeItemData> _readingsItems;
+    private List<EditableList.TreeItemData>? _readingsItems;
+
+    private List<EditableList.TreeItemData>? _propertiesItems;
 
     protected override async Task OnInitializedAsyncImpl()
     {
@@ -204,6 +230,7 @@
 
         _translationsItems = _dto.Translations.SelectOrEmpty(p => new EditableList.TreeItemData(p)).ToList();
         _partOfSpeechItems = _dto.PartOfSpeeches.SelectOrEmpty(p => new EditableList.TreeItemData(p)).ToList();
+        _propertiesItems = _dto.Properties.SelectOrEmpty(p => new EditableList.TreeItemData(p)).ToList();
         _readingsItems = _dto.Readings.SelectOrEmpty(r => new EditableList.TreeItemData(
             r.Value,
             r.Personas.SelectOrEmpty((p, i) => new EditableList.TreeItemData(

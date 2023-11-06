@@ -14,6 +14,7 @@ public record WordMeaningDetailsDTO(
     string Value,
     string[] Translations,
     string[] PartOfSpeeches,
+    string[] Properties,
     string PitchAccent,
     ReadingDTO[] Readings,
     bool KanjiWritingPreferred = true);

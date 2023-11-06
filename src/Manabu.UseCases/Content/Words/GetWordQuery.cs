@@ -12,7 +12,8 @@ public record WordDetailsDTO(
     string WordId,
     string Value,
     WordMeaningDTO[] Meanings,
-    string[] PartOfSpeches);
+    string[] PartOfSpeches,
+    string[]? Properties = null);
 
 public record WordMeaningDTO(
     string Id,

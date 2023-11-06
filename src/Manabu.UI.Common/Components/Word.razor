@@ -12,16 +12,40 @@
 <MudStack Class="main-section word" Style="width: 100%;">
     <SiteTitle>@SiteTitle.Name</SiteTitle>
 
-    <TextField 
-        Label="Word"
-        IsReadonly=@(!IsEdit)
-        Value=@_dto.Value />
+    <MudStack Row=true>
+        <div style="width: 40px;">
+            <TextField 
+                Label="Word"
+                IsReadonly=true
+                Value=@_dto.Value />
+        </div>
 
-    <EditableList
-        Name="Parts Of Speech"
-        IsReadonly=@(!IsEdit)
-        NoIndents=true
-        TreeItems=@_partOfSpeechItems />
+        <MudStack Row=true Style="gap: 0;">
+            @foreach (var pos in _dto.PartOfSpeches)
+            {
+                <MudChip DisableRipple=true Color=Color.Error Style="color: white; font-family: unica; text-transform: uppercase; height: 20px; font-weight: bold;">@pos</MudChip>
+            }
+            @foreach (var prop in _dto.Properties)
+            {
+                <MudChip DisableRipple=true Color=Color.Error Style="color: white; font-family: unica; text-transform: uppercase; height: 20px; font-weight: bold;">@prop</MudChip>
+            }
+        </MudStack>
+    </MudStack>
+
+    @if (IsEdit)
+    {
+        <EditableList
+            Name="Parts Of Speech"
+            IsReadonly=true
+            NoIndents=true
+            TreeItems=@_partOfSpeechItems />
+
+        <EditableList
+            Name="Other Properties"
+            IsReadonly=true
+            NoIndents=true
+            TreeItems=@_propertiesItems />
+    }
 
     <EditableList
         Name="Meanings"
@@ -48,6 +72,7 @@
 
     private List<EditableList.TreeItemData>? _partOfSpeechItems;
     private List<EditableList.TreeItemData>? _meaningsItems;
+    private List<EditableList.TreeItemData>? _propertiesItems;
 
     protected override async Task OnInitializedAsyncImpl()
     {
@@ -73,6 +98,7 @@
         _dto = response.Content;
 
         _partOfSpeechItems = _dto.PartOfSpeches.Select(p => new EditableList.TreeItemData(p)).ToList();
+        _propertiesItems = _dto.Properties.SelectOrEmpty(p => new EditableList.TreeItemData(p)).ToList();
         _meaningsItems = _dto.Meanings.Select(m => new EditableList.TreeItemData(m.Id, m.Value)).ToList();
     }
 
