@@ -22,8 +22,8 @@ public class GetCoursesQueryHandler : IQueryHandler<GetCoursesQuery, Result<GetC
         if (!result.ValidateSuccessAndValues())
             return result.Fail();
 
-        var courseDtos = courses.Where(c => !c.IsArchived).Select(c => new CourseDTO(c.Id.Value, c.Name)).ToArray();
-        var courseArchivedDtos = courses.Where(c => c.IsArchived).Select(c => new CourseDTO(c.Id.Value, c.Name)).ToArray();
+        var courseDtos = courses.Where(c => !c.IsArchived).OrderBy(x=>x.Order).Select(c => new CourseDTO(c.Id.Value, c.Name)).ToArray();
+        var courseArchivedDtos = courses.Where(c => c.IsArchived).OrderBy(x => x.Order).Select(c => new CourseDTO(c.Id.Value, c.Name)).ToArray();
 
         return result.With(new GetCoursesQueryResponse(
                 new CoursesDTO(
