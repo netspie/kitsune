@@ -10,9 +10,9 @@ public class Word : Entity<WordId>, IAggregateRoot<WordId>
     public static string DefaultCollectionName { get; } = "words";
 
     public string Value { get; private set; }
-    public List<PartOfSpeech>? PartsOfSpeech { get; init; }
+    public List<PartOfSpeech>? PartsOfSpeech { get; set; }
     public List<WordMeaningId>? Meanings { get; private set; }
-    public List<WordProperty>? Properties { get; private set; }
+    public List<WordProperty>? Properties { get; set; }
     public WordLexemeId? Lexeme { get; private set; }
 
     public Word(

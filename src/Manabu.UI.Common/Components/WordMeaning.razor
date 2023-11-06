@@ -29,29 +29,44 @@
             }
             @foreach (var prop in _dto.Properties)
             {
-                <MudChip DisableRipple=true Color=Color.Error Style="color: white; font-family: unica; text-transform: uppercase; height: 20px; font-weight: bold;">@prop</MudChip>
+                <MudChip DisableRipple=true Style="background-color: gray; color: white; font-family: unica; text-transform: uppercase; height: 20px; font-weight: bold;">@prop</MudChip>
             }
         </MudStack>
     </MudStack>
 
     <EditableList
+        @ref=@_translationsTreeList
         Name="Translations"
         IsReadonly=@(!IsEdit)
         NoIndents=true
+        OnAddItem=@OnAddTranslation
+        OnRemoveItem=@OnRemoveTranslation
+        MenuItemsRoot=@GetMenuItemsRoot("Translation")
+        MenuItemsForAll=@GetMenuItemsForAll("Translation")
         TreeItems=@_translationsItems />
 
     @if (IsEdit)
     {
         <EditableList
+            @ref=@_partOfSpeechTreeList
             Name="Parts Of Speech"
-            IsReadonly=true
+            IsReadonly=@(!IsEdit)
             NoIndents=true
+            OnAddItem=@OnAddPartOfSpeech
+            OnRemoveItem=@OnRemovePartOfSpeech
+            MenuItemsRoot=@GetMenuItemsRoot("Part Of Speech")
+            MenuItemsForAll=@GetMenuItemsForAll("Part Of Speech")
             TreeItems=@_partOfSpeechItems />
 
         <EditableList
+            @ref=@_propertiesTreeList
             Name="Other Properties"
-            IsReadonly=true
+            IsReadonly=@(!IsEdit)
             NoIndents=true
+            OnAddItem=@OnAddWordProperty
+            OnRemoveItem=@OnRemoveWordProperty
+            MenuItemsRoot=@GetMenuItemsRoot("Word Property")
+            MenuItemsForAll=@GetMenuItemsForAll("Word Property")
             TreeItems=@_propertiesItems />
     }
 
@@ -63,10 +78,10 @@
             IsReadonly=@(!IsEdit)
             TreeItems=@_readingsItems
             NoIndents=true
-            OnAddItem=@OnAddReading
-            OnRemoveItem=@OnRemoveReading
-            MenuItemsRoot=@MenuItemsRoot
-            MenuItemsPerType=@MenuItemsPerType>
+            OnAddItem=@OnAddItem
+            OnRemoveItem=@OnRemoveItem
+            MenuItemsRoot=@Readings_MenuItemsRoot
+            MenuItemsPerType=@Readings_MenuItemsPerType>
 
             <CustomItemTemplate>
                 @{
@@ -131,12 +146,16 @@
     private WordMeaningDetailsDTO? _dto;
     private List<BreadcrumbItem> _breadcrumbs = new();
 
+    private EditableList? _partOfSpeechTreeList;
     private List<EditableList.TreeItemData>? _partOfSpeechItems;
+
+    private EditableList? _translationsTreeList;
     private List<EditableList.TreeItemData>? _translationsItems;
 
     private EditableList? _readingTreeList;
     private List<EditableList.TreeItemData>? _readingsItems;
 
+    private EditableList? _propertiesTreeList;
     private List<EditableList.TreeItemData>? _propertiesItems;
 
     protected override async Task OnInitializedAsyncImpl()
@@ -150,7 +169,21 @@
         await RefreshViewModel();
     }
 
-    private Dictionary<string, MenuItem[]> MenuItemsPerType = new()
+    private MenuItem[] GetMenuItemsForAll(string addItemName) => new[]
+    {
+        MenuItems.AddSibling with { Name = $"Add {addItemName}" },
+        MenuItems.Remove,
+    };
+
+    private MenuItem[] GetMenuItemsRoot(string addItemName) => new[]
+    {
+        MenuItems.AddChildAsLast with { Name = $"Add {addItemName}" },
+        MenuItems.AddChildAsFirst with { Name = $"Add {addItemName} at Start" },
+    };
+
+    #region Readings
+
+    private Dictionary<string, MenuItem[]> Readings_MenuItemsPerType = new()
     {
         {
             "reading",
@@ -173,22 +206,11 @@
         }
     };
 
-    private MenuItem[] MenuItemsRoot = new MenuItem[]
+    private MenuItem[] Readings_MenuItemsRoot = new MenuItem[]
     {
         MenuItems.AddChildAsLast with { Name = "Add Reading", IdSecondary = "addReading"},
         MenuItems.AddChildAsFirst with { Name = "Add Reading at Start", IdSecondary = "addReading" },
     };
-
-    private Task<bool> OnAddReading(
-        EditableList.TreeItemData item, int index, MenuItem menuItem)
-    {
-        return UpdateReadings();
-    }
-
-    private Task<bool> OnRemoveReading(EditableList.TreeItemData item, MenuItem menuItem)
-    {
-        return UpdateReadings();
-    }
 
     private Task OnRemovePersonaItem(PersonaItem.RemoveEventArg arg)
     {
@@ -200,13 +222,16 @@
         return UpdateReadings();
     }
 
-    private Task<bool> OnPitchAccentEdit(string text) =>
-        ExecuteAdminViewAction(() => CommandExecutor.Execute(new UpdateWordMeaningCommand(
-            WordMeaningId, PitchAccent: text)));
+    private Task<bool> OnAddItem(
+        EditableList.TreeItemData item, int index, MenuItem menuItem)
+    {
+        return UpdateReadings();
+    }
 
-    private Task<bool> OnKanjiPreferenceChange(bool value) =>
-        ExecuteAdminViewAction(() => CommandExecutor.Execute(new UpdateWordMeaningCommand(
-            WordMeaningId, KanjiWritingPreference: value)));
+    private Task<bool> OnRemoveItem(EditableList.TreeItemData item, MenuItem menuItem)
+    {
+        return UpdateReadings();
+    }
 
     private Task<bool> UpdateReadings()
     {
@@ -221,6 +246,58 @@
             WordMeaningId, Readings: readings)));
     }
 
+    #endregion
+
+    #region Translations
+
+    private Task<bool> OnAddTranslation(EditableList.TreeItemData item, int index, MenuItem menuItem) =>
+        UpdateTranslations();
+
+    private Task<bool> OnRemoveTranslation(EditableList.TreeItemData item, MenuItem menuItem) =>
+        UpdateTranslations();
+
+    private Task<bool> UpdateTranslations() =>
+        ExecuteAdminViewAction(() => CommandExecutor.Execute(new UpdateWordMeaningCommand(
+            WordMeaningId, Translations: _translationsTreeList.TreeItems.Select(i => i.Name).ToArray())));
+
+    #endregion
+
+    #region Part Of Speeches
+
+    private Task<bool> OnAddPartOfSpeech(EditableList.TreeItemData item, int index, MenuItem menuItem) =>
+        UpdatePartOfSpeeches();
+
+    private Task<bool> OnRemovePartOfSpeech(EditableList.TreeItemData item, MenuItem menuItem) =>
+        UpdatePartOfSpeeches();
+
+    private Task<bool> UpdatePartOfSpeeches() =>
+        ExecuteAdminViewAction(() => CommandExecutor.Execute(new UpdateWordMeaningCommand(
+            WordMeaningId, PartOfSpeeches: _partOfSpeechTreeList.TreeItems.Select(i => i.Name).ToArray())));
+
+    #endregion
+
+    #region Word Properties
+
+    private Task<bool> OnAddWordProperty(EditableList.TreeItemData item, int index, MenuItem menuItem) =>
+        UpdateWordProperties();
+
+    private Task<bool> OnRemoveWordProperty(EditableList.TreeItemData item, MenuItem menuItem) =>
+        UpdateWordProperties();
+
+    private Task<bool> UpdateWordProperties() =>
+        ExecuteAdminViewAction(() => CommandExecutor.Execute(new UpdateWordMeaningCommand(
+            WordMeaningId, WordProperties: _propertiesTreeList.TreeItems.Select(i => i.Name).ToArray())));
+
+    #endregion
+
+    private Task<bool> OnPitchAccentEdit(string text) =>
+        ExecuteAdminViewAction(() => CommandExecutor.Execute(new UpdateWordMeaningCommand(
+            WordMeaningId, PitchAccent: text)));
+
+    private Task<bool> OnKanjiPreferenceChange(bool value) =>
+        ExecuteAdminViewAction(() => CommandExecutor.Execute(new UpdateWordMeaningCommand(
+            WordMeaningId, KanjiWritingPreference: value)));
+
     protected override async Task RefreshViewModel()
     {
         var response = await QueryExecutor.Execute<GetWordMeaningQuery, GetWordMeaningQueryResponse>(
@@ -228,9 +305,9 @@
 
         _dto = response.Content;
 
-        _translationsItems = _dto.Translations.SelectOrEmpty(p => new EditableList.TreeItemData(p)).ToList();
-        _partOfSpeechItems = _dto.PartOfSpeeches.SelectOrEmpty(p => new EditableList.TreeItemData(p)).ToList();
-        _propertiesItems = _dto.Properties.SelectOrEmpty(p => new EditableList.TreeItemData(p)).ToList();
+        _translationsItems = _dto.Translations.SelectOrEmpty(p => new EditableList.TreeItemData(p) { Type = "Translation" }).ToList();
+        _partOfSpeechItems = _dto.PartOfSpeeches.SelectOrEmpty(p => new EditableList.TreeItemData(p) { Type = "Part Of Speech" }).ToList();
+        _propertiesItems = _dto.Properties.SelectOrEmpty(p => new EditableList.TreeItemData(p) { Type = "Word Property" }).ToList();
         _readingsItems = _dto.Readings.SelectOrEmpty(r => new EditableList.TreeItemData(
             r.Value,
             r.Personas.SelectOrEmpty((p, i) => new EditableList.TreeItemData(

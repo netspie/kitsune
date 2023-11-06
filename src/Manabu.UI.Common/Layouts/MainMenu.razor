@@ -16,12 +16,14 @@
                 {
                     <MudMenu Label=@button.Name ActivationEvent="@MouseEvent.MouseOver" Style="height: 100%;">
                         <ChildContent>
-                            @foreach (var nButton in button.Buttons)
-                            {
-                                <MudMenuItem OnClick=@(arg => OnMenuItemButtonClick(arg, button)) Href=@nButton.Href>
-                                    <span style="font-family: unica; text-transform: uppercase;">@nButton.Name</span>
-                                </MudMenuItem>
-                            }
+                            <div class="main-menu" style="width: 100%">
+                                @foreach (var nButton in button.Buttons)
+                                {
+                                    <MudMenuItem OnClick=@(arg => OnMenuItemButtonClick(arg, button)) Href=@nButton.Href>
+                                        <span style="font-family: unica; text-transform: uppercase;">@nButton.Name</span>
+                                    </MudMenuItem>
+                                }
+                            </div>
                         </ChildContent>
                     </MudMenu>
                 }

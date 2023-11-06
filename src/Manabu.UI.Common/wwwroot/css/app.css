@@ -37,7 +37,8 @@ body {
     gap: 15px;
 }
 
-.mud-popover-overflow-flip-onopen {
+    
+.mud-popover:has(.mud-list .main-menu) {
     top: 64px !important;
 }
 
