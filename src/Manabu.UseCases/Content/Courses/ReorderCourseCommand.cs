@@ -24,27 +24,19 @@ public class ReorderCourseCommandHandler : ICommandHandler<ReorderCourseCommand,
             return result.Fail();
         }
 
-        var courses = await _courseRepository.GetAllAsync();
+        var courses = (await _courseRepository.GetAll()).Get();
         var seekedCourseId = new CourseId(command.CourseId);
         var seekedCourse = courses.FirstOrDefault(x => x.Id == seekedCourseId);
-        var currentCoursePosition = courses.FirstOrDefault(x => x.Order == command.Index);
+        var currentCourse = courses.FirstOrDefault(x => x.Order == command.Index);
 
-        if (seekedCourse != null && currentCoursePosition != null)
-        {
-            // Swap the order values between seekedCourse and currentCoursePosition
-            var tempOrder = seekedCourse.Order;
-            seekedCourse.Order = currentCoursePosition.Order;
-            currentCoursePosition.Order = tempOrder;
-
-            foreach (var course in courses)
-            {
-                await _courseRepository.Save(course, result);
-            }
-        }
-        else
-        {
+        if (seekedCourse == null || currentCourse == null)
             result.Fail("Invalid course or index provided.");
-        }
+
+        currentCourse!.ReorderCourse(seekedCourse!, command.Index);
+
+        //save multiple we could add the method.
+        await _courseRepository!.Save(seekedCourse!, result);
+        await _courseRepository!.Save(currentCourse, result);
 
         return result;
 
@@ -54,5 +46,5 @@ public class ReorderCourseCommandHandler : ICommandHandler<ReorderCourseCommand,
 public record ReorderCourseCommand(
     string CourseId,
     int Index) : ICommand<Result>;
-    
+
 public class ReorderCourseModuleCommandValidator : AbstractValidator<ReorderCourseCommand> { }

@@ -23,10 +23,12 @@ public class Course : Entity<CourseId>, IAggregateRoot<CourseId>
 
     public Course(
         string name,
-        UserId owner)
+        UserId owner,
+        int index)
     {
         Name = name;
         Owner = owner;
+        Order = index;
     }
 
     public bool AddLesson(LessonId lesson, int moduleIndex, int lessonIndex)
@@ -101,7 +103,13 @@ public class Course : Entity<CourseId>, IAggregateRoot<CourseId>
 
         return true;
     }
-    
+
+    public void ReorderCourse(Course course, int newOrder)
+    {
+        this.Order = course.Order;
+        course.Order = newOrder;
+    }
+
     public bool HasContent() =>
         !Modules.IsNullOrEmpty() ||
         !LessonsRemoved.IsNullOrEmpty() ||

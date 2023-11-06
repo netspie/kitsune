@@ -74,7 +74,7 @@
         if (!await Auth.IsAdmin())
             return false;
 
-        await CommandExecutor.Execute(new CreateCourseCommand(item.Name));
+        await CommandExecutor.Execute(new CreateCourseCommand(item.Name, index));
         await RefreshView();
 
         return true;
