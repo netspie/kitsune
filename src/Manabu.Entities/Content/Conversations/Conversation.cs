@@ -16,7 +16,6 @@ public class Conversation : Entity<ConversationId>, IAggregateRoot<ConversationI
 
     public string Name { get; set; }
     public string Description { get; set; }
-    public bool Learned { get; set; }
 
     public Conversation(
         string name,

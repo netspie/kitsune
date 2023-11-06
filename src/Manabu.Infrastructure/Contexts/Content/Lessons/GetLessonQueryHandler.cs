@@ -14,7 +14,7 @@ using Manabu.UseCases.Content.Lessons;
 using Mediator;
 using MongoDB.Driver;
 
-namespace Manabu.Infrastructure.Contexts.Content.Lessons;
+namespace Manabu.Infrastructure.CQRS.Content.Lessons;
 
 public class GetLessonQueryHandler : IQueryHandler<GetLessonQuery, Result<GetLessonQueryResponse>>
 {
