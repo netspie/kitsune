@@ -71,6 +71,14 @@ public class GetFlashcardListQueryHandler : IQueryHandler<GetFlashcardListQuery,
             phraseIds.AddRange(lesson.Phrases ?? new());
         }
 
+        if (itemType == LearningContainerType.Conversation.ToObjectType())
+        {
+            var conversation = await conversationRepository.Get(new ConversationId(objectId.Value), result);
+
+            var convPhraseIds = conversation.Phrases.SelectOrEmpty(x => x.Phrase).ToArray();
+            phraseIds.AddRange(convPhraseIds);
+        }
+
         return phraseIds.ToArray();
     }
 }

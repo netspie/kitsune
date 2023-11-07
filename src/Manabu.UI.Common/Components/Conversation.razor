@@ -87,6 +87,10 @@
             <MudSwitch @bind-Checked=@IsSpeakersShown.Value Label="Show Speakers" Color="Color.Info" />
         }
     }
+    
+    <GoFlashcardsMenu 
+            RootItemId=@ConversationId
+            RootItemType="conversation" />
 
     @if (_isAdmin)
     {
