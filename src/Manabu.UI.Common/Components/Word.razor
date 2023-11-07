@@ -27,7 +27,7 @@
             }
             @foreach (var prop in _dto.Properties)
             {
-                <MudChip DisableRipple=true Style="color: white; font-family: unica; text-transform: uppercase; height: 20px; font-weight: bold;">@prop</MudChip>
+                <MudChip DisableRipple=true Style="background-color: gray; color: white; font-family: unica; text-transform: uppercase; height: 20px; font-weight: bold;">@prop</MudChip>
             }
         </MudStack>
     </MudStack>
@@ -56,6 +56,8 @@
         MenuItemsPerType=@WordMeanings_MenuItemsPerType
         OnAddItem=@OnAddWordMeaningItem
         OnItemClick=@OnItemClick />
+
+    @*<WordLexeme />*@
 
     @if (_isAdmin)
     {

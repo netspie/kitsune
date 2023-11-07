@@ -29,7 +29,7 @@ public class WordLexeme : Entity<WordLexemeId>, IAggregateRoot<WordLexemeId>
     }
 }
 
-public class WordLexemeId : EntityId { public WordLexemeId(string value) : base(value) { } }
+public class WordLexemeId : EntityId { public WordLexemeId(string value) : base(value) {} }
 
 public record WordInflectionPair(
     string Name,
