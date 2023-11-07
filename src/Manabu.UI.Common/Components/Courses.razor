@@ -1,6 +1,7 @@
 ﻿@using Corelibs.Basic.Reflection;
 @using Manabu.UseCases.Content.Courses;
 @using Microsoft.AspNetCore.Components.Authorization;
+@using Corelibs.Basic.Blocks
 
 @inherits CoreComponent
 
@@ -16,6 +17,7 @@
         TreeItems=@(_coursesListItems.CastToList<EditableList.TreeItemData>())
         OnItemClick=@OnCourseItemClick
         OnAddItem=@OnAddCourseItem
+        OnMoveItem=@OnMoveCourseItem
         OnRemoveItem=@OnRemoveCourseItem
         MenuItemsRoot=@CoursesMenuItemsRoot 
         MenuItemsForAll=@CourseMenuItems 
@@ -72,7 +74,7 @@
         if (!await Auth.IsAdmin())
             return false;
 
-        await CommandExecutor.Execute(new CreateCourseCommand(item.Name));
+        await CommandExecutor.Execute(new CreateCourseCommand(item.Name, index));
         await RefreshView();
 
         return true;
@@ -92,6 +94,11 @@
         return new CourseItemData("", "New Course", "");
     }
 
+    private async Task<bool> OnMoveCourseItem(EditableList.TreeItemData item, int index, MenuItem menuItem) =>
+        await ExecuteAdminViewAction(() => CommandExecutor.Execute(
+            new ReorderCourseCommand(item.Id, index)));
+        
+
     private MenuItem[] CoursesMenuItemsRoot = new MenuItem[]
     {
         MenuItems.AddChildAsLast,
@@ -101,6 +108,8 @@
     private MenuItem[] CourseMenuItems = new MenuItem[]
     {
         MenuItems.AddSibling,
+        MenuItems.MoveDown,
+        MenuItems.MoveUp,
         MenuItems.Remove
     };
 

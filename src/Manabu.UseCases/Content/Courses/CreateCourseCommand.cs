@@ -28,7 +28,7 @@ public class CreateCourseCommandHandler : ICommandHandler<CreateCourseCommand, R
 
         var userId = await _userAccessor.GetUserID<UserId>();
 
-        var course = new Course(command.Name, userId);
+        var course = new Course(command.Name, userId, command.Index);
         await _courseRepository.Save(course, result);
 
         return result;
@@ -36,6 +36,6 @@ public class CreateCourseCommandHandler : ICommandHandler<CreateCourseCommand, R
 }
 
 public record CreateCourseCommand(
-    string Name) : ICommand<Result>;
+    string Name, int Index) : ICommand<Result>;
 
 public class CreateCourseCommandValidator : AbstractValidator<CreateCourseCommand> {}
