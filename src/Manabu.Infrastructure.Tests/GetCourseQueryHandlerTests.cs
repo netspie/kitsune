@@ -35,7 +35,7 @@ namespace Manabu.Infrastructure.Tests
         [Test]
         public async Task Handle_CourseWithModules_ReturnArray()
         {
-            _courseRepositoryMock.Setup(x => x.GetBy(It.IsAny<CourseId>())).ReturnsAsync(new Corelibs.Basic.Blocks.Result<Course>(new Course("Test Course",new Entities.Content.Users.UserId("TestUser"))
+            _courseRepositoryMock.Setup(x => x.GetBy(It.IsAny<CourseId>())).ReturnsAsync(new Corelibs.Basic.Blocks.Result<Course>(new Course("Test Course",new Entities.Content.Users.UserId("TestUser"), 0)
             {
                 Modules = new List<Course.Module>()
             }));
@@ -47,7 +47,7 @@ namespace Manabu.Infrastructure.Tests
         [Test]
         public async Task Handle_CourseWithoutModules_ReturnArray()
         {
-            _courseRepositoryMock.Setup(x => x.GetBy(It.IsAny<CourseId>())).ReturnsAsync(new Corelibs.Basic.Blocks.Result<Course>(new Course("Test Course", new Entities.Content.Users.UserId("TestUser"))
+            _courseRepositoryMock.Setup(x => x.GetBy(It.IsAny<CourseId>())).ReturnsAsync(new Corelibs.Basic.Blocks.Result<Course>(new Course("Test Course", new Entities.Content.Users.UserId("TestUser"), 0)
             {
                 Modules = new List<Course.Module>()
                 {
