@@ -3,7 +3,15 @@
 @using System.Reflection;
 @inject IJSRuntime JSRuntime
 
-<div class="edit-list" style="">
+@if (!_readyToRender)
+{
+    <div style="position: relative; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; top: 0; left: 0;">
+        <MudProgressCircular Color="Color.Error" Size="Size.Large" Indeterminate="true" />
+    </div>
+}
+
+@{ var opacity = _readyToRender ? 1 : 0; }
+<div class="edit-list" style=@($"opacity: {opacity};")>
     <MudStack id=@_itemId Style="gap: 0;">
         @{
             int paddingLeft = NoIndents ? 0 : 0;
@@ -53,7 +61,6 @@
             <MudExpansionPanel @ref=_topMenuPanel Text="Panel One">
                 <MudStack Row=true Style="width:100%; overflow-y: auto;">
                     @TopMenuButtons
-
 
                     <MudTooltip Text="Add Phrase">
                         <MudIconButton Icon="@Icons.Material.Outlined.AddBox" aria-label="delete" />
@@ -212,16 +219,6 @@
 </div>
 
 @code {
-    private readonly string _itemId = Guid.NewGuid().ToString();
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (NoIndents)
-            await JSRuntime.InvokeVoidAsync("EditableList_disableIndents", _itemId);
-
-        await JSRuntime.InvokeVoidAsync("EditableList_removeMenuIconPadding", _itemId);
-    }
-
     public delegate Task<bool> OnAddDelegate(TreeItemData item, int index, MenuItem menuItem);
     public delegate Task OnRemoveDelegate(TreeItemData item, MenuItem menuItem);
     public delegate Task<bool> OnMoveDelegate(TreeItemData item, int index, MenuItem menuItem);
@@ -247,6 +244,8 @@
     [Parameter] public MenuItem[][] MenuItemsPerLevel { get; set; }
     [Parameter] public Dictionary<string, MenuItem[]> MenuItemsPerType { get; set; }
 
+    [Parameter] public EventCallback OnRenderDone { get; set; }
+
     [Parameter] public List<TreeItemData> TreeItems { get; set; }
     private HashSet<TreeItemData> _selectedTreeItems { get; set; }
 
@@ -257,6 +256,7 @@
 
     [Parameter] public bool NumberPrefix { get; set; }
 
+    private readonly string _itemId = Guid.NewGuid().ToString();
     private bool _isAdding;
     private MenuItem _selectedMenuItem;
     private MudExpansionPanel _topMenuPanel;
@@ -267,6 +267,24 @@
     protected override void OnInitialized()
     {
         AssignIndex(TreeItems);
+    }
+
+    private bool _readyToRender;
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (_readyToRender)
+            return;
+
+        if (NoIndents)
+            await JSRuntime.InvokeVoidAsync("EditableList_disableIndents", _itemId);
+
+        await JSRuntime.InvokeVoidAsync("EditableList_removeMenuIconPadding", _itemId);
+
+        if (firstRender)
+        {
+            _readyToRender = true;
+            await InvokeAsync(StateHasChanged);
+        }
     }
 
     private void AssignIndex(IEnumerable<TreeItemData> items)
@@ -449,6 +467,8 @@
         _selectedTreeItems?.Clear();
         return InvokeAsync(StateHasChanged);
     }
+
+    public Task Refresh() => InvokeAsync(StateHasChanged);
 
     public bool IsActionOn => _multiSelection;
 
