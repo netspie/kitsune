@@ -1,12 +1,12 @@
 ﻿using Corelibs.Basic.Blocks;
 using Corelibs.Basic.Collections;
 using Corelibs.MongoDB;
+using Manabu.Entities.Content.WordLexemes;
 using Manabu.Entities.Content.WordMeanings;
 using Manabu.Entities.Content.Words;
 using Manabu.UseCases.Content.Words;
 using Mediator;
 using MongoDB.Driver;
-using static Manabu.Infrastructure.CQRS.Content.Words.GetWordsQueryHandler;
 
 namespace Manabu.Infrastructure.CQRS.Content.Words;
 
@@ -31,7 +31,8 @@ public class GetWordQueryHandler : IQueryHandler<GetWordQuery, Result<GetWordQue
             .Include(x => x.Value)
             .Include(x => x.PartsOfSpeech)
             .Include(x => x.Meanings)
-            .Include(x => x.Properties);
+            .Include(x => x.Properties)
+            .Include(x => x.Lexeme);
 
         var word = await wordsCollection
             .Aggregate()
@@ -42,22 +43,33 @@ public class GetWordQueryHandler : IQueryHandler<GetWordQuery, Result<GetWordQue
                 localField: nameof(Word.Meanings),
                 foreignField: "_id",
                 @as: nameof(LookupResult.MeaningsJoined))
+            .Lookup<WordLexeme, LookupResult>(
+                foreignCollectionName: WordLexeme.DefaultCollectionName,
+                localField: nameof(Word.Lexeme),
+                foreignField: "_id",
+                @as: nameof(LookupResult.LexemeJoined))
             .FirstOrDefaultAsync();
 
         return result.With(new GetWordQueryResponse(
             new WordDetailsDTO(
                 query.WordId,
                 word.Value,
-                word.MeaningsJoined.SelectOrEmpty(m => new WordMeaningDTO(m.Id.Value, m.Translations.AggregateOrDefault((x, y) => $"{x}, {y}"))).ToArray(),
+                word.MeaningsJoined.SelectOrEmpty(m => 
+                    new WordMeaningDTO(m.Id.Value, m.Translations.AggregateOrDefault((x, y) => $"{x}, {y}"))).ToArray(),
                 word.PartsOfSpeech.SelectOrEmpty(m => m.Value).ToArray(),
-                word.Properties.SelectOrEmpty(m => m.Value).ToArray())));
+                word.Properties.SelectOrEmpty(m => m.Value).ToArray(),
+                word.LexemeJoined.FirstOrDefault()?.Inflections.SelectOrEmpty(i => 
+                    new WordInflectionPairDTO(i.Name, 
+                        new WordInflectionFormDTO(i.Informal.Positive.Value, i.Informal.Negative?.Value),
+                        i.Formal is null ? null : new WordInflectionFormDTO(i.Formal.Positive.Value, i.Formal.Negative?.Value))).ToArray())));
     }
 
     public record WordProjection(
         string Value, 
         List<PartOfSpeech> PartsOfSpeech,
         WordMeaningId[] Meanings,
-        WordProperty[]? Properties);
+        WordProperty[]? Properties,
+        WordLexemeId? Lexeme);
 
     public record LookupResult(
         WordId Id, 
@@ -65,5 +77,8 @@ public class GetWordQueryHandler : IQueryHandler<GetWordQuery, Result<GetWordQue
         List<PartOfSpeech> PartsOfSpeech, 
         WordMeaningId[] Meanings,
         WordProperty[] Properties,
-        WordMeaning[] MeaningsJoined);
+        WordLexemeId? Lexeme,
+        WordMeaning[] MeaningsJoined,
+        WordLexeme[]? LexemeJoined = null);
+
 }

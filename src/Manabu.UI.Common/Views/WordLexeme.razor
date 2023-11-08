@@ -1,0 +1,54 @@
+﻿@using Manabu.UseCases.Content.Words;
+
+@if (InflectionPairs.IsNullOrEmpty()) { return; }
+
+<div>
+    <MudText Style="font-size: 20px; text-transform: uppercase; justify-self: start; flex-grow: 1; flex-shrink: 1; font-weight: bold; font-family: unica; padding: 0; margin: 0;">Inflections</MudText>
+    <MudTable Items=@_elements Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info" Elevation=0>
+        <HeaderContent>
+            <MudTh>Inflection</MudTh>
+            <MudTh>Affirmative</MudTh>
+            <MudTh>Negative</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Inflection">@context.Name</MudTd>
+            <MudTd DataLabel="Affirmative">@context.Affirmative</MudTd>
+            <MudTd DataLabel="Negative">@context.Negative</MudTd>
+        </RowTemplate>
+    </MudTable>
+</div>
+
+@code {
+    [Parameter] public string? WordId { get; set; }
+
+    private List<InflectionItem> _elements = new();
+
+    [Parameter] public WordInflectionPairDTO[] InflectionPairs { get; set; } = new[]
+    {
+        new WordInflectionPairDTO("Present",
+            Informal: new WordInflectionFormDTO("出す", "出さない"),
+            Formal: new WordInflectionFormDTO("出します", "出しません")),
+        new WordInflectionPairDTO("Past",
+            Informal: new WordInflectionFormDTO("出した", "出さなかった"),
+            Formal: new WordInflectionFormDTO("出しました", "出しませんでした")),
+        new WordInflectionPairDTO("Te-Form",
+            Informal: new WordInflectionFormDTO("出して", "出さなくて")),
+        new WordInflectionPairDTO("Potential",
+            Informal: new WordInflectionFormDTO("出せる", "出せない")),
+    };
+
+    protected override void OnInitialized()
+    {
+        if (InflectionPairs.IsNullOrEmpty())
+            return;
+
+        foreach (var pair in InflectionPairs)
+        {
+            _elements.Add(new(pair.Name, pair.Informal.Positive, pair.Informal.Negative));
+            if (pair.Formal is not null)
+                _elements.Add(new($"{pair.Name}, Formal", pair.Formal.Positive, pair.Formal.Negative));
+        }
+    }
+
+    public record InflectionItem(string Name, string Affirmative, string? Negative);
+}
