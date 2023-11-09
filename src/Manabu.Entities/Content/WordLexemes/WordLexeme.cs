@@ -12,27 +12,21 @@ public class WordLexeme : Entity<WordLexemeId>, IAggregateRoot<WordLexemeId>
     public List<WordInflectionPair> Inflections { get; private set; }
 
     public WordLexeme(
-        PartOfSpeech partOfSpeech, string lemma)
-    {
-        PartOfSpeech = partOfSpeech;
-        Lemma = lemma;
-    }
-
-    public WordLexeme(
         WordLexemeId id,
-        uint version,
         PartOfSpeech partOfSpeech,
-        string lemma) : base(id, version)
+        string lemma,
+        List<WordInflectionPair> inflections) : base(id)
     {
         PartOfSpeech = partOfSpeech;
         Lemma = lemma;
+        Inflections = inflections;
     }
 }
 
 public class WordLexemeId : EntityId { public WordLexemeId(string value) : base(value) {} }
 
 public record WordInflectionPair(
-    string Name,
+    InflectionType Type,
     WordInflectionForm Informal,
     WordInflectionForm? Formal = null);
 
@@ -42,5 +36,4 @@ public record WordInflectionForm(
 
 public record WordInflection(
     string Value,
-    string Description,
-    string? Translation);
+    string? Translation = null);

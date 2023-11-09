@@ -1,11 +1,23 @@
 ﻿using Corelibs.Basic.Collections;
-using Corelibs.MongoDB;
 using Manabu.Entities.Content.WordMeanings;
 using Manabu.Entities.Content.Words;
 using MongoDB.Driver;
 using Newtonsoft.Json;
 using System.Text.RegularExpressions;
 using WanikaniTest.Models;
+using MongoDB.Bson.Serialization;
+using Kitsune.WordConverter;
+using Manabu.Entities.Content.WordLexemes;
+
+BsonClassMap.RegisterClassMap<VerbTransitivity>();
+BsonClassMap.RegisterClassMap<VerbConjugationType>();
+BsonClassMap.RegisterClassMap<AdjectiveConjugationType>();
+BsonClassMap.RegisterClassMap<NounType>();
+
+BsonClassMap.RegisterClassMap<Age>();
+BsonClassMap.RegisterClassMap<Gender>();
+BsonClassMap.RegisterClassMap<Dialect>();
+BsonClassMap.RegisterClassMap<Formality>();
 
 string jsonFilePath = "../../../words.json";
 string jsonString = File.ReadAllText(jsonFilePath);
@@ -21,6 +33,67 @@ var wordsByPartOfSpeeches = new List<WordCluster>();
 foreach (var partOfSpeech in partOfSpeechesNames)
     wordsByPartOfSpeeches.Add(new(partOfSpeech, words.Where(w => w.Data.Parts_Of_Speech.Contains(partOfSpeech)).ToArray()));
 
+var conn = "mongodb://localhost:27017/";
+var client = new MongoClient(conn);
+var database = client.GetDatabase("Kitsune_dev");
+var wordCollection = database.GetCollection<Word>(Word.DefaultCollectionName);
+
+var wordsFromDb = await wordCollection.Aggregate().ToListAsync();
+var godanVerbs = wordsFromDb.Where(w => w.PartsOfSpeech is not null && w.Properties is not null && w.PartsOfSpeech.Contains(PartOfSpeech.Verb) && w.Properties.Contains(VerbConjugationType.Godan)).ToArray();
+var ichidanVerbs = wordsFromDb.Where(w => w.PartsOfSpeech is not null && w.Properties is not null && w.PartsOfSpeech.Contains(PartOfSpeech.Verb) && w.Properties.Contains(VerbConjugationType.Ichidan)).ToArray();
+return;
+
+int i = 0;
+foreach (var verb in godanVerbs)
+{
+    var inflections = Conjugator.ConjugateVerb(verb.Value, VerbConjugationType.Godan);
+    if (inflections is null)
+        continue;
+
+    var wordLexemeIdStr = IdCreator.Create();
+    var wordLexeme = new WordLexeme(new WordLexemeId(wordLexemeIdStr), verb.PartsOfSpeech.FirstOrDefault(), verb.Value, inflections);
+    
+    verb.Lexeme = wordLexeme.Id;
+    var wordCol = database.GetCollection<Word>(Word.DefaultCollectionName);
+    await wordCol.ReplaceOneAsync(Builders<Word>.Filter.Eq(x => x.Id, verb.Id), verb);
+
+    var wordLexemeCol = database.GetCollection<WordLexeme>(WordLexeme.DefaultCollectionName);
+    await wordLexemeCol.InsertOneAsync(wordLexeme);
+    i++;
+    Console.WriteLine($"{i}) {verb.Value}");
+}
+
+foreach (var verb in ichidanVerbs)
+{
+    var inflections = Conjugator.ConjugateVerb(verb.Value, VerbConjugationType.Ichidan);
+    if (inflections is null)
+        continue;
+
+    var wordLexemeIdStr = IdCreator.Create();
+    var wordLexeme = new WordLexeme(new WordLexemeId(wordLexemeIdStr), verb.PartsOfSpeech.FirstOrDefault(), verb.Value, inflections);
+
+    verb.Lexeme = wordLexeme.Id;
+    var wordCol = database.GetCollection<Word>(Word.DefaultCollectionName);
+    await wordCol.ReplaceOneAsync(Builders<Word>.Filter.Eq(x => x.Id, verb.Id), verb);
+
+    var wordLexemeCol = database.GetCollection<WordLexeme>(WordLexeme.DefaultCollectionName);
+    await wordLexemeCol.InsertOneAsync(wordLexeme);
+    // ...
+    i++;
+    Console.WriteLine($"{i}) {verb.Value}");
+}
+
+return;
+
+//var wordEnts = await wordCollection.Aggregate().ToListAsync();
+//var verbs = wordEnts
+//    .Where(w => 
+//        (!w.PartsOfSpeech.IsNullOrEmpty() && w.PartsOfSpeech.Contains(PartOfSpeech.Verb)) && 
+//        (!w.Properties.IsNullOrEmpty() && !w.Properties.Contains(VerbConjugationType.Suru)))
+//    .Select(w => w.Value)
+//    .ToArray();
+
+//File.WriteAllLines("../../../verbs.txt", verbs);
 // --- VERBS ---
 //var godanVerbs = wordsByPartOfSpeeches.FirstOrDefault(p => p.Type == "godan verb");
 //var transitiveVerbs = wordsByPartOfSpeeches.FirstOrDefault(p => p.Type == "transitive verb");
@@ -101,11 +174,8 @@ var adjectives = adjectivesAll.Where(i =>
 
 //await Store(adjectives);
 
-Console.WriteLine("End");
-
 async static Task Store(IEnumerable<VocabularyItemDTO> words)
 {
-    var mongoConnection = new MongoConnection("Kitsune_dev");
     var conn = "mongodb://localhost:27017/";
 
     var client = new MongoClient(conn);

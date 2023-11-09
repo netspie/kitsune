@@ -13,7 +13,7 @@ public class Word : Entity<WordId>, IAggregateRoot<WordId>
     public List<PartOfSpeech>? PartsOfSpeech { get; set; }
     public List<WordMeaningId>? Meanings { get; private set; }
     public List<WordProperty>? Properties { get; set; }
-    public WordLexemeId? Lexeme { get; private set; }
+    public WordLexemeId? Lexeme { get; set; }
 
     public Word(
         WordId id,
@@ -89,6 +89,30 @@ public record InflectionType(string Value)
 {
     public static readonly InflectionType Present = new("present");
     public static readonly InflectionType Past = new("past");
+
+    public static readonly InflectionType Te = new("te");
+
+    public static readonly InflectionType Progressive = new("progressive");
+    public static readonly InflectionType ProgressiveColloquial = new("progressive-colloquial");
+
+    public static readonly InflectionType ProgressivePast = new("progressive-past");
+    public static readonly InflectionType ProgressivePastColloquial = new("progressive-past-colloquial");
+
+    public static readonly InflectionType Potential = new("potential");
+    public static readonly InflectionType Passive = new("passive");
+
+    public static readonly InflectionType Causative = new("causative");
+    public static readonly InflectionType CausativePassive = new("causative-passive");
+
+    public static readonly InflectionType Imperative = new("imperative");
+
+    public static readonly InflectionType Violitional = new("violitional");
+    
+    public static readonly InflectionType ConditionalReba = new("conditional-reba");
+    public static readonly InflectionType ConditionalTara = new("conditional-tara");
+
+    public static readonly InflectionType Desire = new("desire");
+    public static readonly InflectionType DesirePast = new("desire-past");
 }
 
 public record PersonaProperty(string Value)

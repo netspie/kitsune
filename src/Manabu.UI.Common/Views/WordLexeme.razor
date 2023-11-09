@@ -11,7 +11,7 @@
             <MudTh>Negative</MudTh>
         </HeaderContent>
         <RowTemplate>
-            <MudTd DataLabel="Inflection">@context.Name</MudTd>
+            <MudTd DataLabel="Inflection">@context.Name.ToUpperFirstLetter()</MudTd>
             <MudTd DataLabel="Affirmative">@context.Affirmative</MudTd>
             <MudTd DataLabel="Negative">@context.Negative</MudTd>
         </RowTemplate>

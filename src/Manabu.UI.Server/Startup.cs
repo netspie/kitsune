@@ -82,15 +82,7 @@ public static class Startup
 
         services.AddRepositories(environment, entitiesAssembly, mongoConnectionString, databaseName);
         await CreateIndexes(mongoConnectionString, databaseName);
-
-        BsonClassMap.RegisterClassMap<VerbTransitivity>();
-        BsonClassMap.RegisterClassMap<VerbConjugationType>();
-        BsonClassMap.RegisterClassMap<AdjectiveConjugationType>();
-
-        BsonClassMap.RegisterClassMap<Age>();
-        BsonClassMap.RegisterClassMap<Gender>();
-        BsonClassMap.RegisterClassMap<Dialect>();
-        BsonClassMap.RegisterClassMap<Formality>();
+        RegisterClassMaps();
 
         services.AddSingleton<IMediaStorage<Audio>>(sp => new LocalMediaStorage<Audio>(
             $"/media/audio", $"/media/audio"));
@@ -124,6 +116,20 @@ public static class Startup
         // ------ PROCESSORS - LEARNING ENTITIES TO REHEARSE ITEMS ------
 
         AddRehearseProcessors(services, entitiesAssembly);
+    }
+
+    private static void RegisterClassMaps()
+    {
+        BsonClassMap.RegisterClassMap<VerbTransitivity>();
+        BsonClassMap.RegisterClassMap<VerbConjugationType>();
+        BsonClassMap.RegisterClassMap<AdjectiveConjugationType>();
+        BsonClassMap.RegisterClassMap<NounType>();
+        BsonClassMap.RegisterClassMap<InflectionType>();
+
+        BsonClassMap.RegisterClassMap<Age>();
+        BsonClassMap.RegisterClassMap<Gender>();
+        BsonClassMap.RegisterClassMap<Dialect>();
+        BsonClassMap.RegisterClassMap<Formality>();
     }
 
     public static void AddRepositories(

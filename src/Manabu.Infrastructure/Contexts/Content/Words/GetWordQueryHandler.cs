@@ -59,7 +59,7 @@ public class GetWordQueryHandler : IQueryHandler<GetWordQuery, Result<GetWordQue
                 word.PartsOfSpeech.SelectOrEmpty(m => m.Value).ToArray(),
                 word.Properties.SelectOrEmpty(m => m.Value).ToArray(),
                 word.LexemeJoined.FirstOrDefault()?.Inflections.SelectOrEmpty(i => 
-                    new WordInflectionPairDTO(i.Name, 
+                    new WordInflectionPairDTO(i.Type.Value, 
                         new WordInflectionFormDTO(i.Informal.Positive.Value, i.Informal.Negative?.Value),
                         i.Formal is null ? null : new WordInflectionFormDTO(i.Formal.Positive.Value, i.Formal.Negative?.Value))).ToArray())));
     }
