@@ -37,6 +37,7 @@ var conn = "mongodb://localhost:27017/";
 var client = new MongoClient(conn);
 var database = client.GetDatabase("Kitsune_dev");
 var wordCollection = database.GetCollection<Word>(Word.DefaultCollectionName);
+return;
 
 var wordsFromDb = await wordCollection.Aggregate().ToListAsync();
 var iAdjectives = wordsFromDb.Where(w => 
