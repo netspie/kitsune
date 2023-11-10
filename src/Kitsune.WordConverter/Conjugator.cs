@@ -174,7 +174,7 @@ public static class Conjugator
               Positive: new(verb.ToGodanEnd(GodanEnding_E_ConvertionChars) + "ば"),
               Negative: new(verb.ToGodanEnd(GodanEnding_A_ConvertionChars) + "なければ"))));
 
-        list.Add(new(InflectionType.ConditionalReba,
+        list.Add(new(InflectionType.ConditionalTara,
           Informal: new(
               Positive: new(verb.ToGodanEnd(GodanEnding_Ta_ConvertionChars) + "ら"),
               Negative: new(verb.ToGodanEnd(GodanEnding_A_ConvertionChars) + "なかったら"))));

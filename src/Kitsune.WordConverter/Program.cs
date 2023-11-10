@@ -19,19 +19,19 @@ BsonClassMap.RegisterClassMap<Gender>();
 BsonClassMap.RegisterClassMap<Dialect>();
 BsonClassMap.RegisterClassMap<Formality>();
 
-string jsonFilePath = "../../../words.json";
-string jsonString = File.ReadAllText(jsonFilePath);
+//string jsonFilePath = "../../../words.json";
+//string jsonString = File.ReadAllText(jsonFilePath);
 
-var words = JsonConvert.DeserializeObject<VocabularyItemDTO[]>(jsonString);
+//var words = JsonConvert.DeserializeObject<VocabularyItemDTO[]>(jsonString);
 
-var Auxiliary_MeaningsMoreThan0 = words.Where(w => w.Data.Auxiliary_Meanings.Length > 0).ToList();
-var multipleMeaningAndReadingWords = words.Where(w => w.Data.Readings.Length > 1).ToList();
-var wordsGroupedByMeaningsLength = words.GroupBy(w => w.Data.Meanings.Length).OrderBy(w => w.Key).ToList();
+//var Auxiliary_MeaningsMoreThan0 = words.Where(w => w.Data.Auxiliary_Meanings.Length > 0).ToList();
+//var multipleMeaningAndReadingWords = words.Where(w => w.Data.Readings.Length > 1).ToList();
+//var wordsGroupedByMeaningsLength = words.GroupBy(w => w.Data.Meanings.Length).OrderBy(w => w.Key).ToList();
 
-var partOfSpeechesNames = File.ReadAllLines("../../../partOfSpeeches.txt");
-var wordsByPartOfSpeeches = new List<WordCluster>();
-foreach (var partOfSpeech in partOfSpeechesNames)
-    wordsByPartOfSpeeches.Add(new(partOfSpeech, words.Where(w => w.Data.Parts_Of_Speech.Contains(partOfSpeech)).ToArray()));
+//var partOfSpeechesNames = File.ReadAllLines("../../../partOfSpeeches.txt");
+//var wordsByPartOfSpeeches = new List<WordCluster>();
+//foreach (var partOfSpeech in partOfSpeechesNames)
+//    wordsByPartOfSpeeches.Add(new(partOfSpeech, words.Where(w => w.Data.Parts_Of_Speech.Contains(partOfSpeech)).ToArray()));
 
 var conn = "mongodb://localhost:27017/";
 var client = new MongoClient(conn);
@@ -144,33 +144,33 @@ return;
 
 //await Store(nouns);
 
-var posDict = new Dictionary<string, List<VocabularyItemDataDTO>>();
-var adjectivesI = wordsByPartOfSpeeches.FirstOrDefault(p => p.Type == "い adjective")?.Items;
-var adjectivesNa = wordsByPartOfSpeeches.FirstOrDefault(p => p.Type == "な adjective")?.Items;
-var adjectivesNo = wordsByPartOfSpeeches.FirstOrDefault(p => p.Type == "の adjective")?.Items;
-var adjectivesR = wordsByPartOfSpeeches.FirstOrDefault(p => p.Type == "adjective")?.Items;
+//var posDict = new Dictionary<string, List<VocabularyItemDataDTO>>();
+//var adjectivesI = wordsByPartOfSpeeches.FirstOrDefault(p => p.Type == "い adjective")?.Items;
+//var adjectivesNa = wordsByPartOfSpeeches.FirstOrDefault(p => p.Type == "な adjective")?.Items;
+//var adjectivesNo = wordsByPartOfSpeeches.FirstOrDefault(p => p.Type == "の adjective")?.Items;
+//var adjectivesR = wordsByPartOfSpeeches.FirstOrDefault(p => p.Type == "adjective")?.Items;
 
-var adjectivesAll = adjectivesI.Concat(adjectivesNa.Concat(adjectivesNo.Concat(adjectivesR))).ToArray();
+//var adjectivesAll = adjectivesI.Concat(adjectivesNa.Concat(adjectivesNo.Concat(adjectivesR))).ToArray();
 
-var adjectives = adjectivesAll.Where(i =>
-{
-    foreach (var p in i.Data.Parts_Of_Speech)
-        if (p != "adjective")
-            if (!posDict.TryAdd(p, new() { i.Data }))
-                posDict[p].Add(i.Data);
+//var adjectives = adjectivesAll.Where(i =>
+//{
+//    foreach (var p in i.Data.Parts_Of_Speech)
+//        if (p != "adjective")
+//            if (!posDict.TryAdd(p, new() { i.Data }))
+//                posDict[p].Add(i.Data);
 
-    var ps = i.Data.Parts_Of_Speech;
+//    var ps = i.Data.Parts_Of_Speech;
 
-    if (ps.Contains("noun"))
-        return false;
+//    if (ps.Contains("noun"))
+//        return false;
 
-    if (!ps.Contains("な adjective") &&
-        !ps.Contains("い adjective"))
-        return false;
+//    if (!ps.Contains("な adjective") &&
+//        !ps.Contains("い adjective"))
+//        return false;
 
-    return true;
+//    return true;
 
-}).ToArray();
+//}).ToArray();
 
 //await Store(adjectives);
 
