@@ -39,11 +39,38 @@ var database = client.GetDatabase("Kitsune_dev");
 var wordCollection = database.GetCollection<Word>(Word.DefaultCollectionName);
 
 var wordsFromDb = await wordCollection.Aggregate().ToListAsync();
+var iAdjectives = wordsFromDb.Where(w => 
+    w.PartsOfSpeech is not null && 
+    w.Properties is not null && 
+    w.PartsOfSpeech.Contains(PartOfSpeech.Adjective) && 
+    w.Properties.Contains(AdjectiveConjugationType.I)).ToArray();
+
+int i = 0;
+foreach (var adj in iAdjectives)
+{
+    var inflections = Conjugator.ConjugateIAdjective(adj.Value);
+    if (inflections is null)
+        continue;
+
+    var wordLexemeIdStr = IdCreator.Create();
+    var wordLexeme = new WordLexeme(new WordLexemeId(wordLexemeIdStr), adj.PartsOfSpeech.FirstOrDefault(), adj.Value, inflections);
+
+    adj.Lexeme = wordLexeme.Id;
+    var wordCol = database.GetCollection<Word>(Word.DefaultCollectionName);
+    await wordCol.ReplaceOneAsync(Builders<Word>.Filter.Eq(x => x.Id, adj.Id), adj);
+
+    var wordLexemeCol = database.GetCollection<WordLexeme>(WordLexeme.DefaultCollectionName);
+    await wordLexemeCol.InsertOneAsync(wordLexeme);
+    i++;
+    Console.WriteLine($"{i}) {adj.Value}");
+}
+
+return;
+
 var godanVerbs = wordsFromDb.Where(w => w.PartsOfSpeech is not null && w.Properties is not null && w.PartsOfSpeech.Contains(PartOfSpeech.Verb) && w.Properties.Contains(VerbConjugationType.Godan)).ToArray();
 var ichidanVerbs = wordsFromDb.Where(w => w.PartsOfSpeech is not null && w.Properties is not null && w.PartsOfSpeech.Contains(PartOfSpeech.Verb) && w.Properties.Contains(VerbConjugationType.Ichidan)).ToArray();
 return;
 
-int i = 0;
 foreach (var verb in godanVerbs)
 {
     var inflections = Conjugator.ConjugateVerb(verb.Value, VerbConjugationType.Godan);

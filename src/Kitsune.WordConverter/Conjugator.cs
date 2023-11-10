@@ -77,6 +77,23 @@ public static class Conjugator
         { 'つ', "とう" },
     };
 
+    public static List<WordInflectionPair> ConjugateIAdjective(string adjective)
+    {
+        var list = new List<WordInflectionPair>();
+
+        list.Add(new(InflectionType.Present,
+            Informal: new(
+                Positive: new(adjective),
+                Negative: new(adjective.TrimEnd('い') + "くない"))));
+
+        list.Add(new(InflectionType.Past,
+            Informal: new(
+                Positive: new(adjective.TrimEnd('い') + "かった"),
+                Negative: new(adjective.TrimEnd('い') + "くなかった"))));
+
+        return list;
+    }
+
     public static List<WordInflectionPair> ConjugateVerb(string verb, VerbConjugationType verbType)
     {
         if (verbType == VerbConjugationType.Godan)
