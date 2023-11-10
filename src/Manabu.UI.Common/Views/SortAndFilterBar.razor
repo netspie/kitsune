@@ -1,11 +1,17 @@
-﻿<div>
-    <MudSelect @ref=_sortSelect T="string" Label="Sort By" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter" FullWidth=false ValueChanged=@OnSortValueChangedInternal
+﻿
+<div class="d-flex">
+    <MudSelect 
+        @ref=_sortSelect T="string" Label="Sort By" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter" FullWidth=false ValueChanged=@OnSortValueChangedInternal
         Style="width: 200px; min-width: 200px; max-width: 200px;">
         @foreach (var value in _sortValues)
         {
             <MudSelectItem T="string" Value="@value" />
         }
     </MudSelect>
+
+    <MudTextField 
+        T="string" Placeholder="Search" Adornment="Adornment.Start" Immediate="true" ValueChanged=@OnSearchValueChangedInternal 
+        AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" />
 
     @*<MudSelect @ref=_filterSelect T="string" Label="Filter By" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter" FullWidth=false
         Style="width: fit-content;">
@@ -27,6 +33,9 @@
     private string[] _filterValues = new[] { Nothing };
     private MudSelect<string>? _filterSelect;
     [Parameter] public EventCallback<string> OnSortValueChanged { get; set; }
+
+    private string _searchString;
+    [Parameter] public EventCallback<string> OnSearchValueChanged { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -50,5 +59,10 @@
     {
         value = value == Nothing ? null : value;
         await OnSortValueChanged.InvokeAsync(value);
+    }
+
+    private async Task OnSearchValueChangedInternal(string value)
+    {
+        await OnSearchValueChanged.InvokeAsync(value);
     }
 }

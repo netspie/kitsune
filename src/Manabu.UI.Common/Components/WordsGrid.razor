@@ -6,11 +6,12 @@
 
 <div>
     <SortAndFilterBar SortProperties=@SortProperties OnSortValueChanged=@OnSortValueChanged />
-    <MudDataGrid @ref=_mudDataGrid Items="@_elements" Filterable="true" Bordered=false Hover=true RowClick=@OnWordClick T="WordItem" Outlined=false RowsPerPage=@Limit Elevation=0>
+    <MudDataGrid @ref=_mudDataGrid Items="@_elements" Filterable="true" Bordered=false Hover=true RowClick=@OnWordClick T="WordItem" Outlined=false RowsPerPage=@Limit Elevation=0
+        >
         <Columns>
             @if ((Columns & Column.Word) != 0)
             {
-               <PropertyColumn Property="x => x.Word" Filterable="false" ValueChanged=@(EventCallback.Factory.Create(this, (WordItem item) => OnValueChanged(item))) /> 
+               <PropertyColumn Property="x => x.Word" ValueChanged=@(EventCallback.Factory.Create(this, (WordItem item) => OnValueChanged(item))) /> 
             }
             @if ((Columns & Column.Reading) != 0)
             {
@@ -55,6 +56,8 @@
 
     private WordsDTO? _dto;
 
+    private string? _searchTextArg;
+
     private RangeArg _rangeArg = new(0, Limit);
     private SortArg[]? _sortArgs = null;
     private FilterArg[]? _filterArgs = null;
@@ -93,6 +96,11 @@
         _filterArgs = filterArgs.ToArray();
     }
 
+    protected override Task OnAfterRenderAsyncImpl(bool firstRender)
+    {
+        return base.OnAfterRenderAsyncImpl(firstRender);
+    }
+
     private async Task OnWordClick(DataGridRowClickEventArgs<WordItem> args)
     {
         Navigation.NavigateTo($"words/{args.Item.Id}");
@@ -129,7 +137,13 @@
 
     private async Task OnSortValueChanged(string value)
     {
-        _sortArgs = value is null or [] ? null : new[] { new SortArg(value) };
+        _sortArgs = value.IsNullOrEmpty() ? null : new[] { new SortArg(value) };
+        await RefreshViewModel();
+    }
+
+    private async Task OnSearchValueChanged(string value)
+    {
+        _searchTextArg = value;
         await RefreshViewModel();
     }
 
@@ -143,8 +157,33 @@
         _elements = _dto.Words.Select(w => new WordItem(w.Id, w.Value, w.Meaning, w.PartOfSpeech, w.Reading)).ToList();
     }
 
+    List<IFilterDefinition<WordItem>> FilterDefinitions = new() { new TestFilterDefinition() };
+
+    class TestFilterDefinition : IFilterDefinition<WordItem>
+    {
+        int i = 0;
+        public Guid Id { get; set; }
+
+        public Column<WordItem>? Column { get; set; }
+
+        public string? Title { get; set; }
+
+        public string? Operator { get; set; }
+
+        public object? Value { get; set; }
+
+        public Func<WordItem, bool> GenerateFilterFunction(FilterOptions? filterOptions = null) =>
+            item =>
+            {
+                Console.WriteLine($"Filter - {i++}");
+                return true;
+            };
+
+        public IFilterDefinition<WordItem> Clone() { return null; }
+    }
+
     public record WordItem(
-        string Id, 
+        string Id,
         string? Word = null, 
         string? Meaning = null,
         string? PartOfSpeech = null,

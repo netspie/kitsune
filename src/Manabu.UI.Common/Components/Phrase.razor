@@ -80,8 +80,12 @@
             Name="Words"
             IsReadonly=@(!IsEdit)
             TreeItems=@_wordTreeItems
+            MenuItemsRoot=@WordsMenuRootItems
+            MenuItemsForAll=@WordsMenuItems
             NoIndents=true />
     }
+
+    @*<SearchView />*@
 
     @if (_isAdmin)
     {
@@ -93,10 +97,10 @@
 @code {
     [Parameter] public string PhraseId { get; set; }
 
-    private List<EditableList.TreeItemData> _wordTreeItems;
-    private List<EditableList.TreeItemData> _translationTreeItems;
-    private List<EditableList.TreeItemData> _contextTreeItems;
-    private List<EditableList.TreeItemData> _audioTreeItems;
+    private List<EditableList.TreeItemData>? _wordTreeItems;
+    private List<EditableList.TreeItemData>? _translationTreeItems;
+    private List<EditableList.TreeItemData>? _contextTreeItems;
+    private List<EditableList.TreeItemData>? _audioTreeItems;
 
     private List<BreadcrumbItem> _breadcrumbs = new();
 
@@ -208,6 +212,32 @@
 
     private MenuItem[] AudioMenuItems = new MenuItem[]
     {
+        MenuItems.Remove,
+    };
+
+    #endregion
+
+    #region Words
+
+    private async Task OnRemoveWord(EditableList.TreeItemData item, MenuItem menuItem)
+    {
+        var result = await AudioStorage.Delete(item.Name);
+        if (!result.IsSuccess)
+            return;
+
+        //await ExecuteAdminViewAction(() => CommandExecutor.Execute(
+            //new RemovePhraseAudioCommand(_phrase.Id, item.Id)));
+    }
+
+    private MenuItem[] WordsMenuRootItems = new MenuItem[]
+    {
+        MenuItems.AddChildAsFirst with { Name = "Add Word as First" },
+        MenuItems.AddChildAsLast with { Name = "Add Word" },
+    };
+
+    private MenuItem[] WordsMenuItems = new MenuItem[]
+    {
+        MenuItems.AddSibling with { Name = "Add Word" },
         MenuItems.Remove,
     };
 
