@@ -14,7 +14,8 @@ public record LessonDetailsDTO(
     string Description,
     bool Learned,
     CourseDTO[] Courses,
-    ConversationDTO[] Conversations);
+    ConversationDTO[]? Conversations = null,
+    ConversationDTO[]? ConversationsRemoved = null);
 
 public record ConversationDTO(
     string Id,

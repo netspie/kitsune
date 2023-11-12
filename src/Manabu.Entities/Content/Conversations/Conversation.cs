@@ -34,6 +34,10 @@ public class Conversation : Entity<ConversationId>, IAggregateRoot<ConversationI
         Phrases ??= new();
         Phrases.InsertClamped(new("", "", phrase), index);
     }
+    
+    public bool RemoveFromLesson(LessonId lesson) =>
+        Lessons is null ? false :
+        Lessons.Count <= 1 ? true : Lessons.Remove(lesson);
 
     public bool ChangeSpeaker(string speaker, PhraseId phrase, int index = -1)
     {
