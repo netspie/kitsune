@@ -24,23 +24,40 @@ public class RemoveConversationCommandHandler : ICommandHandler<RemoveConversati
 
     public async ValueTask<Result> Handle(RemoveConversationCommand command, CancellationToken cancellationToken)
     {
+        // var result = Result.Success();
+        //
+        // var lesson = await _lessonRepository.Get(new LessonId(command.LessonId), result);
+        // var conversation = await _conversationRepository.Get(new ConversationId(command.ConversationId), result);
+        //
+        //
+        // if (!result.ValidateSuccessAndValues())
+        //     return result.Fail();
+        //
+        // if (!lesson.RemoveConversation(conversation.Id))
+        //     return result.Fail();
+        //
+        // if (!conversation.RemoveFromLesson(lesson.Id))
+        //     return result.Fail();
+        //
+        // await _lessonRepository.Save(lesson, result);
+        // await _conversationRepository.Save(conversation, result);
+        //
+        // return result;
+        
         var result = Result.Success();
         
-        var lesson = await _lessonRepository.Get(new LessonId(command.LessonId), result);
         var conversation = await _conversationRepository.Get(new ConversationId(command.ConversationId), result);
-        
-        
         if (!result.ValidateSuccessAndValues())
             return result.Fail();
 
-        if (!lesson.RemoveConversation(conversation.Id))
-            return result.Fail();
+        if (conversation.HasContent())
+        {
+            conversation.IsArchived = true;
+            await _conversationRepository.Save(conversation, result);
+            return result;
+        }
 
-        if (!conversation.RemoveFromLesson(lesson.Id))
-            return result.Fail();
-
-        await _lessonRepository.Save(lesson, result);
-        await _conversationRepository.Save(conversation, result);
+        result += await _conversationRepository.Delete(conversation.Id);
 
         return result;
     }

@@ -52,6 +52,8 @@ public class Lesson : Entity<LessonId>, IAggregateRoot<LessonId>
         if (Conversations.Remove(conversation));
             return true;
     }
+    
+    
 
     public bool RemoveFromCourse(CourseId course) =>
         Courses is null ? false :

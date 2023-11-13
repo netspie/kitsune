@@ -13,7 +13,7 @@ public class Conversation : Entity<ConversationId>, IAggregateRoot<ConversationI
     public UserId Owner { get; private set; }
     public List<PhraseData> Phrases { get; private set; }
     public List<LessonId> Lessons { get; private set; }
-
+    public bool IsArchived { get; set; }
     public string Name { get; set; }
     public string Description { get; set; }
 
@@ -85,6 +85,10 @@ public class Conversation : Entity<ConversationId>, IAggregateRoot<ConversationI
 
         return true;
     }
+
+    public bool HasContent() =>
+        !Phrases.IsNullOrEmpty();
+      
 
     public record PhraseData(string Speaker, string SpeakerTranslation, PhraseId Phrase);
 }
