@@ -19,8 +19,10 @@ public class RemoveCourseCommandHandler : ICommandHandler<RemoveCourseCommand, R
     public async ValueTask<Result> Handle(RemoveCourseCommand command, CancellationToken ct)
     {
         var result = Result.Success();
+        var courses = (await _courseRepository.GetAll()).Get();
+        var course = courses.First(x => x.Id == new CourseId(command.CourseId));
+        var coursesToReorder = courses.Where(x => x.Order > course.Order);
 
-        var course = await _courseRepository.Get(new CourseId(command.CourseId), result);
         if (!result.ValidateSuccessAndValues())
             return result.Fail();
 
@@ -30,9 +32,14 @@ public class RemoveCourseCommandHandler : ICommandHandler<RemoveCourseCommand, R
             await _courseRepository.Save(course, result);
             return result;
         }
+        
+        foreach (var item in coursesToReorder)
+        {
+            item.Order--;
+            await _courseRepository.Save(item, result);
+        }
 
         result += await _courseRepository.Delete(course.Id);
-
         return result;
     }
 }

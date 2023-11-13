@@ -25,10 +25,17 @@ public class CreateCourseCommandHandler : ICommandHandler<CreateCourseCommand, R
     public async ValueTask<Result> Handle(CreateCourseCommand command, CancellationToken ct)
     {
         var result = Result.Success();
-
         var userId = await _userAccessor.GetUserID<UserId>();
-
+        var courses = (await _courseRepository.GetAll()).Get();
+        var coursesToReindex = courses.Where(x=>x.Order>= command.Index).ToList();
         var course = new Course(command.Name, userId, command.Index);
+
+        foreach (var item in coursesToReindex)
+        {
+            item.Order++;
+            await _courseRepository.Save(item, result);
+        }
+
         await _courseRepository.Save(course, result);
 
         return result;
