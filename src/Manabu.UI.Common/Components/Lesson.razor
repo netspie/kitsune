@@ -69,6 +69,7 @@
         TreeItems=@_conversationTreeItems 
         OnItemClick=@OnItemClick
         OnAddItem=@OnAddItem
+        OnRemoveItem=@OnRemoveFromLessonItems
         MenuItemsRoot=@ConvMenuItemsRoot 
         MenuItemsForAll=@ConvMenuItems 
         NumberPrefix=true />
@@ -77,6 +78,16 @@
         RootItemId=@LessonId
         RootItemType="lesson" />
 
+    
+     @if (IsEdit)
+        {
+            <MudPaper Class="py-4" Elevation="0">
+                <EditableList Name="Conversations Removed"
+                              TreeItems=@_conversationsRemovedTreeItems
+                              MenuItemsPerType=@ConversationsRemoved_MenuItemsPerType/>
+            </MudPaper>
+        }
+    
     @if (_isAdmin)
     {
         <MudSwitch @bind-Checked=@_isEdit Label="Edit Mode" Color="Color.Info" />
@@ -90,10 +101,12 @@
     [Inject] public State.SiteTitle SiteTitle { get; set; }
 
     private List<EditableList.TreeItemData> _conversationTreeItems;
+    private List<EditableList.TreeItemData> _conversationsRemovedTreeItems;
 
     private List<BreadcrumbItem> _breadcrumbs = new();
 
     private LessonDetailsDTO? _lesson;
+    private ConversationDetailsDTO? _conversation;
 
     protected override async Task OnInitializedAsyncImpl()
     {
@@ -136,6 +149,15 @@
     {
         Navigation.NavigateTo($"conversations/{item.Id}");
     }
+    
+    private async Task<bool> OnRemoveFromLessonItems(EditableList.TreeItemData item, MenuItem menuItem)
+    {
+        if (menuItem.IdSecondary == "removeConversation")
+            await CommandExecutor.Execute(new RemoveConversationCommand(_lesson.Id, item.Id));
+
+        return await RefreshView();
+    }
+
 
     protected override async Task RefreshViewModel()
     {
@@ -145,7 +167,10 @@
         _lesson = response?.Content;
 
         _conversationTreeItems = _lesson?.Conversations?.SelectOrEmpty((c, i) =>
-            new EditableList.TreeItemData(c.Id, c.Name, "conversation")).ToList();
+            new EditableList.TreeItemData(c.Id, c.Name, "conversation")).ToList() ?? new();
+        
+        _conversationsRemovedTreeItems = _lesson?.ConversationsRemoved?.SelectOrEmpty((c, i) =>
+            new EditableList.TreeItemData(c.Id, c.Name, "conversation")).ToList() ?? new();
     }
 
     private string GetDescription() =>
@@ -162,6 +187,18 @@
     private MenuItem[] ConvMenuItems = new MenuItem[]
     {
         MenuItems.AddSibling with { Name = "Add Conversation", IdSecondary = "addConversation"},
+        MenuItems.Remove with { Name = "Remove", IdSecondary = "removeConversation"},
+    };
+    
+    private Dictionary<string, MenuItem[]> ConversationsRemoved_MenuItemsPerType = new()
+    {
+        {
+            "conversation",
+            new MenuItem[]
+            {
+                new("restore", "Restore")
+            }
+        }
     };
 
     class PhraseTreeItemData : EditableList.TreeItemData

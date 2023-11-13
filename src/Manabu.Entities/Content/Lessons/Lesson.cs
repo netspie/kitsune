@@ -1,5 +1,6 @@
 ﻿using Corelibs.Basic.Collections;
 using Corelibs.Basic.DDD;
+using Corelibs.Basic.Functional;
 using Manabu.Entities.Content.Conversations;
 using Manabu.Entities.Content.Courses;
 using Manabu.Entities.Content.Infos;
@@ -18,6 +19,7 @@ public class Lesson : Entity<LessonId>, IAggregateRoot<LessonId>
     public List<CourseId> Courses { get; private set; }
     public List<InfoId> Infos { get; private set; }
     public List<ConversationId> Conversations { get; private set; }
+    public List<ConversationId> ConversationsRemoved { get; set; }
     public List<PhraseId> Phrases { get; private set; }
 
     public Lesson(
@@ -41,6 +43,17 @@ public class Lesson : Entity<LessonId>, IAggregateRoot<LessonId>
         Conversations ??= new();
         Conversations.InsertClamped(conversation, index);
     }
+    
+    public bool RemoveConversation(ConversationId conversation)
+    {
+        if (Conversations is null)
+            return false;
+
+        if (Conversations.Remove(conversation));
+            return true;
+    }
+    
+    
 
     public bool RemoveFromCourse(CourseId course) =>
         Courses is null ? false :
