@@ -25,7 +25,7 @@
                         if (_selectedValues.FirstOrDefault(v => v.Type is PropertyType.Filter && v.Text == prop) != null)
                             continue;
 
-                        <MudMenuItem OnClick=@(arg => OnFilterPropertyAdd(arg, prop))>@prop</MudMenuItem>
+                        <MudMenuItem OnClick=@(arg => OnFilterPropertyAdd(arg, prop.Value))>@prop.Value</MudMenuItem>
                     }
                 </MudMenu>
             </MudTooltip>
@@ -52,15 +52,33 @@
             else
             if (value.Type is PropertyType.Filter)
             {
-                <div class="d-flex align-center gap-3">
-                    <MudText Style="font-family: unica; text-transform: uppercase; font-weight: bold; ">Filter</MudText>
-                    <div class="d-flex align-center">
-                        <MudChip Color=Color.Error Style="color: white; font-family: unica; text-transform: uppercase; height: 20px; font-weight: bold; width: fit-content;" Icon=@Icons.Material.Filled.FilterAlt OnClose=@(chip => OnPropertyClosed(chip, value))>@value.Text</MudChip>
-                        <MudTextField T="string" Placeholder="Value" Adornment="Adornment.Start" Immediate="true" ValueChanged=@OnValueChangedInternal Class="mt-0"
-                                      Style="padding: 0; height: 20px; width: fit-content; font-weight: bold; min-width: fit-content; max-width: fit-content;" DisableUnderLine=true />
+                if (value.FilterDef is null)
+                {
+                    <div class="d-flex align-center gap-3">
+                        <MudText Style="font-family: unica; text-transform: uppercase; font-weight: bold; ">Filter</MudText>
+                        <div class="d-flex align-center">
+                            <MudChip Color=Color.Error Style="color: white; font-family: unica; text-transform: uppercase; height: 20px; font-weight: bold; width: fit-content;" Icon=@Icons.Material.Filled.FilterAlt OnClose=@(chip => OnPropertyClosed(chip, value))>@value.Text</MudChip>
+                            <MudTextField T="string" Placeholder="Value" Adornment="Adornment.Start" Immediate="true" ValueChanged=@OnValueChangedInternal Class="mt-0"
+                                          Style="padding: 0; height: 20px; width: fit-content; font-weight: bold; min-width: fit-content; max-width: fit-content;" DisableUnderLine=true />
 
+                        </div>
                     </div>
-                </div>
+                }
+                else
+                {
+                    <div class="d-flex align-center gap-3">
+                        <MudText Style="font-family: unica; text-transform: uppercase; font-weight: bold;">Filter</MudText>
+                        <div class="d-flex align-center">
+                            <MudChip Color=Color.Error Style="color: white; font-family: unica; text-transform: uppercase; height: 20px; font-weight: bold; width: fit-content;" Icon=@Icons.Material.Filled.FilterAlt OnClose=@(chip => OnPropertyClosed(chip, value))>@value.Text</MudChip>
+                            <MudSelect T=string Label="" Variant=@Variant.Outlined AnchorOrigin=@Origin.BottomCenter Style="padding-left: 5px;">
+                                @foreach (var defValue in value.FilterDef.Values)
+                                {
+                                    <MudSelectItem T="string" Value=@defValue.Value />
+                                }
+                            </MudSelect>
+                        </div>
+                    </div>
+                }
             }
         }
     </div>
@@ -68,31 +86,22 @@
 
 @code {
     [Parameter] public string[] SortProperties { get; set; } = Array.Empty<string>();
-    private string[] _sortValues = new string[] { };
+    private string[] _sortValues;
 
-    [Parameter] public string[] FilterProperties { get; set; } = Array.Empty<string>();
-    private string[] _filterValues = new string[] {  };
+    [Parameter] public FilterDef[] FilterProperties { get; set; } = Array.Empty<FilterDef>();
+    private FilterDef[] _filterValues;
     [Parameter] public EventCallback<string> OnSortValueChanged { get; set; }
 
     private string _searchString;
     [Parameter] public EventCallback<string> OnSearchValueChanged { get; set; }
 
-    record Value(PropertyType Type, string Text, bool Descending = false);
+    record Value(PropertyType Type, string Text, bool Descending = false, FilterDef? FilterDef = null, IdValue? Selected = null);
     private List<Value> _selectedValues = new();
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override void OnInitialized()
     {
-        if (!firstRender)
-            return;
-
-        _sortValues = _sortValues.Concat(SortProperties).ToArray();
-        _filterValues = _filterValues.Concat(FilterProperties).ToArray();
-    }
-
-    private async Task OnSortValueChangedInternal(string value)
-    {
-        //value = value == Nothing ? null : value;
-        //await OnSortValueChanged.InvokeAsync(value);
+        _sortValues = SortProperties.ToArray();
+        _filterValues = FilterProperties.ToArray();
     }
 
     private async Task OnValueChangedInternal(string value)
@@ -112,13 +121,21 @@
         _selectedValues[index] = _selectedValues[index] with { Descending = !value.Descending };
         return InvokeAsync(StateHasChanged);
     }
-    
+
     private Task OnFilterPropertyAdd(MouseEventArgs args, string value)
     {
-        _selectedValues.Add(new(PropertyType.Filter, value));
+        var filterDef = FilterProperties.FirstOrDefault(v => v.Value == value);
+        if (filterDef.Values.IsNullOrEmpty())
+            _selectedValues.Add(new(PropertyType.Filter, value));
+        else
+        {
+            //_select.SelectedValues = new string[] { _modeValues.FirstOrDefault() };
+            _selectedValues.Add(new(PropertyType.Filter, value, Descending: false, filterDef, filterDef.Values.First()));
+        }
+
         return InvokeAsync(StateHasChanged);
     }
-     
+
     void OnPropertyClosed(MudChip chip, Value value)
     {
         int index = _selectedValues.IndexOf(value);
@@ -130,4 +147,10 @@
         Sort,
         Filter
     }
+
+    public record FilterDef(string Value, List<IdValue>? Values = null)
+    {
+        public static implicit operator FilterDef(string value) => new(value);
+    };
+    public record IdValue(string Id, string Value);
 }

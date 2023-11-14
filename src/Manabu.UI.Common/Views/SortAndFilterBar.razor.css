@@ -12,3 +12,26 @@ div ::deep .mud-input>input.mud-input-root.mud-input-root-filled.mud-input-root-
     margin: 0;
     width: fit-content;
 }
+
+div ::deep .mud-input-control.mud-select {
+    margin: 0;
+    border: none;
+}
+
+div ::deep .mud-input-control-input-container {
+    border: none;
+}
+
+div ::deep .mud-input-slot.mud-input-root.mud-input-root-outlined.mud-input-root-adorned-end.mud-select-input {
+    font-size: 15px;
+    font-weight: bold;
+    height: contain;
+}
+
+div ::deep .mud-input-adornment.mud-input-adornment-end.mud-select-input {
+    display: none;
+}
+
+div ::deep .mud-input.mud-input-outlined.mud-input-adorned-end.mud-shrink.mud-select-input>.mud-input-outlined-border {
+    display: none;
+}

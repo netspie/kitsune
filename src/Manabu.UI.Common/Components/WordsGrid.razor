@@ -70,7 +70,8 @@
     private MudDataGrid<WordItem>? _mudDataGrid;
 
     private string[] SortProperties = new[] { "Word", "Meaning", "Part Of Speech" };
-    private string[] FilterProperties = new[] { "Word", "Meaning", "Part Of Speech" };
+    private SortAndFilterBar.FilterDef[] FilterProperties = new SortAndFilterBar.FilterDef[] { "Word", "Meaning", 
+        new("Part Of Speech", new() { new("verb", "Verb"), new("adjective", "Adjective"), new("noun", "Noun") }) };
 
     protected override async Task BeforeInitializedAsyncImpl()
     {
