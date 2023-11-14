@@ -5,25 +5,27 @@
 @if (_dto is null) { return; }
 
 <div>
-    <SortAndFilterBar SortProperties=@SortProperties OnSortValueChanged=@OnSortValueChanged />
-    <MudDataGrid @ref=_mudDataGrid Items="@_elements" Filterable="true" Bordered=false Hover=true RowClick=@OnWordClick T="WordItem" Outlined=false RowsPerPage=@Limit Elevation=0
+    <SortAndFilterBar 
+        SortProperties=@SortProperties OnSortValueChanged=@OnSortValueChanged 
+        FilterProperties=@FilterProperties />
+    <MudDataGrid @ref=_mudDataGrid Items="@_elements" Filterable=false Bordered=false Hover=true RowClick=@OnWordClick T="WordItem" Outlined=false RowsPerPage=@Limit Elevation=0
         >
         <Columns>
             @if ((Columns & Column.Word) != 0)
             {
-               <PropertyColumn Property="x => x.Word" ValueChanged=@(EventCallback.Factory.Create(this, (WordItem item) => OnValueChanged(item))) /> 
+               <PropertyColumn Property="x => x.Word" Filterable=false ValueChanged=@(EventCallback.Factory.Create(this, (WordItem item) => OnValueChanged(item))) /> 
             }
             @if ((Columns & Column.Reading) != 0)
             {
-                <PropertyColumn Property="x => x.Reading" Title="Reading" />
+                <PropertyColumn Property="x => x.Reading" Title="Reading" Filterable=false />
             }
             @if ((Columns & Column.Meaning) != 0)
             {
-                <PropertyColumn Property="x => x.Meaning" />
+                <PropertyColumn Property="x => x.Meaning" Filterable=false />
             }
             @if ((Columns & Column.PartOfSpeech) != 0)
             {
-                <PropertyColumn Property="x => x.PartOfSpeech" Title="Part of Speech" />
+                <PropertyColumn Property="x => x.PartOfSpeech" Title="Part of Speech" Filterable=false />
             }
         </Columns>
         <PagerContent>
@@ -67,7 +69,8 @@
 
     private MudDataGrid<WordItem>? _mudDataGrid;
 
-    private string[] SortProperties = new[] { "Word" };
+    private string[] SortProperties = new[] { "Word", "Meaning", "Part Of Speech" };
+    private string[] FilterProperties = new[] { "Word", "Meaning", "Part Of Speech" };
 
     protected override async Task BeforeInitializedAsyncImpl()
     {

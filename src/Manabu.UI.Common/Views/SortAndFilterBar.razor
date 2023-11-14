@@ -1,68 +1,133 @@
-﻿
-<div class="d-flex">
-    <MudSelect 
-        @ref=_sortSelect T="string" Label="Sort By" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter" FullWidth=false ValueChanged=@OnSortValueChangedInternal
-        Style="width: 200px; min-width: 200px; max-width: 200px;">
-        @foreach (var value in _sortValues)
-        {
-            <MudSelectItem T="string" Value="@value" />
-        }
-    </MudSelect>
+﻿@using System.Globalization;
 
-    <MudTextField 
-        T="string" Placeholder="Search" Adornment="Adornment.Start" Immediate="true" ValueChanged=@OnSearchValueChangedInternal 
-        AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" />
-
-    @*<MudSelect @ref=_filterSelect T="string" Label="Filter By" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter" FullWidth=false
-        Style="width: fit-content;">
-        @foreach (var value in _filterValues)
+<div class="d-flex flex-column">
+    <div class="d-flex">
+        @if (!_sortValues.IsNullOrEmpty() && _selectedValues.Where(v => v.Type is PropertyType.Sort).Count() < _sortValues.Count())
         {
-            <MudSelectItem T="string" Value="@value" />
+            <MudTooltip Text="Sort">
+                <MudMenu Icon=@Icons.Material.Filled.Sort Color=@Color.Error>
+                    @foreach (var prop in _sortValues)
+                    {
+                        if (_selectedValues.FirstOrDefault(v => v.Type is PropertyType.Sort && v.Text == prop) != null)
+                            continue;
+
+                        <MudMenuItem OnClick=@(arg => OnSortPropertyAdd(arg, prop))>@prop</MudMenuItem>
+                    }
+                </MudMenu>
+            </MudTooltip>
         }
-    </MudSelect>*@
+        @if (!_filterValues.IsNullOrEmpty())
+        {
+            <MudTooltip Text="Filter">
+                <MudMenu Icon=@Icons.Material.Filled.FilterAlt Color=@Color.Error>
+                    @foreach (var prop in _filterValues)
+                    {
+                        if (_selectedValues.FirstOrDefault(v => v.Type is PropertyType.Filter && v.Text == prop) != null)
+                            continue;
+
+                        <MudMenuItem OnClick=@(arg => OnFilterPropertyAdd(arg, prop))>@prop</MudMenuItem>
+                    }
+                </MudMenu>
+            </MudTooltip>
+        }
+    </div>
+    <div class="d-flex flex-column pl-3">
+        @foreach (var value in _selectedValues)
+        {
+            if (value.Type is PropertyType.Sort)
+            {
+                <div class="d-flex align-center gap-3">
+                    <MudText Style="font-family: unica; text-transform: uppercase; font-weight: bold; ">Sort</MudText>
+                    <div class="d-flex align-center">
+                        <MudChip Color=Color.Error Style="color: white; font-family: unica; text-transform: uppercase; height: 20px; font-weight: bold; width: fit-content;" Icon=@Icons.Material.Filled.Sort OnClose=@(chip => OnPropertyClosed(chip, value))>@value.Text</MudChip>
+                        <MudTooltip Text=@(value.Descending ? "Descending" : "Ascending")>
+                            <MudChip Color=Color.Error 
+                                Style="cursor: pointer; color: white; font-family: unica; text-transform: uppercase; height: 20px; font-weight: bold; width: fit-content; padding: 0; padding-left: 8px; margin: 0;" 
+                                Icon=@(value.Descending ? Icons.Material.Filled.ArrowDownward : Icons.Material.Filled.ArrowUpward)
+                                OnClick=@(arg => OnChangeSortOrderType(arg, value)) />
+                        </MudTooltip>
+                    </div>
+                </div>
+            }
+            else
+            if (value.Type is PropertyType.Filter)
+            {
+                <div class="d-flex align-center gap-3">
+                    <MudText Style="font-family: unica; text-transform: uppercase; font-weight: bold; ">Filter</MudText>
+                    <div class="d-flex align-center">
+                        <MudChip Color=Color.Error Style="color: white; font-family: unica; text-transform: uppercase; height: 20px; font-weight: bold; width: fit-content;" Icon=@Icons.Material.Filled.FilterAlt OnClose=@(chip => OnPropertyClosed(chip, value))>@value.Text</MudChip>
+                        <MudTextField T="string" Placeholder="Value" Adornment="Adornment.Start" Immediate="true" ValueChanged=@OnValueChangedInternal Class="mt-0"
+                                      Style="padding: 0; height: 20px; width: fit-content; font-weight: bold; min-width: fit-content; max-width: fit-content;" DisableUnderLine=true />
+
+                    </div>
+                </div>
+            }
+        }
+    </div>
 </div>
 
 @code {
-    private static readonly string Nothing = "None";
-
     [Parameter] public string[] SortProperties { get; set; } = Array.Empty<string>();
-    private string[] _sortValues = new[] { Nothing };
-    private MudSelect<string>? _sortSelect;
+    private string[] _sortValues = new string[] { };
 
     [Parameter] public string[] FilterProperties { get; set; } = Array.Empty<string>();
-    private string[] _filterValues = new[] { Nothing };
-    private MudSelect<string>? _filterSelect;
+    private string[] _filterValues = new string[] {  };
     [Parameter] public EventCallback<string> OnSortValueChanged { get; set; }
 
     private string _searchString;
     [Parameter] public EventCallback<string> OnSearchValueChanged { get; set; }
+
+    record Value(PropertyType Type, string Text, bool Descending = false);
+    private List<Value> _selectedValues = new();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (!firstRender)
             return;
 
-        if (_sortSelect is not null)
-        {
-            _sortValues = _sortValues.Concat(SortProperties).ToArray();
-            _sortSelect.SelectedValues = new string[] { _sortValues.FirstOrDefault() };
-        }
-
-        if (_filterSelect is not null)
-        {
-            _filterValues = _filterValues.Concat(FilterProperties).ToArray();
-            _filterSelect.SelectedValues = new string[] { _filterValues.FirstOrDefault() };
-        }
+        _sortValues = _sortValues.Concat(SortProperties).ToArray();
+        _filterValues = _filterValues.Concat(FilterProperties).ToArray();
     }
 
     private async Task OnSortValueChangedInternal(string value)
     {
-        value = value == Nothing ? null : value;
-        await OnSortValueChanged.InvokeAsync(value);
+        //value = value == Nothing ? null : value;
+        //await OnSortValueChanged.InvokeAsync(value);
     }
 
-    private async Task OnSearchValueChangedInternal(string value)
+    private async Task OnValueChangedInternal(string value)
     {
         await OnSearchValueChanged.InvokeAsync(value);
+    }
+
+    private Task OnSortPropertyAdd(MouseEventArgs args, string value)
+    {
+        _selectedValues.Add(new(PropertyType.Sort, value));
+        return InvokeAsync(StateHasChanged);
+    }
+
+    private Task OnChangeSortOrderType(MouseEventArgs args, Value value)
+    {
+        int index = _selectedValues.IndexOf(value);
+        _selectedValues[index] = _selectedValues[index] with { Descending = !value.Descending };
+        return InvokeAsync(StateHasChanged);
+    }
+    
+    private Task OnFilterPropertyAdd(MouseEventArgs args, string value)
+    {
+        _selectedValues.Add(new(PropertyType.Filter, value));
+        return InvokeAsync(StateHasChanged);
+    }
+     
+    void OnPropertyClosed(MudChip chip, Value value)
+    {
+        int index = _selectedValues.IndexOf(value);
+        _selectedValues.RemoveAt(index);
+    }
+
+    enum PropertyType
+    {
+        Sort,
+        Filter
     }
 }
