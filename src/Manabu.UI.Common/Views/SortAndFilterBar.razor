@@ -22,7 +22,7 @@
                 <MudMenu Icon=@Icons.Material.Filled.FilterAlt Color=@Color.Error>
                     @foreach (var prop in _filterValues)
                     {
-                        if (_selectedValues.FirstOrDefault(v => v.Type is PropertyType.Filter && v.Text == prop) != null)
+                        if (_selectedValues.FirstOrDefault(v => v.Type is PropertyType.Filter && v.Text == prop.Value) != null)
                             continue;
 
                         <MudMenuItem OnClick=@(arg => OnFilterPropertyAdd(arg, prop.Value))>@prop.Value</MudMenuItem>
@@ -70,10 +70,11 @@
                         <MudText Style="font-family: unica; text-transform: uppercase; font-weight: bold;">Filter</MudText>
                         <div class="d-flex align-center">
                             <MudChip Color=Color.Error Style="color: white; font-family: unica; text-transform: uppercase; height: 20px; font-weight: bold; width: fit-content;" Icon=@Icons.Material.Filled.FilterAlt OnClose=@(chip => OnPropertyClosed(chip, value))>@value.Text</MudChip>
-                            <MudSelect T=string Label="" Variant=@Variant.Outlined AnchorOrigin=@Origin.BottomCenter Style="padding-left: 5px;">
+                            <MudSelect @ref=@value.Ref
+                                T=string Label="" Variant=@Variant.Outlined AnchorOrigin=@Origin.BottomCenter Style="padding-left: 5px;">
                                 @foreach (var defValue in value.FilterDef.Values)
                                 {
-                                    <MudSelectItem T="string" Value=@defValue.Value />
+                                    <MudSelectItem T=string Value=@defValue.Value />
                                 }
                             </MudSelect>
                         </div>
@@ -95,13 +96,25 @@
     private string _searchString;
     [Parameter] public EventCallback<string> OnSearchValueChanged { get; set; }
 
-    record Value(PropertyType Type, string Text, bool Descending = false, FilterDef? FilterDef = null, IdValue? Selected = null);
     private List<Value> _selectedValues = new();
 
     protected override void OnInitialized()
     {
         _sortValues = SortProperties.ToArray();
         _filterValues = FilterProperties.ToArray();
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        foreach (var value in _selectedValues)
+        {
+            if (value.Type is not PropertyType.Filter ||
+                value.Ref is null ||
+                value.FilterDef.Values.IsNullOrEmpty())
+                continue;
+
+            value.Ref.SelectedValues = new string[] { value.FilterDef.Values.FirstOrDefault().Value };
+        }
     }
 
     private async Task OnValueChangedInternal(string value)
@@ -118,7 +131,7 @@
     private Task OnChangeSortOrderType(MouseEventArgs args, Value value)
     {
         int index = _selectedValues.IndexOf(value);
-        _selectedValues[index] = _selectedValues[index] with { Descending = !value.Descending };
+        _selectedValues[index].Descending = !_selectedValues[index].Descending;
         return InvokeAsync(StateHasChanged);
     }
 
@@ -129,8 +142,7 @@
             _selectedValues.Add(new(PropertyType.Filter, value));
         else
         {
-            //_select.SelectedValues = new string[] { _modeValues.FirstOrDefault() };
-            _selectedValues.Add(new(PropertyType.Filter, value, Descending: false, filterDef, filterDef.Values.First()));
+            _selectedValues.Add(new(PropertyType.Filter, value, descending: false, filterDef, filterDef.Values.First()));
         }
 
         return InvokeAsync(StateHasChanged);
@@ -152,5 +164,32 @@
     {
         public static implicit operator FilterDef(string value) => new(value);
     };
+
     public record IdValue(string Id, string Value);
+
+    class Value
+    {
+        public PropertyType Type { get; }
+        public string Text { get; }
+        public bool Descending { get; set; }
+        public FilterDef? FilterDef { get; }
+        public IdValue? Selected { get; }
+        public MudSelect<string>? Ref { get; set; }
+
+        public Value(
+            PropertyType type,
+            string text,
+            bool descending = false,
+            FilterDef? filterDef = null,
+            IdValue? selected = null,
+            MudSelect<string>? @ref = null)
+        {
+            Type = type;
+            Text = text;
+            Descending = descending;
+            FilterDef = filterDef;
+            Selected = selected;
+            Ref = @ref;
+        }
+    }
 }
