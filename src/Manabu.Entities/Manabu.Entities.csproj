@@ -1,17 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Dunet" Version="1.8.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Corelibs.Basic\Corelibs.Basic\Corelibs.Basic\Corelibs.Basic.csproj" />

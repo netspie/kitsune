@@ -6,14 +6,16 @@
 
 <div>
     <SortAndFilterBar 
-        SortProperties=@SortProperties OnSortValueChanged=@OnSortValueChanged 
-        FilterProperties=@FilterProperties />
+        SortProperties=@SortProperties 
+        FilterProperties=@FilterProperties
+        OnValueChanged=@OnSortOrFilterValueChanged />
+
     <MudDataGrid @ref=_mudDataGrid Items="@_elements" Filterable=false Bordered=false Hover=true RowClick=@OnWordClick T="WordItem" Outlined=false RowsPerPage=@Limit Elevation=0
         >
         <Columns>
             @if ((Columns & Column.Word) != 0)
             {
-               <PropertyColumn Property="x => x.Word" Filterable=false ValueChanged=@(EventCallback.Factory.Create(this, (WordItem item) => OnValueChanged(item))) /> 
+               <PropertyColumn Property="x => x.Word" Filterable=false /> 
             }
             @if ((Columns & Column.Reading) != 0)
             {
@@ -61,8 +63,6 @@
     private string? _searchTextArg;
 
     private RangeArg _rangeArg = new(0, Limit);
-    private SortArg[]? _sortArgs = null;
-    private FilterArg[]? _filterArgs = null;
 
     private const int Limit = 10;
     private List<WordItem> _elements = new();
@@ -83,21 +83,21 @@
         if (PartOfSpeeches is null)
             return;
 
-        var filterArgs = new List<FilterArg>();
+        // var filterArgs = new List<FilterArg>();
 
-        if ((PartOfSpeeches & PartOfSpeech.Verb) != 0)
-            filterArgs.Add(new("PartsOfSpeech", "verb"));
+        // if ((PartOfSpeeches & PartOfSpeech.Verb) != 0)
+        //     filterArgs.Add(new("PartsOfSpeech", "verb"));
 
-        if ((PartOfSpeeches & PartOfSpeech.Noun) != 0)
-            filterArgs.Add(new("PartsOfSpeech", "noun"));
+        // if ((PartOfSpeeches & PartOfSpeech.Noun) != 0)
+        //     filterArgs.Add(new("PartsOfSpeech", "noun"));
 
-        if ((PartOfSpeeches & PartOfSpeech.Numeral) != 0)
-            filterArgs.Add(new("PartsOfSpeech", "numeral"));
+        // if ((PartOfSpeeches & PartOfSpeech.Numeral) != 0)
+        //     filterArgs.Add(new("PartsOfSpeech", "numeral"));
 
-        if ((PartOfSpeeches & PartOfSpeech.Adjective) != 0)
-            filterArgs.Add(new("PartsOfSpeech", "adjective"));
+        // if ((PartOfSpeeches & PartOfSpeech.Adjective) != 0)
+        //     filterArgs.Add(new("PartsOfSpeech", "adjective"));
 
-        _filterArgs = filterArgs.ToArray();
+        // _filterArgs = filterArgs.ToArray();
     }
 
     protected override Task OnAfterRenderAsyncImpl(bool firstRender)
@@ -134,14 +134,9 @@
         await RefreshViewModel();
     }
 
-    private async Task OnValueChanged(WordItem item)
+    private async Task OnSortOrFilterValueChanged(List<SortAndFilterBar.Value> selectedValues)
     {
-        Console.WriteLine("");
-    }
-
-    private async Task OnSortValueChanged(string value)
-    {
-        _sortArgs = value.IsNullOrEmpty() ? null : new[] { new SortArg(value) };
+        //_sortArgs = value.IsNullOrEmpty() ? null : new[] { new SortArg(value) };
         await RefreshViewModel();
     }
 
@@ -154,7 +149,7 @@
     protected override async Task RefreshViewModel()
     {
         var response = await QueryExecutor.Execute<GetWordsQuery, GetWordsQueryResponse>(
-            new GetWordsQuery(_rangeArg, _sortArgs, _filterArgs));
+            new GetWordsQuery(_rangeArg));
 
         _dto = response.Content;
 

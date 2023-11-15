@@ -30,8 +30,8 @@ public class GetWordsQueryHandler : IQueryHandler<GetWordsQuery, Result<GetWords
         var wordsFilter = Builders<Word>.Filter.Empty;
 
         var wordsHintDict = new Dictionary<string, object>();
-        if (!query.SortArgs.IsNullOrEmpty())
-            wordsHintDict.Add(nameof(Word.Value), 1);
+       // if (!query.SortArgs.IsNullOrEmpty())
+            //wordsHintDict.Add(nameof(Word.Value), 1);
 
         var wordsHint = new BsonDocument(wordsHintDict);
 
@@ -39,9 +39,23 @@ public class GetWordsQueryHandler : IQueryHandler<GetWordsQuery, Result<GetWords
         var limit = Math.Min(range.Limit, MaxItemLimit);
 
         var filter = Builders<Word>.Filter.Empty;
-        if (!query.FilterArgs.IsNullOrEmpty())
-            foreach (var arg in query.FilterArgs)
-                filter &= Builders<Word>.Filter.Eq(x => x.PartsOfSpeech[0].Value, arg.Value);
+        //if (!query.FilterArgs.IsNullOrEmpty())
+        //    foreach (var arg in query.FilterArgs)
+        //        filter &= Builders<Word>.Filter.Eq(x => x.PartsOfSpeech[0].Value, arg.Value);
+
+        //bool wasSort;
+        //foreach (var arg in query.Modifiers.ToArrayOrEmpty())
+        //{
+        //    if (arg.IsSort)
+        //    {
+
+        //    }
+        //    else
+        //    {
+
+        //    }
+        //    filter &= Builders<Word>.Filter.Eq(x => x.PartsOfSpeech[0].Value, arg.Value);
+        //}
 
         var wordsProjection = Builders<Word>.Projection.Include(x => x.Id).Include(x => x.Value).Include(x => x.PartsOfSpeech).Include(x => x.Meanings);
         var totalCount = await wordsCollection.CountDocumentsAsync(filter);

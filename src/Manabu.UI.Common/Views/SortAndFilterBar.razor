@@ -58,7 +58,7 @@
                         <MudText Style="font-family: unica; text-transform: uppercase; font-weight: bold; ">Filter</MudText>
                         <div class="d-flex align-center">
                             <MudChip Color=Color.Error Style="color: white; font-family: unica; text-transform: uppercase; height: 20px; font-weight: bold; width: fit-content;" Icon=@Icons.Material.Filled.FilterAlt OnClose=@(chip => OnPropertyClosed(chip, value))>@value.Text</MudChip>
-                            <MudTextField T="string" Placeholder="Value" Adornment="Adornment.Start" Immediate="true" ValueChanged=@OnValueChangedInternal Class="mt-0"
+                            <MudTextField T="string" Placeholder="Value" Adornment="Adornment.Start" Immediate="true" ValueChanged=@OnFilterValueChangedInternal Class="mt-0"
                                           Style="padding: 0; height: 20px; width: fit-content; font-weight: bold; min-width: fit-content; max-width: fit-content;" DisableUnderLine=true />
 
                         </div>
@@ -91,11 +91,8 @@
 
     [Parameter] public FilterDef[] FilterProperties { get; set; } = Array.Empty<FilterDef>();
     private FilterDef[] _filterValues;
-    [Parameter] public EventCallback<string> OnSortValueChanged { get; set; }
 
-    private string _searchString;
-    [Parameter] public EventCallback<string> OnSearchValueChanged { get; set; }
-
+    [Parameter] public EventCallback<List<Value>> OnValueChanged { get; set; }
     private List<Value> _selectedValues = new();
 
     protected override void OnInitialized()
@@ -117,9 +114,9 @@
         }
     }
 
-    private async Task OnValueChangedInternal(string value)
+    private async Task OnFilterValueChangedInternal(string value)
     {
-        await OnSearchValueChanged.InvokeAsync(value);
+        await OnValueChanged.InvokeAsync(_selectedValues);
     }
 
     private Task OnSortPropertyAdd(MouseEventArgs args, string value)
@@ -154,7 +151,7 @@
         _selectedValues.RemoveAt(index);
     }
 
-    enum PropertyType
+    public enum PropertyType
     {
         Sort,
         Filter
@@ -167,7 +164,7 @@
 
     public record IdValue(string Id, string Value);
 
-    class Value
+    public class Value
     {
         public PropertyType Type { get; }
         public string Text { get; }
