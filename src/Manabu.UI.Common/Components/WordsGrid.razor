@@ -5,10 +5,13 @@
 @if (_dto is null) { return; }
 
 <div>
-    <SortAndFilterBar 
-        SortProperties=@SortProperties 
-        FilterProperties=@FilterProperties
-        OnValueChanged=@OnSortOrFilterValueChanged />
+    @if (FilteringAndSortingEnabled)
+    {
+        <SortAndFilterBar 
+            SortProperties=@SortProperties
+            FilterProperties=@FilterProperties
+            OnValueChanged=@OnSortOrFilterValueChanged />
+    }
 
     <MudDataGrid @ref=_mudDataGrid Items="@_elements" Filterable=false Bordered=false Hover=true RowClick=@OnWordClick T="WordItem" Outlined=false RowsPerPage=@Limit Elevation=0
         >
@@ -57,6 +60,7 @@
 @code {
     [Parameter] public Column? Columns { get; set; } = Column.Word | Column.Reading | Column.Meaning;
     [Parameter] public PartOfSpeech? PartOfSpeeches { get; set; }
+    [Parameter] public bool FilteringAndSortingEnabled { get; set; } = true;
 
     private WordsDTO? _dto;
 
@@ -69,13 +73,25 @@
 
     private MudDataGrid<WordItem>? _mudDataGrid;
 
-    private string[] SortProperties = new[] { "Word", "Meaning", "Part Of Speech" };
-    private SortAndFilterBar.FilterDef[] FilterProperties = new SortAndFilterBar.FilterDef[] { "Word", "Meaning", 
-        new("Part Of Speech", new() { new("verb", "Verb"), new("adjective", "Adjective"), new("noun", "Noun") }) };
+    private string[] SortProperties = new[] { "Word", "Part Of Speech" };
+    private SortAndFilterBar.FilterDef[] FilterProperties = new SortAndFilterBar.FilterDef[] 
+    {   
+        "Word",
+        new("Part Of Speech", new() { new("verb", "Verb"), new("adjective", "Adjective"), new("noun", "Noun"),  new("numeral", "Numeral") }) 
+    };
+
+    private List<ModifierArg> _baseModifierArgs = new();
+    private List<ModifierArg> _modifierArgs = new();
 
     protected override async Task BeforeInitializedAsyncImpl()
     {
         InitializeFilterArgs();
+
+        if (PartOfSpeeches is not null)
+        {
+            SortProperties = SortProperties.Except("Part Of Speech").ToArray();
+            FilterProperties = FilterProperties.Where(f => f.Value != "Part Of Speech").ToArray();
+        }
     }
 
     private void InitializeFilterArgs()
@@ -83,21 +99,19 @@
         if (PartOfSpeeches is null)
             return;
 
-        // var filterArgs = new List<FilterArg>();
+        if ((PartOfSpeeches & PartOfSpeech.Verb) != 0)
+            _baseModifierArgs.Add(new("PartsOfSpeech", Value: "verb"));
 
-        // if ((PartOfSpeeches & PartOfSpeech.Verb) != 0)
-        //     filterArgs.Add(new("PartsOfSpeech", "verb"));
+        if ((PartOfSpeeches & PartOfSpeech.Noun) != 0)
+            _baseModifierArgs.Add(new("PartsOfSpeech", Value: "noun"));
 
-        // if ((PartOfSpeeches & PartOfSpeech.Noun) != 0)
-        //     filterArgs.Add(new("PartsOfSpeech", "noun"));
+        if ((PartOfSpeeches & PartOfSpeech.Numeral) != 0)
+            _baseModifierArgs.Add(new("PartsOfSpeech", Value: "numeral"));
 
-        // if ((PartOfSpeeches & PartOfSpeech.Numeral) != 0)
-        //     filterArgs.Add(new("PartsOfSpeech", "numeral"));
+        if ((PartOfSpeeches & PartOfSpeech.Adjective) != 0)
+            _baseModifierArgs.Add(new("PartsOfSpeech", Value: "adjective"));
 
-        // if ((PartOfSpeeches & PartOfSpeech.Adjective) != 0)
-        //     filterArgs.Add(new("PartsOfSpeech", "adjective"));
-
-        // _filterArgs = filterArgs.ToArray();
+        _modifierArgs = new List<ModifierArg>(_baseModifierArgs);
     }
 
     protected override Task OnAfterRenderAsyncImpl(bool firstRender)
@@ -136,7 +150,13 @@
 
     private async Task OnSortOrFilterValueChanged(List<SortAndFilterBar.Value> selectedValues)
     {
-        //_sortArgs = value.IsNullOrEmpty() ? null : new[] { new SortArg(value) };
+        _modifierArgs = _baseModifierArgs.Concat(
+            selectedValues.Select(v => new ModifierArg(
+                Field: v.Text,
+                IsSort: v.Type is SortAndFilterBar.PropertyType.Sort ? true : false,
+                Order: v.Descending ? -1 : 1,
+                Value: v?.Selected?.Id))).ToList();
+
         await RefreshViewModel();
     }
 
@@ -149,7 +169,7 @@
     protected override async Task RefreshViewModel()
     {
         var response = await QueryExecutor.Execute<GetWordsQuery, GetWordsQueryResponse>(
-            new GetWordsQuery(_rangeArg));
+            new GetWordsQuery(_rangeArg, _modifierArgs.ToArray()));
 
         _dto = response.Content;
 

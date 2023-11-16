@@ -58,7 +58,7 @@
                         <MudText Style="font-family: unica; text-transform: uppercase; font-weight: bold; ">Filter</MudText>
                         <div class="d-flex align-center">
                             <MudChip Color=Color.Error Style="color: white; font-family: unica; text-transform: uppercase; height: 20px; font-weight: bold; width: fit-content;" Icon=@Icons.Material.Filled.FilterAlt OnClose=@(chip => OnPropertyClosed(chip, value))>@value.Text</MudChip>
-                            <MudTextField T="string" Placeholder="Value" Adornment="Adornment.Start" Immediate="true" ValueChanged=@OnFilterValueChangedInternal Class="mt-0"
+                            <MudTextField T="string" Placeholder="Value" Adornment="Adornment.Start" Immediate="true" ValueChanged=@(text => OnFilterValueChangedInternal(value, text)) Class="mt-0"
                                           Style="padding: 0; height: 20px; width: fit-content; font-weight: bold; min-width: fit-content; max-width: fit-content;" DisableUnderLine=true />
 
                         </div>
@@ -71,7 +71,7 @@
                         <div class="d-flex align-center">
                             <MudChip Color=Color.Error Style="color: white; font-family: unica; text-transform: uppercase; height: 20px; font-weight: bold; width: fit-content;" Icon=@Icons.Material.Filled.FilterAlt OnClose=@(chip => OnPropertyClosed(chip, value))>@value.Text</MudChip>
                             <MudSelect @ref=@value.Ref
-                                T=string Label="" Variant=@Variant.Outlined AnchorOrigin=@Origin.BottomCenter Style="padding-left: 5px;">
+                                T=string Label="" Variant=@Variant.Outlined AnchorOrigin=@Origin.BottomCenter Style="padding-left: 5px;" ValueChanged=@(text => OnFilterValueDropdownChangedInternal(value, text))>
                                 @foreach (var defValue in value.FilterDef.Values)
                                 {
                                     <MudSelectItem T=string Value=@defValue.Value />
@@ -110,26 +110,34 @@
                 value.FilterDef.Values.IsNullOrEmpty())
                 continue;
 
-            value.Ref.SelectedValues = new string[] { value.FilterDef.Values.FirstOrDefault().Value };
+            if (value.Ref.SelectedValues.IsNullOrEmpty())
+                value.Ref.SelectedValues = new string[] { value.FilterDef.Values.FirstOrDefault().Value };
         }
     }
 
-    private async Task OnFilterValueChangedInternal(string value)
+    private async Task OnFilterValueChangedInternal(Value value, string text)
     {
+        value.Selected = new IdValue(text, text);
+        await OnValueChanged.InvokeAsync(_selectedValues);
+    }
+
+    private async Task OnFilterValueDropdownChangedInternal(Value value, string text)
+    {
+        value.Selected = new IdValue(text, text);
         await OnValueChanged.InvokeAsync(_selectedValues);
     }
 
     private Task OnSortPropertyAdd(MouseEventArgs args, string value)
     {
         _selectedValues.Add(new(PropertyType.Sort, value));
-        return InvokeAsync(StateHasChanged);
+        return OnValueChanged.InvokeAsync(_selectedValues);
     }
 
     private Task OnChangeSortOrderType(MouseEventArgs args, Value value)
     {
         int index = _selectedValues.IndexOf(value);
         _selectedValues[index].Descending = !_selectedValues[index].Descending;
-        return InvokeAsync(StateHasChanged);
+        return OnValueChanged.InvokeAsync(_selectedValues);
     }
 
     private Task OnFilterPropertyAdd(MouseEventArgs args, string value)
@@ -145,10 +153,12 @@
         return InvokeAsync(StateHasChanged);
     }
 
-    void OnPropertyClosed(MudChip chip, Value value)
+    private Task OnPropertyClosed(MudChip chip, Value value)
     {
         int index = _selectedValues.IndexOf(value);
         _selectedValues.RemoveAt(index);
+
+        return InvokeAsync(StateHasChanged);
     }
 
     public enum PropertyType
@@ -170,7 +180,7 @@
         public string Text { get; }
         public bool Descending { get; set; }
         public FilterDef? FilterDef { get; }
-        public IdValue? Selected { get; }
+        public IdValue? Selected { get; set; }
         public MudSelect<string>? Ref { get; set; }
 
         public Value(

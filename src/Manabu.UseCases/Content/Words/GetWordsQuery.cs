@@ -13,7 +13,7 @@ public record RangeArg(
 
 public record ModifierArg(
     string Field,
-    bool IsSort,
+    bool IsSort = false,
     int Order = 1,
     string? Value = null);
 

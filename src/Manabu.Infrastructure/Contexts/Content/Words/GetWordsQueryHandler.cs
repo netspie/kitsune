@@ -5,10 +5,13 @@ using Manabu.Entities.Content.WordMeanings;
 using Manabu.Entities.Content.Words;
 using Manabu.UseCases.Content.Words;
 using Mediator;
-using MongoDB.Bson;
+using Microsoft.IdentityModel.Tokens;
 using MongoDB.Driver;
+using MongoDB.Driver.Search;
 
 namespace Manabu.Infrastructure.CQRS.Content.Words;
+
+using SearchDef = (string IndexName, SearchDefinition<Word> Definition);
 
 public class GetWordsQueryHandler : IQueryHandler<GetWordsQuery, Result<GetWordsQueryResponse>>
 {
@@ -29,39 +32,53 @@ public class GetWordsQueryHandler : IQueryHandler<GetWordsQuery, Result<GetWords
         var wordsCollection = _mongoConnection.Database.GetCollection<Word>(Word.DefaultCollectionName);
         var wordsFilter = Builders<Word>.Filter.Empty;
 
-        var wordsHintDict = new Dictionary<string, object>();
-       // if (!query.SortArgs.IsNullOrEmpty())
-            //wordsHintDict.Add(nameof(Word.Value), 1);
-
-        var wordsHint = new BsonDocument(wordsHintDict);
-
         var range = query.Range ?? new RangeArg(0, MaxItemLimit);
         var limit = Math.Min(range.Limit, MaxItemLimit);
 
         var filter = Builders<Word>.Filter.Empty;
-        //if (!query.FilterArgs.IsNullOrEmpty())
-        //    foreach (var arg in query.FilterArgs)
-        //        filter &= Builders<Word>.Filter.Eq(x => x.PartsOfSpeech[0].Value, arg.Value);
+        List<SearchDef> searches = [];
+        List<string> sorts = [];
+        foreach (var arg in query.Modifiers.ToArrayOrEmpty())
+        {
+            if (arg.IsSort)
+            {
+                if (arg.Field == nameof(Word))
+                    sorts.Add($"{{Value:{arg.Order}}}");
 
-        //bool wasSort;
-        //foreach (var arg in query.Modifiers.ToArrayOrEmpty())
-        //{
-        //    if (arg.IsSort)
-        //    {
+                if (arg.Field == "Part Of Speech")
+                    sorts.Add($"{{PartsOfSpeech:{arg.Order}}}");
+            }
+            else
+            {
+                if (arg.Field.IsNullOrEmpty() ||
+                    arg.Value.IsNullOrEmpty())
+                    continue;
 
-        //    }
-        //    else
-        //    {
-
-        //    }
-        //    filter &= Builders<Word>.Filter.Eq(x => x.PartsOfSpeech[0].Value, arg.Value);
-        //}
+                if (arg.Field == "Part Of Speech")
+                {
+                    filter &= Builders<Word>.Filter.Eq(x => x.PartsOfSpeech[0].Value, arg.Value.ToLower());
+                }
+                else
+                if (arg.Field == nameof(Word) && MongoConfig.IsAtlas)
+                {
+                    //filter &= Builders<Word>.Filter.Text($"{arg.Value}~");
+                    searches.Add(new("searchWordsByValue", Builders<Word>.Search.Regex(x => x.Value, $"(.*){arg.Value}(.*)")));
+                }
+            }
+        }
 
         var wordsProjection = Builders<Word>.Projection.Include(x => x.Id).Include(x => x.Value).Include(x => x.PartsOfSpeech).Include(x => x.Meanings);
         var totalCount = await wordsCollection.CountDocumentsAsync(filter);
-        var words = await wordsCollection
-            .Aggregate(new AggregateOptions() { Hint = wordsHint })
-            .Match(filter)
+        
+        var aggregate = wordsCollection.Aggregate(new AggregateOptions());
+        foreach (var search in searches)
+            aggregate = aggregate.Search(search.Definition, new SearchOptions<Word>() { IndexName = search.IndexName });
+
+        aggregate = aggregate.Match(filter);
+        foreach (var sort in sorts)
+            aggregate = aggregate.Sort(sort);
+
+        var words = await aggregate
             .Project(wordsProjection)
             .Skip(range.Start)
             .Lookup<WordMeaning, LookupResult>(
@@ -69,6 +86,7 @@ public class GetWordsQueryHandler : IQueryHandler<GetWordsQuery, Result<GetWords
                 localField: nameof(Word.Meanings),
                 foreignField: "_id",
                 @as: nameof(LookupResult.MeaningsJoined))
+            //.Sort("{MeaningsJoined.Translations[0]:1}")
             .Limit(limit)
             .ToListAsync();
 
