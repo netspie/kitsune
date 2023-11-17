@@ -33,3 +33,11 @@ function EditableList_removeMenuIconPadding(parentId) {
         });
     });
 }
+
+function addDocumentKeyDownHandler(object, methodName) {
+    document.addEventListener('keydown', function (evt) {
+        object.invokeMethodAsync(methodName, evt.ctrlKey, event.altKey, evt.key)
+            .then(result => {})
+            .catch(error => console.log('Error calling C# method:', error));
+    });
+}

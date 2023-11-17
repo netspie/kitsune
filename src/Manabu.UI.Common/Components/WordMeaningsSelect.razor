@@ -1,0 +1,53 @@
+﻿@using Corelibs.Basic.Functional
+@using Microsoft.JSInterop
+
+@inject IJSRuntime JSRuntime
+@implements IDisposable
+
+@if (!IsOn) { return; }
+
+<div style="position: fixed; width: 100vh; height: 100vw;">
+    <MudOverlay Visible=true OnClick=@Switch ZIndex=9999/>
+    <div class="select">
+        <MudText Typo=Typo.h5 Class="pl-3" Style="font-family: unica; text-transform: uppercase; font-weight: bold;">Select Word Meaning</MudText>
+        <WordMeaningsGrid />
+    </div>
+</div>
+
+@code {
+    [Parameter] public EventCallback<bool> OnSwitch { get; set; }
+
+    public bool IsOn { get; private set; }
+
+    private DotNetObjectReference<WordMeaningsSelect>? _ref;
+
+    public void Dispose() => _ref?.Dispose();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+            return;
+
+        _ref?.Dispose();
+        _ref = DotNetObjectReference.Create(this);
+        await JSRuntime.AddKeyDownEventHandler(_ref, nameof(OnKey));
+    }
+
+    public async Task Switch()
+    {
+        IsOn = !IsOn;
+
+        await OnSwitch.InvokeAsync(IsOn);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    [JSInvokableAttribute("OnKey")]
+    public async Task OnKey(bool isCtrl, bool altKey, string key)
+    {
+        if (isCtrl || altKey || key != "Escape")
+            return;
+
+        if (IsOn)
+            await Switch();
+    }
+}

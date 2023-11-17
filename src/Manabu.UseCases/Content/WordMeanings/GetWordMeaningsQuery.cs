@@ -17,13 +17,13 @@ public record ModifierArg(
     int Order = 1,
     string? Value = null);
 
-public record GetWordMeaningsQueryResponse(WordsDTO Content);
+public record GetWordMeaningsQueryResponse(WordMeaningsDTO Content);
 
-public record WordsDTO(
-    WordDTO[] Words,
+public record WordMeaningsDTO(
+    WordMeaningDTO[] Words,
     RangeDTO Range);
 
-public record WordDTO(
+public record WordMeaningDTO(
     string Id,
     string Value,
     string? Meaning,

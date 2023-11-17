@@ -91,8 +91,8 @@ public class GetWordMeaningsQueryHandler : IQueryHandler<GetWordMeaningsQuery, R
             .ToListAsync();
 
         return result.With(new GetWordMeaningsQueryResponse(
-            new WordsDTO(
-                Words: words.Select(w => new WordDTO(
+            new WordMeaningsDTO(
+                Words: words.Select(w => new WordMeaningDTO(
                     w.Id.Value, 
                     w.Value,
                     w.MeaningsJoined?.FirstOrDefault()?.Translations?.FirstOrDefault(),

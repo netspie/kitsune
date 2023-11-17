@@ -1,0 +1,157 @@
+﻿@using Manabu.UseCases.Content.WordMeanings
+
+@inherits CoreComponent
+
+@if (_dto is null) { return; }
+
+<div class="">
+    <SortAndFilterBar SortProperties=@SortProperties
+                        FilterProperties=@FilterProperties
+                        OnValueChanged=@OnSortOrFilterValueChanged />
+
+    <MudDataGrid @ref=_mudDataGrid Items="@_elements" Filterable=false Bordered=false Hover=true RowClick=@OnWordClick T="WordItem" Outlined=false RowsPerPage=@Limit Elevation=0>
+        <Columns>
+            <PropertyColumn Property="x => x.Meaning" Filterable=false />
+            <PropertyColumn Property="x => x.Word" Filterable=false />
+            <PropertyColumn Property="x => x.Reading" Title="Reading" Filterable=false />
+        </Columns>
+        <PagerContent>
+            <MudStack Row=true Style="width: 100%;">
+                <MudStack Row=true Style="width: 100%; display: flex; justify-content: right;">
+                    <div class="mud-table-pagination-caption">
+                        <div class="mud-table-page-number-information">
+                            <span>@_dto.Range.Start</span>
+                            -
+                            <span>@(Math.Min(_dto.Range.Limit + _dto.Range.Start, _dto.Range.TotalCount))</span>
+                            of
+                            <span>@(_dto.Range.TotalCount)</span>
+                        </div>
+                    </div>
+                </MudStack>
+                <div style="display: flex; justify-content: right;">
+                    <MudIconButton Class="mud-flip-x-rtl" Icon=@Icons.Material.Outlined.KeyboardDoubleArrowLeft @onclick=@OnFirstWordPage aria-label="Previous page" />
+                    <MudIconButton Class="mud-flip-x-rtl" Icon=@Icons.Material.Outlined.KeyboardArrowLeft @onclick=@OnPrevWordPage aria-label="First page" />
+                    <MudIconButton Class="mud-flip-x-rtl" Icon=@Icons.Material.Outlined.KeyboardArrowRight @onclick=@OnNextWordPage aria-label="Previous page" />
+                    <MudIconButton Class="mud-flip-x-rtl" Icon=@Icons.Material.Outlined.KeyboardDoubleArrowRight @onclick=@OnLastWordPage aria-label="Previous page" />
+                </div>
+            </MudStack>
+        </PagerContent>
+    </MudDataGrid>
+</div>
+
+@code {
+    private WordMeaningsDTO? _dto;
+
+    private string? _searchTextArg;
+
+    private RangeArg _rangeArg = new(0, Limit);
+
+    private const int Limit = 10;
+    private List<WordItem> _elements = new();
+
+    private MudDataGrid<WordItem>? _mudDataGrid;
+
+    private string[] SortProperties = new[] { "Word", "Part Of Speech" };
+    private SortAndFilterBar.FilterDef[] FilterProperties = new SortAndFilterBar.FilterDef[]
+    {
+        "Word",
+        new("Part Of Speech", new() { new("verb", "Verb"), new("adjective", "Adjective"), new("noun", "Noun"),  new("numeral", "Numeral") })
+    };
+
+    private List<ModifierArg> _modifierArgs = new();
+
+    protected override async Task BeforeInitializedAsyncImpl()
+    {
+        SortProperties = SortProperties.Except("Part Of Speech").ToArray();
+        FilterProperties = FilterProperties.Where(f => f.Value != "Part Of Speech").ToArray();
+    }
+
+    protected override Task OnAfterRenderAsyncImpl(bool firstRender)
+    {
+        return base.OnAfterRenderAsyncImpl(firstRender);
+    }
+
+    private async Task OnWordClick(DataGridRowClickEventArgs<WordItem> args)
+    {
+        Navigation.NavigateTo($"wordMeanings/{args.Item.Id}");
+    }
+
+    private async Task OnPrevWordPage()
+    {
+        _rangeArg = new RangeArg(Math.Max(_rangeArg.Start - _rangeArg.Limit, 0), _rangeArg.Limit);
+        await RefreshViewModel();
+    }
+
+    private async Task OnNextWordPage()
+    {
+        _rangeArg = new RangeArg(_rangeArg.Start + _rangeArg.Limit, _rangeArg.Limit);
+        await RefreshViewModel();
+    }
+
+    private async Task OnFirstWordPage()
+    {
+        _rangeArg = new RangeArg(0, _rangeArg.Limit);
+        await RefreshViewModel();
+    }
+
+    private async Task OnLastWordPage()
+    {
+        _rangeArg = new RangeArg(Math.Max(_dto.Range.TotalCount - _rangeArg.Limit, 0), _dto.Range.Limit);
+        await RefreshViewModel();
+    }
+
+    private async Task OnSortOrFilterValueChanged(List<SortAndFilterBar.Value> selectedValues)
+    {
+        _modifierArgs = selectedValues
+            .Select(v => new ModifierArg(
+                Field: v.Text,
+                IsSort: v.Type is SortAndFilterBar.PropertyType.Sort ? true : false,
+                Order: v.Descending ? -1 : 1,
+                Value: v?.Selected?.Id)).ToList();
+
+        await RefreshViewModel();
+    }
+
+    private async Task OnSearchValueChanged(string value)
+    {
+        _searchTextArg = value;
+        await RefreshViewModel();
+    }
+
+    protected override async Task RefreshViewModel()
+    {
+        var response = await QueryExecutor.Execute<GetWordMeaningsQuery, GetWordMeaningsQueryResponse>(
+            new GetWordMeaningsQuery(_rangeArg, _modifierArgs.ToArray()));
+
+        _dto = response.Content;
+
+        _elements = _dto.Words.Select(w => new WordItem(w.Id, w.Meaning, w.Value, w.Reading)).ToList();
+    }
+
+    public record WordItem(
+        string Id,
+        string? Meaning = null,
+        string? Word = null,
+        string? Reading = null);
+
+    [Flags]
+    public enum Column
+    {
+        Word = 1,
+        Meaning = 2,
+        PartOfSpeech = 4,
+        Property = 8,
+        Properties = 16,
+        Reading = 32
+    }
+
+    [Flags]
+    public enum PartOfSpeech
+    {
+        Verb = 1,
+        Noun = 2,
+        Particle = 4,
+        Numeral = 8,
+        Adjective = 16,
+    }
+}

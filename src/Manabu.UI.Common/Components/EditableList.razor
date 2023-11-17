@@ -133,15 +133,18 @@
                             <div style="display: grid; grid-template-columns: 1fr auto; align-items: center; width: 100%">
                                 @if (_isAdding && item.IsEditing)
                                 {
-                                    <TextField 
-                                        IsEditing=true
-                                        Value=@item.Name
-                                        OnBlur=@OnEditableItemBlur
-                                        OnEdit=@(text => 
-                                        {
-                                            item.Name = text;
-                                            return OnTextFieldValueChanged(item);
-                                        }) />
+                                    if (OnCustomAdd is null)
+                                    {
+                                        <TextField 
+                                            IsEditing=true
+                                            Value=@item.Name
+                                            OnBlur=@OnEditableItemBlur
+                                            OnEdit=@(text => 
+                                            {
+                                                item.Name = text;
+                                                return OnTextFieldValueChanged(item);
+                                            }) />
+                                    }
                                 }
                                 else
                                 {
@@ -226,10 +229,13 @@
     public delegate Task OnItemActionDelegate(TreeItemData item, MenuItem menuItem);
     public delegate Task OnCutItemDelegate(TreeItemData[] items);
     public delegate TreeItemData CreateCustomItemDataDelegate(TreeItemData parent);
+    public delegate Task CreateCustomItemDataAddDelegate(TreeItemData item, MenuItem menuItem);
 
-    [Parameter] public RenderFragment<TreeItemData> CustomItemTemplate { get; set; }
-    [Parameter] public RenderFragment TopMenuButtons { get; set; }
-    [Parameter] public CreateCustomItemDataDelegate CreateCustomItemData { get; set; }
+    [Parameter] public RenderFragment<TreeItemData>? CustomItemTemplate { get; set; }
+    [Parameter] public RenderFragment? TopMenuButtons { get; set; }
+    [Parameter] public CreateCustomItemDataDelegate? CreateCustomItemData { get; set; }
+
+    [Parameter] public CreateCustomItemDataAddDelegate? OnCustomAdd { get; set; }
 
     [Parameter] public string Name { get; set; }
     [Parameter] public OnAddDelegate OnAddItem { get; set; }
@@ -296,7 +302,7 @@
         });
     }
 
-    private void OnEditableItemBlur()
+    public void OnEditableItemBlur()
     {
         ClearItemsWithNoIds();
         InvokeAsync(StateHasChanged);
@@ -357,6 +363,9 @@
                 newItem.IsEditing = true;
                 treeItems.Insert(i, newItem);
                 AssignIndex(TreeItems);
+
+                if (OnCustomAdd is not null)
+                    await UIComponent.InvokeVoid(OnCustomAdd, item, menuItem)();
             }
             else
             {
@@ -372,9 +381,12 @@
                 int i = menuItem.Id == MenuItems.AddChildAsFirst.Id ? 0 : treeItems.Count;
                 treeItems.Insert(i, newItem);
                 AssignIndex(TreeItems);
+
+                if (OnCustomAdd is not null)
+                    await UIComponent.InvokeVoid(OnCustomAdd, item, menuItem)();
             }
         }
-        else 
+        else
         if (menuItem.Id == MenuItems.Remove.Id)
         {
             var treeItems = item?.Parent is not null ? item.Parent.TreeItems : TreeItems;

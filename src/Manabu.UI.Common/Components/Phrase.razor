@@ -14,7 +14,7 @@
 
 @if (_phrase is null) { return; }
 
-<MudStack Class="main-section phrase" Style="width: 100%;">
+<MudStack Class="main-section phrase" Style=@($"width: 100%")>
     <SiteTitle>@SiteTitle.Name</SiteTitle>
 
     <MudBreadcrumbs Items=@_breadcrumbs Style="padding-left: 0; font-size: 12px" />
@@ -77,11 +77,14 @@
     @if (IsEdit || !_wordTreeItems.IsNullOrEmpty())
     {
         <EditableList
+            @ref=@_wordsList
             Name="Words"
             IsReadonly=@(!IsEdit)
             TreeItems=@_wordTreeItems
             MenuItemsRoot=@WordsMenuRootItems
             MenuItemsForAll=@WordsMenuItems
+            OnAddItem=@OnWordAdd
+            OnCustomAdd=@OnCustomUIAdd
             NoIndents=true />
     }
 
@@ -92,12 +95,18 @@
         <MudSwitch @bind-Checked=@_isEdit Label="Edit Mode" Color="Color.Info" />
     }
 
+    <WordMeaningsSelect 
+        @ref=_wordMeaningsSelect
+        OnSwitch=@OnWordMeaningSelectSwitch />
+
 </MudStack>
 
 @code {
     [Parameter] public string PhraseId { get; set; }
 
-    private List<EditableList.TreeItemData>? _wordTreeItems;
+    private EditableList? _wordsList;
+    private List<EditableList.TreeItemData>? _wordTreeItems = new();
+
     private List<EditableList.TreeItemData>? _translationTreeItems;
     private List<EditableList.TreeItemData>? _contextTreeItems;
     private List<EditableList.TreeItemData>? _audioTreeItems;
@@ -108,6 +117,8 @@
 
     [Inject] public IMediaStorage<Audio> AudioStorage { get; set; }   
     [Inject] public State.SiteTitle SiteTitle { get; set; }
+
+    private WordMeaningsSelect? _wordMeaningsSelect;
 
     private async Task<Result> OnAudioUpload(IBrowserFile file)
     {
@@ -123,7 +134,7 @@
     protected override async Task OnInitializedAsyncImpl()
     {
         SiteTitle.Rename("PHRASE");
-        
+
         await RefreshViewModel();
 
         if (_phrase is null)
@@ -219,6 +230,24 @@
 
     #region Words
 
+    private async Task OnCustomUIAdd(EditableList.TreeItemData item, MenuItem menuItem)
+    {
+        await _wordMeaningsSelect!.Switch();
+
+        return;
+    }
+
+    private Task OnWordMeaningSelectSwitch(bool isOn)
+    {
+        return RefreshView();
+    }
+
+    private async Task<bool> OnWordAdd(EditableList.TreeItemData item, int index, MenuItem menuItem)
+    {
+        //await _wordMeaningsSelect.Switch();
+        return true;
+    }
+
     private async Task OnRemoveWord(EditableList.TreeItemData item, MenuItem menuItem)
     {
         var result = await AudioStorage.Delete(item.Name);
@@ -226,7 +255,7 @@
             return;
 
         //await ExecuteAdminViewAction(() => CommandExecutor.Execute(
-            //new RemovePhraseAudioCommand(_phrase.Id, item.Id)));
+        //new RemovePhraseAudioCommand(_phrase.Id, item.Id)));
     }
 
     private MenuItem[] WordsMenuRootItems = new MenuItem[]
@@ -242,7 +271,7 @@
     };
 
     #endregion
-    
+
     protected override async Task RefreshViewModel()
     {
         var response = await QueryExecutor.Execute<GetPhraseQuery, GetPhraseQueryResponse>(
@@ -258,5 +287,7 @@
 
         _audioTreeItems = _phrase?.Audios?.SelectOrEmpty(a =>
             new EditableList.TreeItemData(a.Id, a.Href, "audio")).ToList();
+
+        _wordTreeItems = new();
     }
 }
