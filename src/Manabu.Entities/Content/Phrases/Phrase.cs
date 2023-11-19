@@ -1,4 +1,5 @@
-﻿using Corelibs.Basic.DDD;
+﻿using Corelibs.Basic.Collections;
+using Corelibs.Basic.DDD;
 using Manabu.Entities.Content.Audios;
 using Manabu.Entities.Content.Conversations;
 using Manabu.Entities.Content.Users;
@@ -15,7 +16,7 @@ public class Phrase : Entity<PhraseId>, IAggregateRoot<PhraseId>
     public List<string>? Translations { get; set; }
     public List<AudioId>? Audios { get; set; }
     public List<string>? Contexts { get; set; }
-    public List<WordMeaningId>? WordMeanings { get; private set; }
+    public List<WordLink>? WordMeanings { get; private set; }
     public List<ConversationId>? Conversations { get; private set; }
 
     public Phrase(
@@ -47,6 +48,33 @@ public class Phrase : Entity<PhraseId>, IAggregateRoot<PhraseId>
 
         return true;
     }
+
+    public bool AddWord(WordLink word)
+    {
+        if (!WordMeanings!.IsNullOrEmpty() && WordMeanings!.Contains(word)) 
+            return false;
+
+        WordMeanings ??= new();
+        WordMeanings.Add(word);
+
+        return true;
+    }
 }
 
 public class PhraseId : EntityId { public PhraseId(string value) : base(value) { } }
+
+public record WordLink(
+    WordMeaningId WordMeaningId,
+    string? WordInflectionId = null,
+    string? Reading = null,
+    WritingMode? WritingMode = null,
+    string? CustomWriting = null);
+
+public record WritingMode(string Value)
+{
+    public static readonly WritingMode Hiragana = new("hiragana");
+    public static readonly WritingMode Katakana = new("katakana");
+    public static readonly WritingMode Custom = new("custom");
+}
+
+public record ValueIndex(string Value, int Index);

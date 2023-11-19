@@ -1,0 +1,29 @@
+﻿div ::deep .mud-table-foot {
+    display: none;
+}
+
+@media only screen and (max-width: 600px) {
+    div ::deep .mud-xs-table .mud-table-row {
+        display: table-row;
+    }
+
+    div ::deep .mud-xs-table .mud-table-cell {
+        display: table-cell;
+        padding: 16px;
+        font-size: .875rem;
+        text-align: start;
+        font-weight: 400;
+        line-height: 1.43;
+        border-bottom: 1px solid var(--mud-palette-table-lines);
+        letter-spacing: .01071em;
+        vertical-align: inherit;
+    }
+
+    div ::deep .mud-xs-table .mud-table-root .mud-table-head, .mud-xs-table .mud-table-root .mud-table-foot {
+        display: table-header-group;
+    }
+
+    div ::deep .mud-xs-table .mud-table-cell:before {
+        display: none;
+    }
+}

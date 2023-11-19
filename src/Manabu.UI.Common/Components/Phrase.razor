@@ -97,7 +97,8 @@
 
     <WordMeaningsSelect 
         @ref=_wordMeaningsSelect
-        OnSwitch=@OnWordMeaningSelectSwitch />
+        OnSwitch=@OnWordMeaningSelectSwitch
+        OnWordMeaningSelected=@OnWordMeaningSelected />
 
 </MudStack>
 
@@ -240,6 +241,11 @@
     private Task OnWordMeaningSelectSwitch(bool isOn)
     {
         return RefreshView();
+    }
+
+    private async Task OnWordMeaningSelected(WordMeaningsGrid.WordItem word)
+    {
+        Console.WriteLine("sd");
     }
 
     private async Task<bool> OnWordAdd(EditableList.TreeItemData item, int index, MenuItem menuItem)

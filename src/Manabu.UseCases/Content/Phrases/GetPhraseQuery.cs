@@ -23,11 +23,3 @@ public record WordMeaningDTO(
     string Id,
     string Original,
     string WritingType);
-
-public record WritingMode(string Value)
-{
-    public static readonly WritingMode Dictionary = new("dictionary");
-    public static readonly WritingMode Hiragana = new("hiragana");
-    public static readonly WritingMode Katakana = new("katakana");
-    public static readonly WritingMode OtherWriting = new("otherWriting");
-}

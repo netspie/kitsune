@@ -27,7 +27,6 @@ public record WordMeaningDTO(
     string Id,
     string Value,
     string? Meaning,
-    string? PartOfSpeech,
     string? Reading);
 
 public record RangeDTO(

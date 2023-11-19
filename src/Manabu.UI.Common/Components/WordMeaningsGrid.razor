@@ -5,12 +5,32 @@
 @if (_dto is null) { return; }
 
 <div class="">
-    <SortAndFilterBar SortProperties=@SortProperties
-                        FilterProperties=@FilterProperties
-                        OnValueChanged=@OnSortOrFilterValueChanged />
-
-    <MudDataGrid @ref=_mudDataGrid Items="@_elements" Filterable=false Bordered=false Hover=true RowClick=@OnWordClick T="WordItem" Outlined=false RowsPerPage=@Limit Elevation=0>
+    <div class="d-flex mb-6 align-center">
+        <div class="flex-grow-0">
+            <SortAndFilterBar 
+                SortProperties=@SortProperties
+                FilterProperties=@FilterProperties
+                OnValueChanged=@OnSortOrFilterValueChanged />
+        </div>
+        <div class="d-flex align-center justify-end" style="width: 100%; @_writingSettingsCssStyle; display: none;">
+            <MudRadioGroup T=int SelectedOption=1>
+                <MudRadio Option=1>Default</MudRadio>
+                <MudRadio Option=2>Hiragana</MudRadio>
+                <MudRadio Option=3>Katakana</MudRadio>
+                <MudRadio Option=4>Custom</MudRadio>
+            </MudRadioGroup>
+            <MudSelect T=string Label="Inflection" Variant=Variant.Outlined AnchorOrigin=Origin.BottomCenter FullWidth=false>
+                <MudSelectItem T=string Value=@("Inflection 1") />
+                <MudSelectItem T=string Value=@("Inflection 2") />
+                <MudSelectItem T=string Value=@("Inflection 3") />
+            </MudSelect>
+        </div>
+    </div>
+    
+    <MudDataGrid @ref=_mudDataGrid MultiSelection=false SelectedItemChanged=@OnSelectedItemChanged
+        Items="@_elements" Filterable=false Bordered=false SelectOnRowClick=true Hover=true RowClick=@OnWordClick T="WordItem" Outlined=false RowsPerPage=@Limit Elevation=0>
         <Columns>
+            <SelectColumn T=WordItem />
             <PropertyColumn Property="x => x.Meaning" Filterable=false />
             <PropertyColumn Property="x => x.Word" Filterable=false />
             <PropertyColumn Property="x => x.Reading" Title="Reading" Filterable=false />
@@ -40,6 +60,8 @@
 </div>
 
 @code {
+    [Parameter] public EventCallback<WordItem> OnWordMeaningSelected { get; set; }
+
     private WordMeaningsDTO? _dto;
 
     private string? _searchTextArg;
@@ -51,29 +73,29 @@
 
     private MudDataGrid<WordItem>? _mudDataGrid;
 
-    private string[] SortProperties = new[] { "Word", "Part Of Speech" };
+    private string _writingSettingsCssStyle => 
+        _mudDataGrid is not null &&
+        _mudDataGrid.Selection.Any() &&
+        _mudDataGrid.Selection.All(i => i is not null) ? "" : "display: none !important;";
+
+    private string[] SortProperties = new[] { "Word", "Meaning" };
     private SortAndFilterBar.FilterDef[] FilterProperties = new SortAndFilterBar.FilterDef[]
     {
         "Word",
-        new("Part Of Speech", new() { new("verb", "Verb"), new("adjective", "Adjective"), new("noun", "Noun"),  new("numeral", "Numeral") })
+        "Meaning"
     };
 
     private List<ModifierArg> _modifierArgs = new();
 
-    protected override async Task BeforeInitializedAsyncImpl()
-    {
-        SortProperties = SortProperties.Except("Part Of Speech").ToArray();
-        FilterProperties = FilterProperties.Where(f => f.Value != "Part Of Speech").ToArray();
-    }
+    private Task OnWordClick(DataGridRowClickEventArgs<WordItem> args) => 
+        OnWordMeaningSelected.InvokeAsync(args.Item);
 
-    protected override Task OnAfterRenderAsyncImpl(bool firstRender)
+    private void OnSelectedItemChanged(WordItem item)
     {
-        return base.OnAfterRenderAsyncImpl(firstRender);
-    }
+        _mudDataGrid?.Selection.Clear();
+        _mudDataGrid?.Selection.Add(item);
 
-    private async Task OnWordClick(DataGridRowClickEventArgs<WordItem> args)
-    {
-        Navigation.NavigateTo($"wordMeanings/{args.Item.Id}");
+        Console.WriteLine("");
     }
 
     private async Task OnPrevWordPage()

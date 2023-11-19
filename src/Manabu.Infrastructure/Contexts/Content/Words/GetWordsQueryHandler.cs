@@ -30,7 +30,6 @@ public class GetWordsQueryHandler : IQueryHandler<GetWordsQuery, Result<GetWords
         var result = Result<GetWordsQueryResponse>.Success();
 
         var wordsCollection = _mongoConnection.Database.GetCollection<Word>(Word.DefaultCollectionName);
-        var wordsFilter = Builders<Word>.Filter.Empty;
 
         var range = query.Range ?? new RangeArg(0, MaxItemLimit);
         var limit = Math.Min(range.Limit, MaxItemLimit);

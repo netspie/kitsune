@@ -10,12 +10,14 @@
     <MudOverlay Visible=true OnClick=@Switch ZIndex=9999/>
     <div class="select">
         <MudText Typo=Typo.h5 Class="pl-3" Style="font-family: unica; text-transform: uppercase; font-weight: bold;">Select Word Meaning</MudText>
-        <WordMeaningsGrid />
+        <WordMeaningsGrid 
+            OnWordMeaningSelected=@OnWordMeaningSelected />
     </div>
 </div>
 
 @code {
     [Parameter] public EventCallback<bool> OnSwitch { get; set; }
+    [Parameter] public EventCallback<WordMeaningsGrid.WordItem> OnWordMeaningSelected { get; set; }
 
     public bool IsOn { get; private set; }
 
