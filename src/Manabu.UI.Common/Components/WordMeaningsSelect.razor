@@ -6,7 +6,7 @@
 
 @if (!IsOn) { return; }
 
-<div style="position: fixed; width: 100vh; height: 100vw;">
+<div style="position: fixed; width: 100vw; height: 100vh; overflow: scroll; padding-bottom: 1000px;">
     <MudOverlay Visible=true OnClick=@Switch ZIndex=9999/>
     <div class="select">
         <MudText Typo=Typo.h5 Class="pl-3" Style="font-family: unica; text-transform: uppercase; font-weight: bold;">Select Word Meaning</MudText>

@@ -12,7 +12,7 @@
 
 @inherits CoreComponent
 
-@if (_phrase is null) { return; }
+@if (_dto is null) { return; }
 
 <MudStack Class="main-section phrase" Style=@($"width: 100%")>
     <SiteTitle>@SiteTitle.Name</SiteTitle>
@@ -21,12 +21,12 @@
 
     <LearnButton LearningObjectId=@PhraseId
                  LearningObjectType=@LearningItemType.Phrase.Value
-                 IsAlreadyAdded=_phrase.Learned/>
+                 IsAlreadyAdded=_dto.Learned/>
 
     <TextField 
         Label="Original"
         IsReadonly=@(!IsEdit)
-        Value=@_phrase.Original 
+        Value=@_dto.Original 
         OnEdit=@OnOriginalEdit />
 
     <EditableList
@@ -84,6 +84,7 @@
             MenuItemsRoot=@WordsMenuRootItems
             MenuItemsForAll=@WordsMenuItems
             OnAddItem=@OnWordAdd
+            OnItemClick=@OnWordClick
             OnCustomAdd=@OnCustomUIAdd
             NoIndents=true />
     }
@@ -114,7 +115,7 @@
 
     private List<BreadcrumbItem> _breadcrumbs = new();
 
-    private PhraseDetailsDTO? _phrase;
+    private PhraseDetailsDTO? _dto;
 
     [Inject] public IMediaStorage<Audio> AudioStorage { get; set; }   
     [Inject] public State.SiteTitle SiteTitle { get; set; }
@@ -127,7 +128,7 @@
         var res = await AudioStorage.Save((maxSize, ct) => file.OpenReadStream(1024*1024*10, ct), originalFileName);
         if (res.Item1.IsSuccess)
             await ExecuteAdminViewAction(() => CommandExecutor.Execute(
-                new AddPhraseAudioCommand(_phrase.Id, res.Item2)));
+                new AddPhraseAudioCommand(_dto.Id, res.Item2)));
 
         return res.Item1;
     }
@@ -138,7 +139,7 @@
 
         await RefreshViewModel();
 
-        if (_phrase is null)
+        if (_dto is null)
             return;
 
         //_breadcrumbs.Add(new("Courses", href: "/courses"));
@@ -149,7 +150,7 @@
 
     private Task<bool> OnOriginalEdit(string original) =>
          ExecuteAdminViewAction(() => CommandExecutor.Execute(
-                new UpdatePhraseCommand(_phrase.Id, original)));
+                new UpdatePhraseCommand(_dto.Id, original)));
 
     #region Translations
 
@@ -170,16 +171,16 @@
     private Task<bool> OnAddTranslation(
         EditableList.TreeItemData item, int index, MenuItem menuItem) =>
             ExecuteAdminViewAction(() => CommandExecutor.Execute(
-                new UpdatePhraseCommand(_phrase.Id, Translations: _translationTreeItems.Select(i => i.Name).ToArray())));
+                new UpdatePhraseCommand(_dto.Id, Translations: _translationTreeItems.Select(i => i.Name).ToArray())));
 
     private async Task OnRemoveTranslation(EditableList.TreeItemData item, MenuItem menuItem) =>
         await ExecuteAdminViewAction(() => CommandExecutor.Execute(
-            new UpdatePhraseCommand(_phrase.Id, Translations: _translationTreeItems.Select(i => i.Name).ToArray())));
+            new UpdatePhraseCommand(_dto.Id, Translations: _translationTreeItems.Select(i => i.Name).ToArray())));
 
     private Task<bool> OnMoveTranslation(
         EditableList.TreeItemData item, int index, MenuItem menuItem) =>
             ExecuteAdminViewAction(() => CommandExecutor.Execute(
-                new UpdatePhraseCommand(_phrase.Id, Translations: _translationTreeItems.Select(i => i.Name).ToArray())));
+                new UpdatePhraseCommand(_dto.Id, Translations: _translationTreeItems.Select(i => i.Name).ToArray())));
 
     #endregion
 
@@ -188,11 +189,11 @@
     private Task<bool> OnAddContext(
         EditableList.TreeItemData item, int index, MenuItem menuItem) =>
             ExecuteAdminViewAction(() => CommandExecutor.Execute(
-                new UpdatePhraseCommand(_phrase.Id, Contexts: _contextTreeItems.Select(i => i.Name).ToArray())));
+                new UpdatePhraseCommand(_dto.Id, Contexts: _contextTreeItems.Select(i => i.Name).ToArray())));
 
     private async Task OnRemoveContext(EditableList.TreeItemData item, MenuItem menuItem) =>
         await ExecuteAdminViewAction(() => CommandExecutor.Execute(
-            new UpdatePhraseCommand(_phrase.Id, Translations: _contextTreeItems.Select(i => i.Name).ToArray())));
+            new UpdatePhraseCommand(_dto.Id, Translations: _contextTreeItems.Select(i => i.Name).ToArray())));
 
     private MenuItem[] ContextsMenuItemsRoot = new MenuItem[]
     {
@@ -219,7 +220,7 @@
             return;
 
         await ExecuteAdminViewAction(() => CommandExecutor.Execute(
-            new RemovePhraseAudioCommand(_phrase.Id, item.Id)));
+            new RemovePhraseAudioCommand(_dto.Id, item.Id)));
     }
 
     private MenuItem[] AudioMenuItems = new MenuItem[]
@@ -243,14 +244,15 @@
         return RefreshView();
     }
 
-    private async Task OnWordMeaningSelected(WordMeaningsGrid.WordItem word)
-    {
-        Console.WriteLine("sd");
-    }
+    private Task OnWordMeaningSelected(WordMeaningsGrid.WordItem word) =>
+        ExecuteAdminViewAction(() => CommandExecutor.Execute(
+            new AddWordToPhraseCommand(_dto.Id, word.Id)));
 
     private async Task<bool> OnWordAdd(EditableList.TreeItemData item, int index, MenuItem menuItem)
     {
         //await _wordMeaningsSelect.Switch();
+
+        
         return true;
     }
 
@@ -262,6 +264,11 @@
 
         //await ExecuteAdminViewAction(() => CommandExecutor.Execute(
         //new RemovePhraseAudioCommand(_phrase.Id, item.Id)));
+    }
+
+    private async Task OnWordClick(EditableList.TreeItemData item)
+    {
+        Navigation.NavigateTo($"word-meanings/{item.Id}");
     }
 
     private MenuItem[] WordsMenuRootItems = new MenuItem[]
@@ -283,18 +290,18 @@
         var response = await QueryExecutor.Execute<GetPhraseQuery, GetPhraseQueryResponse>(
             new GetPhraseQuery(PhraseId));
 
-        _phrase = response?.Content;
+        _dto = response?.Content;
 
-        _translationTreeItems = _phrase?.Translations?.SelectOrEmpty(t =>
+        _translationTreeItems = _dto?.Translations?.SelectOrEmpty(t =>
             new EditableList.TreeItemData(t, t, "translation")).ToList();
 
-        _contextTreeItems = _phrase?.Contexts?.SelectOrEmpty(c =>
+        _contextTreeItems = _dto?.Contexts?.SelectOrEmpty(c =>
             new EditableList.TreeItemData(c, c, "context")).ToList();
 
-        _audioTreeItems = _phrase?.Audios?.SelectOrEmpty(a =>
+        _audioTreeItems = _dto?.Audios?.SelectOrEmpty(a =>
             new EditableList.TreeItemData(a.Id, a.Href, "audio")).ToList();
 
-        _wordTreeItems = _phrase?.WordMeanings?.SelectOrEmpty(w =>
+        _wordTreeItems = _dto?.WordMeanings?.SelectOrEmpty(w =>
             new EditableList.TreeItemData(w.Id, $"{w.Original} - {w.Translation}", "audio")).ToList();
     }
 }

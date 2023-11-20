@@ -28,7 +28,7 @@
     </div>
     
     <MudDataGrid @ref=_mudDataGrid MultiSelection=false SelectedItemChanged=@OnSelectedItemChanged
-        Items="@_elements" Filterable=false Bordered=false SelectOnRowClick=true Hover=true RowClick=@OnWordClick T="WordItem" Outlined=false RowsPerPage=@Limit Elevation=0>
+        Items="@_elements" Filterable=false Bordered=false SelectOnRowClick=true Hover=true T="WordItem" Outlined=false RowsPerPage=@Limit Elevation=0>
         <Columns>
             <SelectColumn T=WordItem />
             <PropertyColumn Property="x => x.Meaning" Filterable=false />
@@ -57,6 +57,8 @@
             </MudStack>
         </PagerContent>
     </MudDataGrid>
+
+    <MudButton Variant="Variant.Filled" DisableElevation=true OnClick=@OnWordClick>Add</MudButton>
 </div>
 
 @code {
@@ -87,8 +89,8 @@
 
     private List<ModifierArg> _modifierArgs = new();
 
-    private Task OnWordClick(DataGridRowClickEventArgs<WordItem> args) => 
-        OnWordMeaningSelected.InvokeAsync(args.Item);
+    private Task OnWordClick() => 
+        OnWordMeaningSelected.InvokeAsync(_mudDataGrid.Selection.FirstOrDefault());
 
     private void OnSelectedItemChanged(WordItem item)
     {
