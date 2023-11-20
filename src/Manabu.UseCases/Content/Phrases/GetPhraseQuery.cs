@@ -22,4 +22,8 @@ public record AudioDTO(string Id, string Href);
 public record WordMeaningDTO(
     string Id,
     string Original,
-    string WritingType);
+    string Translation,
+    string? WordInflectionId = null,
+    string? Reading = null,
+    string? WritingMode = null,
+    string? CustomWriting = null);

@@ -294,6 +294,7 @@
         _audioTreeItems = _phrase?.Audios?.SelectOrEmpty(a =>
             new EditableList.TreeItemData(a.Id, a.Href, "audio")).ToList();
 
-        _wordTreeItems = new();
+        _wordTreeItems = _phrase?.WordMeanings?.SelectOrEmpty(w =>
+            new EditableList.TreeItemData(w.Id, $"{w.Original} - {w.Translation}", "audio")).ToList();
     }
 }
