@@ -67,6 +67,19 @@ public class Phrase : Entity<PhraseId>, IAggregateRoot<PhraseId>
 
         return WordMeanings.Remove(word);
     }
+
+    public bool ReorderWord(WordLink word, int index)
+    {
+        if (WordMeanings!.IsNullOrEmpty() || !WordMeanings!.Contains(word))
+            return false;
+
+        if (!WordMeanings.Remove(word))
+            return false;
+
+        WordMeanings.InsertClamped(word, index);
+
+        return true;
+    }
 }
 
 public class PhraseId : EntityId { public PhraseId(string value) : base(value) { } }

@@ -84,6 +84,7 @@
             MenuItemsRoot=@WordsMenuRootItems
             MenuItemsForAll=@WordsMenuItems
             OnRemoveItem=@OnRemoveWord
+            OnMoveItem=@OnReorderWord
             OnItemClick=@OnWordClick
             OnCustomAdd=@OnCustomUIAdd
             NoIndents=true />
@@ -232,30 +233,23 @@
 
     #region Words
 
-    private async Task OnCustomUIAdd(EditableList.TreeItemData item, MenuItem menuItem)
-    {
-        await _wordMeaningsSelect!.Switch();
+    private Task OnCustomUIAdd(EditableList.TreeItemData item, MenuItem menuItem) => _wordMeaningsSelect!.Switch();
 
-        return;
-    }
-
-    private Task OnWordMeaningSelectSwitch(bool isOn)
-    {
-        return RefreshView();
-    }
+    private Task OnWordMeaningSelectSwitch(bool isOn) => RefreshView();
 
     private Task OnWordMeaningSelected(WordMeaningsGrid.WordItem word) =>
         ExecuteAdminViewAction(() => CommandExecutor.Execute(
             new AddPhraseWordCommand(_dto.Id, word.Id)));
 
+    private Task<bool> OnReorderWord(EditableList.TreeItemData item, int index, MenuItem menuItem) =>
+        ExecuteAdminViewAction(() => CommandExecutor.Execute(
+            new ReorderPhraseWordCommand(_dto.Id, item.Id, index)));
+
     private Task OnRemoveWord(EditableList.TreeItemData item, MenuItem menuItem) =>
         ExecuteAdminViewAction(() => CommandExecutor.Execute(
             new RemovePhraseWordCommand(_dto.Id, item.Id)));
 
-    private async Task OnWordClick(EditableList.TreeItemData item)
-    {
-        Navigation.NavigateTo($"word-meanings/{item.Id}");
-    }
+    private async Task OnWordClick(EditableList.TreeItemData item) => Navigation.NavigateTo($"word-meanings/{item.Id}");
 
     private MenuItem[] WordsMenuRootItems = new MenuItem[]
     {
@@ -266,6 +260,8 @@
     private MenuItem[] WordsMenuItems = new MenuItem[]
     {
         MenuItems.AddSibling with { Name = "Add Word" },
+        MenuItems.MoveUp,
+        MenuItems.MoveDown,
         MenuItems.Remove,
     };
 

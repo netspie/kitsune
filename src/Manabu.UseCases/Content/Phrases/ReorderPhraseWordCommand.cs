@@ -3,6 +3,7 @@ using Corelibs.Basic.Collections;
 using Corelibs.Basic.Repository;
 using FluentValidation;
 using Manabu.Entities.Content.Phrases;
+using Manabu.Entities.Content.WordMeanings;
 using Mediator;
 
 namespace Manabu.UseCases.Content.Phrases;
@@ -25,17 +26,19 @@ public class ReorderPhraseWordCommandHandler : ICommandHandler<ReorderPhraseWord
         if (!result.ValidateSuccessAndValues())
             return result.Fail();
 
-        //if (!phrase.AddWord(new WordLink(
-        //    new WordMeaningId(command.WordMeaningId),
-        //        command.WordInflectionId,
-        //        command.Reading,
-        //        command.WritingMode is null ? null : new WritingMode(command.WritingMode),
-        //        command.CustomWriting)))
-        //    return result.Fail();
+        if (!phrase.ReorderWord(
+                new WordLink(
+                    new WordMeaningId(command.WordMeaningId),
+                    command.WordInflectionId,
+                    command.Reading,
+                    command.WritingMode is null ? null : new WritingMode(command.WritingMode),
+                    command.CustomWriting), 
+                command.Index))
+            return result.Fail();
 
-        //await _phraseRepository.Save(phrase, result);
+        await _phraseRepository.Save(phrase, result);
 
-        return result.Fail();
+        return result;
     }
 }
 
