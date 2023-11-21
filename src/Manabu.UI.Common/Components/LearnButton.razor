@@ -3,7 +3,9 @@
 <div>
     @if (!IsAlreadyAdded)
     {
-        <MudButton Variant="Variant.Filled" DisableElevation=true OnClick=@OnClickInternal>Add To Learn</MudButton>
+        <MudButton Variant=@Variant.Filled DisableElevation=true OnClick=@OnClickInternal Class="action-button">
+            Add To Learn
+        </MudButton>
     }
     else
     {

@@ -44,7 +44,7 @@
         </div>
     }
 
-    <div @onclick:stopPropagation="true" @onclick:preventDefault="true">
+    
         @if (IsReadonly)
         {
             if (NoLabels)
@@ -63,13 +63,15 @@
         }
         else
         {
-            <TextField IsSmallLabel=true
+            <div @onclick:stopPropagation="true" @onclick:preventDefault="true" style="height: 100%;">
+                <TextField 
+                    IsSmallLabel=true
                     IsReadonly=@IsReadonly
-                       Label=@("Phrase")
-                       Value=@Content
-                       OnEdit=@OnSubmitPhraseInternal />
+                    Label=@("Phrase")
+                    Value=@Content
+                    OnEdit=@OnSubmitPhraseInternal />
+            </div>
         }
-    </div>
 
 </MudStack>
 

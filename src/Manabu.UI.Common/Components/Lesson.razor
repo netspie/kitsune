@@ -40,15 +40,23 @@
         
     </EditableList>*@
 
-    @if (_isSignedIn)
-    {
-        <LearnButton 
-            LearningObjectId=@LessonId 
-            LearningObjectType=@LearningContainerType.Lesson.Value 
-            IsAlreadyAdded=@_lesson.Learned />
-    }
+    <MudStack Row=true>
 
-    <MudStack>
+        @if (_isSignedIn)
+        {
+            <LearnButton 
+                LearningObjectId=@LessonId 
+                LearningObjectType=@LearningContainerType.Lesson.Value
+                IsAlreadyAdded=@_lesson.Learned />
+        }
+        
+        <GoFlashcardsMenu 
+            RootItemId=@LessonId
+            RootItemType="lesson" />
+
+    </MudStack>
+
+    <MudStack class="mt-4">
         <TextField 
             Label="Name"
             IsReadonly=@(!IsEdit)
@@ -74,11 +82,6 @@
         MenuItemsForAll=@ConvMenuItems 
         NumberPrefix=true />
 
-    <GoFlashcardsMenu 
-        RootItemId=@LessonId
-        RootItemType="lesson" />
-
-    
      @if (IsEdit)
         {
             <MudPaper Class="py-4" Elevation="0">

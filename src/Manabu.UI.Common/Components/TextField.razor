@@ -9,17 +9,19 @@
 
 </style>
 
-<div id=@_id>
+<div id=@_id style="height: 100%;">
     @if (IsEditing)
     {
+        string height = Height is null ? "" : $"min-height: {Height}px;";
+        string style = height is [] ? "" : $"padding: 0; margin: 0; {Height}px;";
         <MudTextField T="string"
                       Label=@Label
                       Variant="Variant.Text"
                       OnBlur=@OnEditableItemBlur
                       Value=@_dynamicText
                       ValueChanged=@OnTextFieldValueChanged
-                      AutoFocus=true 
-                      Style="padding: 0; margin: 0; max-height: 32px;"/>
+                      AutoFocus=true
+                      Style=@($"{style}")/>
     }
     else
     {
@@ -27,7 +29,7 @@
                   Label=@Label
                   Variant="Variant.Text"
                   DisableUnderLine=true
-                  Style="font-weight: bold;">
+                  Style="font-weight: bold; height: 100%;">
             <span>@Value</span>
         </MudField>
     }
@@ -46,6 +48,7 @@
     [Parameter] public Action OnBlur { get; set; }
 
     [Parameter] public bool IsSmallLabel { get; set; }
+    [Parameter] public int? Height { get; set; }
 
     private readonly string _id = Get();
 

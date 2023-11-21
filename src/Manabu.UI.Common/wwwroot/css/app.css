@@ -43,6 +43,18 @@ body {
     position: fixed;
 }
 
+.action-button {
+    font-family: unica;
+    font-weight: bold;
+    background: orangered; 
+    color: white;
+}
+
+.action-button:hover {
+    background: black; 
+    transform:scale(1.1);
+}
+
 @media only screen and (max-width: 600px) {
     .main-section {
         margin-top: 60px;

@@ -19,17 +19,22 @@
 
     <MudBreadcrumbs Items=@_breadcrumbs Style="padding-left: 0; font-size: 12px" />
 
+    <MudStack Row=true>
+        @if (_isSignedIn)
+        {
+            <LearnButton 
+                LearningObjectId=@ConversationId 
+                LearningObjectType=@LearningContainerType.Conversation.Value
+                IsAlreadyAdded=@_conversation.Learned />
+        }
 
-    @if (_isSignedIn)
-    {
-        <LearnButton 
-            LearningObjectId=@ConversationId 
-            LearningObjectType=@LearningContainerType.Conversation.Value
-            IsAlreadyAdded=@_conversation.Learned />
-    }
+         <GoFlashcardsMenu 
+            RootItemId=@ConversationId
+            RootItemType="conversation" />
 
+    </MudStack>
 
-    <MudStack>
+    <MudStack class="mt-4">
         <TextField
             Label="Name"
             IsReadonly=@(!IsEdit)
@@ -88,10 +93,6 @@
         }
     }
     
-    <GoFlashcardsMenu 
-            RootItemId=@ConversationId
-            RootItemType="conversation" />
-
     @if (_isAdmin)
     {
         <MudSwitch @bind-Checked=@_isEdit Label="Edit Mode" Color="Color.Warning" />

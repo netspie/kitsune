@@ -1,7 +1,7 @@
 ﻿@using Manabu.UI.Common.State;
 @using Manabu.UseCases.Content.FlashcardLists;
 
-<div style="margin-top: 15px;">
+<div>
     @*<MudExpansionPanels DisableBorders="true" Elevation="0"
                         Style="width: 300px; gap: 10px;">
         <MudExpansionPanel Text="Flashcards">
@@ -9,7 +9,9 @@
         </MudExpansionPanel>
     </MudExpansionPanels>*@
 
-    <MudButton Variant="Variant.Filled" DisableElevation=true OnClick="@(() => OpenDrawer(Anchor.End))">Flashcards</MudButton>
+    <MudButton Variant=@Variant.Filled DisableElevation=true OnClick="@(() => OpenDrawer(Anchor.End))" Class="action-button">
+        Flashcards
+    </MudButton>
 
     <MudDrawer @bind-Open="@open" Anchor="@anchor" Elevation="1" Variant="@DrawerVariant.Temporary" Width="300px"
         Style="position:fixed;height: 100vh; top: 0; display: flex; justify-content: start;">
@@ -31,7 +33,7 @@
                     <MudSelectItem T="string" Value="@value" />
                 }
             </MudSelect>
-            <MudButton Variant="Variant.Filled" DisableElevation=true OnClick=@OnItemClick>Go</MudButton>
+            <MudButton Variant="Variant.Filled" DisableElevation=true OnClick=@OnItemClick Class="action-button">Go</MudButton>
         </MudStack>
     </MudDrawer>
 </div>
