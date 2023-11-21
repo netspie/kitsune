@@ -128,7 +128,7 @@
                         SelectedChanged=@(selected => OnItemSelected(item, selected))
                         OnClick=@(args => OnItemClickInternal(item))>
 
-                        <BodyContent class="body-content">  
+                        <BodyContent>  
                             <div style="display: grid; grid-template-columns: 1fr auto; align-items: center; width: 100%; padding-left: 0;">
                                 @if (_isAdding && item.IsEditing)
                                 {
