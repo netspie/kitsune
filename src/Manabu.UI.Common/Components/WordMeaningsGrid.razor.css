@@ -27,3 +27,19 @@
         display: none;
     }
 }
+
+
+@media only screen and (max-width: 900px) {
+    .select {
+        display: flex;
+        flex-direction: column;
+        align-items: start !important;
+    }
+
+    .radios-and-inflection {
+        display: flex;
+        flex-direction: column;
+        align-items: start !important;
+    }
+}
+

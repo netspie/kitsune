@@ -1,10 +1,50 @@
 ﻿.select {
-    z-index: 99999; 
-    position: absolute; 
-    background: white; 
+    z-index: 999; 
+    position: absolute;
+    overflow: scroll; 
+    padding: 25px; 
+    padding-bottom: 100px;
+    padding-left: 310px;
+    padding-right: 310px;
+    left: 0;
+    top: 0;
+    background: white;
     width: 100%; 
     height: 100%;
-    top: 0%;
-    left: 0%;
-    transform: translateX(0%);
+}
+
+@media only screen and (max-width: 1500px) {
+    .select {
+        padding-left: 310px;
+        padding-right: 310px;
+    }
+}
+
+@media only screen and (max-width: 1300px) {
+    .select {
+        padding-left: 135px;
+        padding-right: 135px;
+    }
+}
+
+@media only screen and (max-width: 1000px) {
+    .select {
+        padding-left: 100px;
+        padding-right: 100px;   
+    }
+}
+
+@media only screen and (max-width: 800px) {
+    .select {
+        padding-left: 45px;
+        padding-right: 45px;
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    .select {
+        padding-left: 25px;
+        padding-right: 25px;
+        margin-top: 15px;
+    }
 }

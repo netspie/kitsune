@@ -5,14 +5,14 @@
 @if (_dto is null) { return; }
 
 <div class="">
-    <div class="d-flex mb-6 align-center">
+    <div class="select d-flex mb-6 align-center">
         <div class="flex-grow-0">
             <SortAndFilterBar 
                 SortProperties=@SortProperties
                 FilterProperties=@FilterProperties
                 OnValueChanged=@OnSortOrFilterValueChanged />
         </div>
-        <div class="d-flex align-center justify-end" style="width: 100%; @_writingSettingsCssStyle; display: none;">
+        <div class="radios-and-inflection d-flex align-center justify-end" style="width: 100%; @_writingSettingsCssStyle; display: none;">
             <MudRadioGroup T=int SelectedOption=1>
                 <MudRadio Option=1>Default</MudRadio>
                 <MudRadio Option=2>Hiragana</MudRadio>
@@ -26,7 +26,7 @@
             </MudSelect>
         </div>
     </div>
-    
+    <MudButton Variant="Variant.Filled" DisableElevation=true OnClick=@OnWordClick Style="@_writingSettingsCssStyle">Add</MudButton>
     <MudDataGrid @ref=_mudDataGrid MultiSelection=false SelectedItemChanged=@OnSelectedItemChanged
         Items="@_elements" Filterable=false Bordered=false SelectOnRowClick=true Hover=true T="WordItem" Outlined=false RowsPerPage=@Limit Elevation=0>
         <Columns>
@@ -58,7 +58,7 @@
         </PagerContent>
     </MudDataGrid>
 
-    <MudButton Variant="Variant.Filled" DisableElevation=true OnClick=@OnWordClick>Add</MudButton>
+    <MudButton Variant="Variant.Filled" DisableElevation=true OnClick=@OnWordClick Style="@_writingSettingsCssStyle">Add</MudButton>
 </div>
 
 @code {
