@@ -8,17 +8,17 @@ using Mediator;
 
 namespace Manabu.UseCases.Content.Phrases;
 
-public class AddWordToPhraseCommandHandler : ICommandHandler<AddWordToPhraseCommand, Result>
+public class AddPhraseWordCommandHandler : ICommandHandler<AddPhraseWordCommand, Result>
 {
     private readonly IRepository<Phrase, PhraseId> _phraseRepository;
 
-    public AddWordToPhraseCommandHandler(
+    public AddPhraseWordCommandHandler(
         IRepository<Phrase, PhraseId> phraseRepository)
     {
         _phraseRepository = phraseRepository;
     }
 
-    public async ValueTask<Result> Handle(AddWordToPhraseCommand command, CancellationToken ct)
+    public async ValueTask<Result> Handle(AddPhraseWordCommand command, CancellationToken ct)
     {
         var result = Result.Success();
 
@@ -40,7 +40,7 @@ public class AddWordToPhraseCommandHandler : ICommandHandler<AddWordToPhraseComm
     }
 }
 
-public record AddWordToPhraseCommand(
+public record AddPhraseWordCommand(
     string PhraseId,
     string WordMeaningId,
     string? WordInflectionId = null,
@@ -48,4 +48,4 @@ public record AddWordToPhraseCommand(
     string? WritingMode = null,
     string? CustomWriting = null) : ICommand<Result>;
 
-public class AddWordToPhraseCommandValidator : AbstractValidator<AddWordToPhraseCommand> {}
+public class AddWordToPhraseCommandValidator : AbstractValidator<AddPhraseWordCommand> {}

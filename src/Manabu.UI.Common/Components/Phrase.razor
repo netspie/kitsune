@@ -246,7 +246,7 @@
 
     private Task OnWordMeaningSelected(WordMeaningsGrid.WordItem word) =>
         ExecuteAdminViewAction(() => CommandExecutor.Execute(
-            new AddWordToPhraseCommand(_dto.Id, word.Id)));
+            new AddPhraseWordCommand(_dto.Id, word.Id)));
 
     private Task OnRemoveWord(EditableList.TreeItemData item, MenuItem menuItem) =>
         ExecuteAdminViewAction(() => CommandExecutor.Execute(
