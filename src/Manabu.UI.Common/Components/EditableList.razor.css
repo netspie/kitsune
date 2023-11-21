@@ -14,6 +14,8 @@ div ::deep .mud-expand-panel-header {
 }
 
 div ::deep .mud-treeview-item-content {
+    margin: 0;
+    padding: 0;
 }
 
 div ::deep .mud-input-control.mud-input-control-boolean-input.mud-treeview-item-checkbox {
@@ -36,4 +38,11 @@ div ::deep .list-menu-button:hover .mud-button-root {
 div ::deep .list-menu-button:hover .mud-button-root > .mud-icon-button-label > .mud-icon-root {
     color: black;
     transform: scale(1.2);
+}
+
+div ::deep .mud-treeview-item > .mud-treeview-item-content > .mud-treeview-item-arrow {
+    width: 0;
+    height: 0;
+    margin: 0;
+    padding: 0;
 }

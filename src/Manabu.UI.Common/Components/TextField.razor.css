@@ -1,4 +1,9 @@
 ﻿::deep
+    .mud-input-control {
+    margin: 0;
+}
+
+::deep
     .mud-input-control
     .mud-input-control-input-container >
     .mud-input-label-inputcontrol {

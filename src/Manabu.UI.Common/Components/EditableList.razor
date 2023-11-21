@@ -114,11 +114,11 @@
                 MultiSelection=@_multiSelection
                 @ref=_treeView
                 Items=@TreeItems.ToHashSet() Hover="true" Width="100%"
-                Style=@($"margin-left: 0; display: flex; flex-direction: column; gap: {Gap}px;")>
+                Style=@($"margin-left: 0; display: flex; flex-direction: column; gap: {Gap}px; overflow: hidden;")>
 
                 <ItemTemplate Context="item">
                     @{ var itemHeight = item.Display ? "fit-content" : "0px"; }
-                    <MudTreeViewItem
+                    <MudTreeViewItem Class="MudTreeViewItem"
                         Items=@item.TreeItems.ToHashSet()
                         Expanded=@item.IsExpanded
                         ExpandedChanged=@(v => @item.IsExpanded = v)
@@ -128,8 +128,8 @@
                         SelectedChanged=@(selected => OnItemSelected(item, selected))
                         OnClick=@(args => OnItemClickInternal(item))>
 
-                        <BodyContent>  
-                            <div style="display: grid; grid-template-columns: 1fr auto; align-items: center; width: 100%">
+                        <BodyContent class="body-content">  
+                            <div style="display: grid; grid-template-columns: 1fr auto; align-items: center; width: 100%; padding-left: 0;">
                                 @if (_isAdding && item.IsEditing)
                                 {
                                     if (OnCustomAdd is null)
@@ -182,7 +182,7 @@
 
                                     bool hasMenuItemsForAll = !MenuItemsForAll.IsNullOrEmpty();
 
-                                    if (!IsReadonly && (hasItemsPerLevel || hasMenuItemsForAll || hasMenuItemsPerType))
+                                    if (!(_isAdding && item.IsEditing) && !IsReadonly && (hasItemsPerLevel || hasMenuItemsForAll || hasMenuItemsPerType))
                                     {
                                         var menuItems = MenuItemsForAll ?? Array.Empty<MenuItem>();
                                         menuItems = !hasMenuItemsPerType ? menuItems : menuItems.Concat(MenuItemsPerType[@item.Type]).ToArray();

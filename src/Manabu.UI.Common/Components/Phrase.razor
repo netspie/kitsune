@@ -157,13 +157,13 @@
 
     private MenuItem[] TranslationMenuItemsRoot = new MenuItem[]
     {
-        MenuItems.AddChildAsLast,
-        MenuItems.AddChildAsFirst,
+        MenuItems.AddChildAsLast with { Name = "Add Translation" },
+        MenuItems.AddChildAsFirst with { Name = "Add Translation as First" },
     };
 
     private MenuItem[] TranslationMenuItems = new MenuItem[]
     {
-        MenuItems.AddSibling,
+        MenuItems.AddSibling with { Name = "Add Translation" },
         MenuItems.MoveDown,
         MenuItems.MoveUp,
         MenuItems.Remove,
