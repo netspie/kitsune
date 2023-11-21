@@ -24,3 +24,16 @@ div ::deep .mud-input-control.mud-input-control-boolean-input.mud-treeview-item-
 div ::deep mud-button-root.mud-icon-button.mud-ripple.mud-ripple-icon {
     align-self: center;
 }
+
+div ::deep .list-menu-button {
+    height: 15px;
+}
+
+div ::deep .list-menu-button:hover .mud-button-root {
+    background: none;
+}
+
+div ::deep .list-menu-button:hover .mud-button-root > .mud-icon-button-label > .mud-icon-root {
+    color: black;
+    transform: scale(1.2);
+}

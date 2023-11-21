@@ -44,8 +44,7 @@
                     }
                     @if (!MenuItemsRoot.IsNullOrEmpty() && !IsReadonly)
                     {
-                        <MudMenu Icon="@Icons.Material.Filled.MoreHoriz"
-                            Style=""> 
+                        <MudMenu Icon="@Icons.Material.Filled.MoreHoriz" Class="list-menu-button">
                             @foreach (var menuItem in MenuItemsRoot)
                             {
                                 <MudMenuItem OnClick=@(args => OnMenuItemClickInternal(args, null, menuItem))>@menuItem.Name</MudMenuItem>
@@ -190,7 +189,7 @@
                                         menuItems = !hasItemsPerLevel ? menuItems : menuItems.Concat(MenuItemsPerLevel[item.Level]).ToArray();
 
                                         <div style="justify-self: end;">
-                                            <MudMenu Icon="@Icons.Material.Filled.MoreHoriz">
+                                            <MudMenu Icon="@Icons.Material.Filled.MoreHoriz" Class="list-menu-button">
                                                 @foreach (var menuItem in menuItems)
                                                 {
                                                     if (menuItem.Id == MenuItems.MoveUp.Id &&
@@ -201,7 +200,7 @@
                                                         itemIndex >= items.Count - 1)
                                                         continue;
                                                 
-                                                    <MudMenuItem OnClick=@(args => OnMenuItemClickInternal(args, item, menuItem))>@menuItem.Name</MudMenuItem>
+                                                    <MudMenuItem  OnClick=@(args => OnMenuItemClickInternal(args, item, menuItem))>@menuItem.Name</MudMenuItem>
                                                 }
                                             </MudMenu>
                                         </div>
