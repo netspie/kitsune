@@ -59,6 +59,14 @@ public class Phrase : Entity<PhraseId>, IAggregateRoot<PhraseId>
 
         return true;
     }
+
+    public bool RemoveWord(WordLink word)
+    {
+        if (WordMeanings!.IsNullOrEmpty() || !WordMeanings!.Contains(word))
+            return false;
+
+        return WordMeanings.Remove(word);
+    }
 }
 
 public class PhraseId : EntityId { public PhraseId(string value) : base(value) { } }

@@ -83,7 +83,7 @@
             TreeItems=@_wordTreeItems
             MenuItemsRoot=@WordsMenuRootItems
             MenuItemsForAll=@WordsMenuItems
-            OnAddItem=@OnWordAdd
+            OnRemoveItem=@OnRemoveWord
             OnItemClick=@OnWordClick
             OnCustomAdd=@OnCustomUIAdd
             NoIndents=true />
@@ -248,23 +248,9 @@
         ExecuteAdminViewAction(() => CommandExecutor.Execute(
             new AddWordToPhraseCommand(_dto.Id, word.Id)));
 
-    private async Task<bool> OnWordAdd(EditableList.TreeItemData item, int index, MenuItem menuItem)
-    {
-        //await _wordMeaningsSelect.Switch();
-
-        
-        return true;
-    }
-
-    private async Task OnRemoveWord(EditableList.TreeItemData item, MenuItem menuItem)
-    {
-        var result = await AudioStorage.Delete(item.Name);
-        if (!result.IsSuccess)
-            return;
-
-        //await ExecuteAdminViewAction(() => CommandExecutor.Execute(
-        //new RemovePhraseAudioCommand(_phrase.Id, item.Id)));
-    }
+    private Task OnRemoveWord(EditableList.TreeItemData item, MenuItem menuItem) =>
+        ExecuteAdminViewAction(() => CommandExecutor.Execute(
+            new RemovePhraseWordCommand(_dto.Id, item.Id)));
 
     private async Task OnWordClick(EditableList.TreeItemData item)
     {
