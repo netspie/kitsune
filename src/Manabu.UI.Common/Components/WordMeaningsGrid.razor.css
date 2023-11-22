@@ -2,6 +2,18 @@
     display: none;
 }
 
+div ::deep 
+    .word-meanings-grid >
+    .mud-table-container >
+    .mud-drop-container >
+    .mud-table-root >
+    .mud-table-head >
+    .mud-table-row >
+    .mud-table-cell:first-child > 
+    .column-header {
+    display: none;
+}
+
 @media only screen and (max-width: 600px) {
     div ::deep .mud-xs-table .mud-table-row {
         display: table-row;
@@ -27,7 +39,6 @@
         display: none;
     }
 }
-
 
 @media only screen and (max-width: 900px) {
     .select {

@@ -27,7 +27,7 @@
         </div>
     </div>
     <MudButton Variant="Variant.Filled" DisableElevation=true OnClick=@OnWordClick Class="action-button" Style="@_writingSettingsCssStyle">Add</MudButton>
-    <MudDataGrid @ref=_mudDataGrid MultiSelection=false SelectedItemChanged=@OnSelectedItemChanged
+    <MudDataGrid Class="word-meanings-grid" @ref=_mudDataGrid MultiSelection=false SelectedItemChanged=@OnSelectedItemChanged
         Items="@_elements" Filterable=false Bordered=false SelectOnRowClick=true Hover=true T="WordItem" Outlined=false RowsPerPage=@Limit Elevation=0>
         <Columns>
             <SelectColumn T=WordItem />
