@@ -3,7 +3,9 @@ using Corelibs.Basic.Collections;
 using Corelibs.MongoDB;
 using Manabu.Entities.Content.Audios;
 using Manabu.Entities.Content.Phrases;
+using Manabu.Entities.Content.WordLexemes;
 using Manabu.Entities.Content.WordMeanings;
+using Manabu.Entities.Content.Words;
 using Manabu.Entities.Rehearse.RehearseEntities;
 using Manabu.Entities.Shared;
 using Manabu.UseCases.Content.Phrases;
@@ -37,7 +39,19 @@ public class GetPhraseQueryHandler : IQueryHandler<GetPhraseQuery, Result<GetPhr
                 _mongoConnection.Database.GetCollection<WordMeaning>(WordMeaning.DefaultCollectionName).AsQueryable(),
                 link => link.WordMeaningId.Value,
                 wordMeaning => wordMeaning.Id.Value,
-                (link, wordMeanings) => new { Link = link, WordMeaning = wordMeanings.First() })
+                (link, wordMeanings) => new { Link = link, Content = wordMeanings.First() })
+            .GroupJoin(
+                _mongoConnection.Database.GetCollection<Word>(Word.DefaultCollectionName).AsQueryable(),
+                wordMeaning => wordMeaning.Content.WordId,
+                word => word.Id,
+                (wm, words) => new { Link = wm.Link, Content = wm.Content, Word = words.First() }
+            )
+            .GroupJoin(
+                _mongoConnection.Database.GetCollection<WordLexeme>(WordLexeme.DefaultCollectionName).AsQueryable(),
+                wordMeaning => wordMeaning.Word.Lexeme,
+                lexeme => lexeme.Id,
+                (wm, lexemes) => new { Link = wm.Link, Content = wm.Content, Word = wm.Word, Lexeme = lexemes.First() }
+            )
             .ToList();
 
         var audios = queryable
@@ -68,14 +82,46 @@ public class GetPhraseQueryHandler : IQueryHandler<GetPhraseQuery, Result<GetPhr
                     Learned: rehearseEntityCount > 0,
                     audios!.SelectOrEmpty(a => new AudioDTO(a.Id.Value, a.Audio.Href)).ToArray(),
                     wordMeanings.SelectOrEmpty(w => 
-                        new WordMeaningDTO(
-                            w.WordMeaning.Id.Value,
-                            w.WordMeaning.Original,
-                            w.WordMeaning.Translations.First(),
+                    {
+                        var dictionaryForm = w.Content.Original;
+                        var originalWriting = w.Link.WordInflectionId.SelectValue(
+                            inflectionId =>
+                            {
+                                if (inflectionId.IsNullOrEmpty())
+                                    return dictionaryForm;
+
+                                return dictionaryForm;
+                            });
+
+                        var targetWriting = w.Link.WritingMode.SelectValue(mode =>
+                        {
+                            if (mode == WritingMode.Hiragana)
+                                return w.Content.HiraganaWritings.First().Value;
+
+                            return w.Content.Original;
+                        });
+
+                        var reading = w.Content.HiraganaWritings.SelectValue(
+                            readings =>
+                            {
+                                if (readings.Count == 1 && w.Link.Reading.IsNullOrEmpty())
+                                    return readings.First().Value;
+
+                                return readings.FirstOrDefault(r => r.Value == w.Link.Reading).Value;
+                            });
+
+                        return new WordMeaningDTO(
+                            w.Content.Id.Value,
+                            dictionaryForm,
+                            originalWriting,
+                            targetWriting,
+                            w.Content.Translations.First(),
                             w.Link.WordInflectionId,
+                            reading,
                             w.Link.Reading,
                             w.Link.WritingMode?.Value,
-                            w.Link.CustomWriting)).ToArray())));
+                            w.Link.CustomWriting);
+                    }).ToArray())));
     }
 
     public record PhraseProjection(

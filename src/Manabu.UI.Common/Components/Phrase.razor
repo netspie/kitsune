@@ -80,14 +80,37 @@
             @ref=@_wordsList
             Name="Words"
             IsReadonly=@(!IsEdit)
-            TreeItems=@_wordTreeItems
+            TreeItems=@(_wordTreeItems.CastToList<EditableList.TreeItemData>())
             MenuItemsRoot=@WordsMenuRootItems
             MenuItemsForAll=@WordsMenuItems
             OnRemoveItem=@OnRemoveWord
             OnMoveItem=@OnReorderWord
             OnItemClick=@OnWordClick
             OnCustomAdd=@OnCustomUIAdd
-            NoIndents=true />
+            NoIndents=true>
+
+            <CustomItemTemplate>
+
+                @{
+                    var word = context as WordItemData;
+                    <MudTooltip>
+                        <ChildContent>
+                            <MudText Style="justify-self: start;">
+                                @word.Name - @word.Translation
+                            </MudText>
+                        </ChildContent>
+                        <TooltipContent style="align-items: start; justify-content: start;">
+                            <MudStack Class="align-start justify-content-center" Style="gap: 0;">
+                                <MudText Style="font-size: 12px; margin:0; padding: 0;">Original form - @word.OriginalWriting</MudText>
+                                <MudText Style="font-size: 12px; margin:0; padding: 0;">Reading - @word.Reading</MudText>
+                            </MudStack>
+                        </TooltipContent>
+                    </MudTooltip>
+                }
+
+            </CustomItemTemplate>
+
+        </EditableList>
     }
 
     @*<SearchView />*@
@@ -108,7 +131,7 @@
     [Parameter] public string PhraseId { get; set; }
 
     private EditableList? _wordsList;
-    private List<EditableList.TreeItemData>? _wordTreeItems = new();
+    private List<WordItemData>? _wordTreeItems = new();
 
     private List<EditableList.TreeItemData>? _translationTreeItems;
     private List<EditableList.TreeItemData>? _contextTreeItems;
@@ -237,9 +260,9 @@
 
     private Task OnWordMeaningSelectSwitch(bool isOn) => RefreshView();
 
-    private Task OnWordMeaningSelected(WordMeaningsGrid.WordItem word) =>
+    private Task OnWordMeaningSelected(WordMeaningsGrid.SelectedWord word) =>
         ExecuteAdminViewAction(() => CommandExecutor.Execute(
-            new AddPhraseWordCommand(_dto.Id, word.Id)));
+            new AddPhraseWordCommand(_dto.Id, word.Word.Id, WritingMode: word.WritingMode)));
 
     private Task<bool> OnReorderWord(EditableList.TreeItemData item, int index, MenuItem menuItem) =>
         ExecuteAdminViewAction(() => CommandExecutor.Execute(
@@ -284,6 +307,46 @@
             new EditableList.TreeItemData(a.Id, a.Href, "audio")).ToList();
 
         _wordTreeItems = _dto?.WordMeanings?.SelectOrEmpty(w =>
-            new EditableList.TreeItemData(w.Id, $"{w.Original} - {w.Translation}", "audio")).ToList();
+            new WordItemData(
+                w.Id,
+                w.DictionaryForm,
+                w.OriginalWriting,
+                w.TargetWriting,
+                w.Translation,
+                w.Reading,
+                w.SelectedReading,
+                w.WordInflectionId,
+                w.WritingMode)).ToList();
+    }
+
+    class WordItemData : EditableList.TreeItemData
+    {
+        public WordItemData(
+            string id, 
+            string dictionaryForm,
+            string originalWriting,
+            string targetWriting,
+            string translation,
+            string reading,
+            string selectedReading,
+            string? inflectionId = null, 
+            string? writingMode = null) : base(id, targetWriting)
+        {
+            DictionaryForm = dictionaryForm;
+            OriginalWriting = originalWriting;
+            Translation = translation;
+            Reading = reading;
+            SelectedReading = selectedReading;
+            InflectionId = inflectionId;
+            WritingMode = writingMode;
+        }
+
+        public string DictionaryForm { get; }
+        public string OriginalWriting { get; }
+        public string Translation { get; }
+        public string Reading { get; }
+        public string SelectedReading { get; }
+        public string InflectionId { get; }
+        public string WritingMode { get; }
     }
 }

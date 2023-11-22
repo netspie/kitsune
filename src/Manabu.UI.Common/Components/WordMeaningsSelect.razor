@@ -21,7 +21,7 @@
 
 @code {
     [Parameter] public EventCallback<bool> OnSwitch { get; set; }
-    [Parameter] public EventCallback<WordMeaningsGrid.WordItem> OnWordMeaningSelected { get; set; }
+    [Parameter] public EventCallback<WordMeaningsGrid.SelectedWord> OnWordMeaningSelected { get; set; }
 
     public bool IsOn { get; private set; }
 

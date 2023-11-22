@@ -13,11 +13,11 @@
                 OnValueChanged=@OnSortOrFilterValueChanged />
         </div>
         <div class="radios-and-inflection d-flex align-center justify-end" style="width: 100%; @_writingSettingsCssStyle; display: none;">
-            <MudRadioGroup T=int SelectedOption=1>
-                <MudRadio Option=1>Default</MudRadio>
-                <MudRadio Option=2>Hiragana</MudRadio>
-                <MudRadio Option=3>Katakana</MudRadio>
-                <MudRadio Option=4>Custom</MudRadio>
+            <MudRadioGroup @ref=@_writingModeRadios T=string SelectedOption=@("default")>
+                <MudRadio Option=@("default")>Default</MudRadio>
+                <MudRadio Option=@("hiragana")>Hiragana</MudRadio>
+                <MudRadio Option=@("katakana")>Katakana</MudRadio>
+                <MudRadio Option=@("custom")>Custom</MudRadio>
             </MudRadioGroup>
             <MudSelect T=string Label="Inflection" Variant=Variant.Outlined AnchorOrigin=Origin.BottomCenter FullWidth=false>
                 <MudSelectItem T=string Value=@("Inflection 1") />
@@ -62,7 +62,7 @@
 </div>
 
 @code {
-    [Parameter] public EventCallback<WordItem> OnWordMeaningSelected { get; set; }
+    [Parameter] public EventCallback<SelectedWord> OnWordMeaningSelected { get; set; }
 
     private WordMeaningsDTO? _dto;
 
@@ -74,6 +74,7 @@
     private List<WordItem> _elements = new();
 
     private MudDataGrid<WordItem>? _mudDataGrid;
+    private MudRadioGroup<string>? _writingModeRadios;
 
     private string _writingSettingsCssStyle => 
         _mudDataGrid is not null &&
@@ -89,8 +90,17 @@
 
     private List<ModifierArg> _modifierArgs = new();
 
-    private Task OnWordClick() => 
-        OnWordMeaningSelected.InvokeAsync(_mudDataGrid.Selection.FirstOrDefault());
+    private Task OnWordClick()
+    {
+        var selectedItem = _mudDataGrid.Selection.FirstOrDefault();
+        var writingMode = _writingModeRadios.SelectedOption == "default" ? null : _writingModeRadios.SelectedOption;
+
+        var selectedWord = new SelectedWord(
+            selectedItem,
+            WritingMode: writingMode);
+
+        return OnWordMeaningSelected.InvokeAsync(selectedWord);
+    }
 
     private void OnSelectedItemChanged(WordItem item)
     {
@@ -151,6 +161,14 @@
 
         _elements = _dto.Words.Select(w => new WordItem(w.Id, w.Meaning, w.Value, w.Reading)).ToList();
     }
+
+    public record SelectedWord(
+        WordItem Word,
+        string? Reading = null,
+        string? WritingMode = null,
+        string? InflectionId = null,
+        string? CustomWriting = null
+    );
 
     public record WordItem(
         string Id,
