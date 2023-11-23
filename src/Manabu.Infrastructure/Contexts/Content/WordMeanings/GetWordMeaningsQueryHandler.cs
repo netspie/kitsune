@@ -49,8 +49,8 @@ public class GetWordMeaningsQueryHandler : IQueryHandler<GetWordMeaningsQuery, R
                 if (arg.Field == "Meaning")
                     sorts.Add($"{{{nameof(WordMeaning.Translations)}:{arg.Order}}}");
 
-                //if (arg.Field == "Part Of Speech")
-                ///sorts.Add($"{{PartsOfSpeech:{arg.Order}}}");
+                // if (arg.Field == "Part Of Speech")
+                // sorts.Add($"{{PartsOfSpeech:{arg.Order}}}");
             }
             else
             {
@@ -99,6 +99,7 @@ public class GetWordMeaningsQueryHandler : IQueryHandler<GetWordMeaningsQuery, R
                     var wm = BsonSerializer.Deserialize<WordMeaningProjection>(w);
                     return new WordMeaningDTO(
                         wm.Id.Value,
+                        wm.WordId.Value,
                         wm.Original,
                         wm.Translations?.FirstOrDefault(),
                         wm.HiraganaWritings?.FirstOrDefault()?.Value);

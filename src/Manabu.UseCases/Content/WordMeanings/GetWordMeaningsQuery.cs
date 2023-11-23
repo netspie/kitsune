@@ -25,7 +25,8 @@ public record WordMeaningsDTO(
 
 public record WordMeaningDTO(
     string Id,
-    string Value,
+    string WordId,
+    string Word,
     string? Meaning,
     string? Reading);
 
