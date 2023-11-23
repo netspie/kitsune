@@ -12,6 +12,16 @@
 <MudStack Class="main-section word" Style="width: 100%;">
     <SiteTitle>@SiteTitle.Name</SiteTitle>
 
+    <MudStack Row=true Style="gap: 0;">
+        @foreach (var pos in _dto.PartOfSpeches)
+        {
+            <MudChip DisableRipple=true Color=Color.Error Style="color: white; font-family: unica; text-transform: uppercase; height: 20px; font-weight: bold; margin-left: 0;">@pos</MudChip>
+        }
+        @foreach (var prop in _dto.Properties)
+        {
+            <MudChip DisableRipple=true Style="background-color: gray; color: white; font-family: unica; text-transform: uppercase; height: 20px; font-weight: bold;">@prop</MudChip>
+        }
+    </MudStack>
     <MudStack Row=true>
         <div style="min-width: 40px; width: fit-content;">
             <TextField 
@@ -19,17 +29,6 @@
                 IsReadonly=true
                 Value=@_dto.Value />
         </div>
-
-        <MudStack Row=true Style="gap: 0;">
-            @foreach (var pos in _dto.PartOfSpeches)
-            {
-                <MudChip DisableRipple=true Color=Color.Error Style="color: white; font-family: unica; text-transform: uppercase; height: 20px; font-weight: bold;">@pos</MudChip>
-            }
-            @foreach (var prop in _dto.Properties)
-            {
-                <MudChip DisableRipple=true Style="background-color: gray; color: white; font-family: unica; text-transform: uppercase; height: 20px; font-weight: bold;">@prop</MudChip>
-            }
-        </MudStack>
     </MudStack>
 
     @if (IsEdit)

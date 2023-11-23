@@ -22,11 +22,14 @@
             </MudRadioGroup>
             @if (_dtoLexeme is not null)
             {
-                <MudSelect T=string Label="Inflection" Variant=Variant.Outlined AnchorOrigin=Origin.BottomCenter FullWidth=false>
+                <MudSelect @ref=@_inflectionSelect T=string Label="Inflection" Variant=Variant.Outlined AnchorOrigin=Origin.BottomCenter FullWidth=false>
 
                     @foreach (var pair in _dtoLexeme.Inflections)
                     {
-                        <MudSelectItem T=string Value=@($"{pair.Informal.Positive} - {pair.Type}, informal, positive") />
+                        @if (pair.Type != "present")
+                        {
+                            <MudSelectItem T=string Value=@($"{pair.Informal.Positive} - {pair.Type}, informal, positive") />
+                        }
                         @if (pair.Informal?.Negative is not null)
                         {
                             <MudSelectItem T=string Value=@($"{pair.Informal.Negative} - {pair.Type}, informal, negative") />
@@ -95,6 +98,7 @@
 
     private MudDataGrid<WordItem>? _mudDataGrid;
     private MudRadioGroup<string>? _writingModeRadios;
+    private MudSelect<string>? _inflectionSelect;
 
     private string _writingSettingsCssStyle => 
         _mudDataGrid is not null &&
@@ -115,9 +119,14 @@
         var selectedItem = _mudDataGrid.Selection.FirstOrDefault();
         var writingMode = _writingModeRadios.SelectedOption == "default" ? null : _writingModeRadios.SelectedOption;
 
+        var inflection = _inflectionSelect?.SelectedValues.FirstOrDefault();
+        if (inflection is not null)
+            inflection = inflection?.Split('-')[1].Trim();
+
         var selectedWord = new SelectedWord(
             selectedItem,
-            WritingMode: writingMode);
+            WritingMode: writingMode,
+            InflectionId: inflection);
 
         return OnWordMeaningSelected.InvokeAsync(selectedWord);
     }

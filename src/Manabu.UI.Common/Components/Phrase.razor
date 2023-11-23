@@ -262,7 +262,7 @@
 
     private Task OnWordMeaningSelected(WordMeaningsGrid.SelectedWord word) =>
         ExecuteAdminViewAction(() => CommandExecutor.Execute(
-            new AddPhraseWordCommand(_dto.Id, word.Word.Id, WritingMode: word.WritingMode)));
+            new AddPhraseWordCommand(_dto.Id, word.Word.Id, WritingMode: word.WritingMode, WordInflectionId: word.InflectionId)));
 
     private Task<bool> OnReorderWord(EditableList.TreeItemData item, int index, MenuItem menuItem) =>
         ExecuteAdminViewAction(() => CommandExecutor.Execute(

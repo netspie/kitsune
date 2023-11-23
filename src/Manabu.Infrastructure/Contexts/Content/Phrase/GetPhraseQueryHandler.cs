@@ -90,7 +90,12 @@ public class GetPhraseQueryHandler : IQueryHandler<GetPhraseQuery, Result<GetPhr
                                 if (inflectionId.IsNullOrEmpty())
                                     return dictionaryForm;
 
-                                return dictionaryForm;
+                                var inflectionDef = inflectionId.Split(',').Select(i => i.Trim()).ToArray();
+                                var inflectionType = new InflectionType(inflectionDef[0]);
+                                var inflection = w.Lexeme.Inflections.FirstOrDefault(i => i.Type == inflectionType);
+
+                                var inflectionForm = inflectionDef[1] == "formal" ? inflection?.Formal : inflection?.Informal;
+                                return inflectionDef[2] == "negative" ? inflectionForm?.Negative?.Value : inflectionForm?.Positive.Value;
                             });
 
                         var targetWriting = w.Link.WritingMode.SelectValue(mode =>
@@ -98,7 +103,7 @@ public class GetPhraseQueryHandler : IQueryHandler<GetPhraseQuery, Result<GetPhr
                             if (mode == WritingMode.Hiragana)
                                 return w.Content.HiraganaWritings.First().Value;
 
-                            return w.Content.Original;
+                            return originalWriting;
                         });
 
                         var reading = w.Content.HiraganaWritings.SelectValue(
