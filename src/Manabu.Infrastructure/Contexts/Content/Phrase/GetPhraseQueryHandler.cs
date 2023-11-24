@@ -84,7 +84,7 @@ public class GetPhraseQueryHandler : IQueryHandler<GetPhraseQuery, Result<GetPhr
                     wordMeanings.SelectOrEmpty(w => 
                     {
                         var dictionaryForm = w.Content.Original;
-                        var originalWriting = w.Link.WordInflectionId.SelectValue(
+                        var conjugatedForm = w.Link.WordInflectionId.SelectValue(
                             inflectionId =>
                             {
                                 if (inflectionId.IsNullOrEmpty())
@@ -101,16 +101,20 @@ public class GetPhraseQueryHandler : IQueryHandler<GetPhraseQuery, Result<GetPhr
                         var targetWriting = w.Link.WritingMode.SelectValue(mode =>
                         {
                             if (mode == WritingMode.Hiragana)
+                            {
                                 return w.Content.HiraganaWritings.First().Value;
+                            }
 
-                            return originalWriting;
+                            return conjugatedForm;
                         });
 
                         var reading = w.Content.HiraganaWritings.SelectValue(
                             readings =>
                             {
                                 if (readings.Count == 1 && w.Link.Reading.IsNullOrEmpty())
-                                    return readings.First().Value;
+                                {
+                                    return readings.First().Value.Get(dictionaryForm, conjugatedForm);
+                                }
 
                                 return readings.FirstOrDefault(r => r.Value == w.Link.Reading).Value;
                             });
@@ -118,7 +122,7 @@ public class GetPhraseQueryHandler : IQueryHandler<GetPhraseQuery, Result<GetPhr
                         return new WordMeaningDTO(
                             w.Content.Id.Value,
                             dictionaryForm,
-                            originalWriting,
+                            conjugatedForm,
                             targetWriting,
                             w.Content.Translations.First(),
                             w.Link.WordInflectionId,
