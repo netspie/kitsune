@@ -1,5 +1,6 @@
 ﻿using Corelibs.Basic.Collections;
 using Corelibs.Basic.DDD;
+using Corelibs.Basic.Repository;
 using Manabu.Entities.Content.WordLexemes;
 using Manabu.Entities.Content.WordMeanings;
 
@@ -14,6 +15,9 @@ public class Word : Entity<WordId>, IAggregateRoot<WordId>
     public List<WordMeaningId>? Meanings { get; private set; }
     public List<WordProperty>? Properties { get; set; }
     public WordLexemeId? Lexeme { get; set; }
+    
+    [Ignore]
+    public int Level { get; set; }
 
     public Word(
         WordId id,

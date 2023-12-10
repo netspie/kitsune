@@ -19,6 +19,8 @@ BsonClassMap.RegisterClassMap<Gender>();
 BsonClassMap.RegisterClassMap<Dialect>();
 BsonClassMap.RegisterClassMap<Formality>();
 
+new GetWordsByLessons().Get();
+
 //string jsonFilePath = "../../../words.json";
 //string jsonString = File.ReadAllText(jsonFilePath);
 
@@ -33,85 +35,85 @@ BsonClassMap.RegisterClassMap<Formality>();
 //foreach (var partOfSpeech in partOfSpeechesNames)
 //    wordsByPartOfSpeeches.Add(new(partOfSpeech, words.Where(w => w.Data.Parts_Of_Speech.Contains(partOfSpeech)).ToArray()));
 
-var conn = "mongodb://localhost:27017/";
-var client = new MongoClient(conn);
-var database = client.GetDatabase("Kitsune_dev");
-var wordCollection = database.GetCollection<Word>(Word.DefaultCollectionName);
-return;
+//var conn = "mongodb://localhost:27017/";
+//var client = new MongoClient(conn);
+//var database = client.GetDatabase("Kitsune_dev");
+//var wordCollection = database.GetCollection<Word>(Word.DefaultCollectionName);
+//return;
 
-var wordsFromDb = await wordCollection.Aggregate().ToListAsync();
-var iAdjectives = wordsFromDb.Where(w => 
-    w.PartsOfSpeech is not null && 
-    w.Properties is not null && 
-    w.PartsOfSpeech.Contains(PartOfSpeech.Adjective) && 
-    w.Properties.Contains(AdjectiveConjugationType.I)).ToArray();
+//var wordsFromDb = await wordCollection.Aggregate().ToListAsync();
+//var iAdjectives = wordsFromDb.Where(w => 
+//    w.PartsOfSpeech is not null && 
+//    w.Properties is not null && 
+//    w.PartsOfSpeech.Contains(PartOfSpeech.Adjective) && 
+//    w.Properties.Contains(AdjectiveConjugationType.I)).ToArray();
 
-int i = 0;
-foreach (var adj in iAdjectives)
-{
-    var inflections = Conjugator.ConjugateIAdjective(adj.Value);
-    if (inflections is null)
-        continue;
+//int i = 0;
+//foreach (var adj in iAdjectives)
+//{
+//    var inflections = Conjugator.ConjugateIAdjective(adj.Value);
+//    if (inflections is null)
+//        continue;
 
-    var wordLexemeIdStr = IdCreator.Create();
-    var wordLexeme = new WordLexeme(new WordLexemeId(wordLexemeIdStr), adj.PartsOfSpeech.FirstOrDefault(), adj.Value, inflections);
+//    var wordLexemeIdStr = IdCreator.Create();
+//    var wordLexeme = new WordLexeme(new WordLexemeId(wordLexemeIdStr), adj.PartsOfSpeech.FirstOrDefault(), adj.Value, inflections);
 
-    adj.Lexeme = wordLexeme.Id;
-    var wordCol = database.GetCollection<Word>(Word.DefaultCollectionName);
-    await wordCol.ReplaceOneAsync(Builders<Word>.Filter.Eq(x => x.Id, adj.Id), adj);
+//    adj.Lexeme = wordLexeme.Id;
+//    var wordCol = database.GetCollection<Word>(Word.DefaultCollectionName);
+//    await wordCol.ReplaceOneAsync(Builders<Word>.Filter.Eq(x => x.Id, adj.Id), adj);
 
-    var wordLexemeCol = database.GetCollection<WordLexeme>(WordLexeme.DefaultCollectionName);
-    await wordLexemeCol.InsertOneAsync(wordLexeme);
-    i++;
-    Console.WriteLine($"{i}) {adj.Value}");
-}
+//    var wordLexemeCol = database.GetCollection<WordLexeme>(WordLexeme.DefaultCollectionName);
+//    await wordLexemeCol.InsertOneAsync(wordLexeme);
+//    i++;
+//    Console.WriteLine($"{i}) {adj.Value}");
+//}
 
-return;
+//return;
 
-var godanVerbs = wordsFromDb.Where(w => w.PartsOfSpeech is not null && w.Properties is not null && w.PartsOfSpeech.Contains(PartOfSpeech.Verb) && w.Properties.Contains(VerbConjugationType.Godan)).ToArray();
-var ichidanVerbs = wordsFromDb.Where(w => w.PartsOfSpeech is not null && w.Properties is not null && w.PartsOfSpeech.Contains(PartOfSpeech.Verb) && w.Properties.Contains(VerbConjugationType.Ichidan)).ToArray();
-return;
+//var godanVerbs = wordsFromDb.Where(w => w.PartsOfSpeech is not null && w.Properties is not null && w.PartsOfSpeech.Contains(PartOfSpeech.Verb) && w.Properties.Contains(VerbConjugationType.Godan)).ToArray();
+//var ichidanVerbs = wordsFromDb.Where(w => w.PartsOfSpeech is not null && w.Properties is not null && w.PartsOfSpeech.Contains(PartOfSpeech.Verb) && w.Properties.Contains(VerbConjugationType.Ichidan)).ToArray();
+//return;
 
-foreach (var verb in godanVerbs)
-{
-    var inflections = Conjugator.ConjugateVerb(verb.Value, VerbConjugationType.Godan);
-    if (inflections is null)
-        continue;
+//foreach (var verb in godanVerbs)
+//{
+//    var inflections = Conjugator.ConjugateVerb(verb.Value, VerbConjugationType.Godan);
+//    if (inflections is null)
+//        continue;
 
-    var wordLexemeIdStr = IdCreator.Create();
-    var wordLexeme = new WordLexeme(new WordLexemeId(wordLexemeIdStr), verb.PartsOfSpeech.FirstOrDefault(), verb.Value, inflections);
+//    var wordLexemeIdStr = IdCreator.Create();
+//    var wordLexeme = new WordLexeme(new WordLexemeId(wordLexemeIdStr), verb.PartsOfSpeech.FirstOrDefault(), verb.Value, inflections);
     
-    verb.Lexeme = wordLexeme.Id;
-    var wordCol = database.GetCollection<Word>(Word.DefaultCollectionName);
-    await wordCol.ReplaceOneAsync(Builders<Word>.Filter.Eq(x => x.Id, verb.Id), verb);
+//    verb.Lexeme = wordLexeme.Id;
+//    var wordCol = database.GetCollection<Word>(Word.DefaultCollectionName);
+//    await wordCol.ReplaceOneAsync(Builders<Word>.Filter.Eq(x => x.Id, verb.Id), verb);
 
-    var wordLexemeCol = database.GetCollection<WordLexeme>(WordLexeme.DefaultCollectionName);
-    await wordLexemeCol.InsertOneAsync(wordLexeme);
-    i++;
-    Console.WriteLine($"{i}) {verb.Value}");
-}
+//    var wordLexemeCol = database.GetCollection<WordLexeme>(WordLexeme.DefaultCollectionName);
+//    await wordLexemeCol.InsertOneAsync(wordLexeme);
+//    i++;
+//    Console.WriteLine($"{i}) {verb.Value}");
+//}
 
-foreach (var verb in ichidanVerbs)
-{
-    var inflections = Conjugator.ConjugateVerb(verb.Value, VerbConjugationType.Ichidan);
-    if (inflections is null)
-        continue;
+//foreach (var verb in ichidanVerbs)
+//{
+//    var inflections = Conjugator.ConjugateVerb(verb.Value, VerbConjugationType.Ichidan);
+//    if (inflections is null)
+//        continue;
 
-    var wordLexemeIdStr = IdCreator.Create();
-    var wordLexeme = new WordLexeme(new WordLexemeId(wordLexemeIdStr), verb.PartsOfSpeech.FirstOrDefault(), verb.Value, inflections);
+//    var wordLexemeIdStr = IdCreator.Create();
+//    var wordLexeme = new WordLexeme(new WordLexemeId(wordLexemeIdStr), verb.PartsOfSpeech.FirstOrDefault(), verb.Value, inflections);
 
-    verb.Lexeme = wordLexeme.Id;
-    var wordCol = database.GetCollection<Word>(Word.DefaultCollectionName);
-    await wordCol.ReplaceOneAsync(Builders<Word>.Filter.Eq(x => x.Id, verb.Id), verb);
+//    verb.Lexeme = wordLexeme.Id;
+//    var wordCol = database.GetCollection<Word>(Word.DefaultCollectionName);
+//    await wordCol.ReplaceOneAsync(Builders<Word>.Filter.Eq(x => x.Id, verb.Id), verb);
 
-    var wordLexemeCol = database.GetCollection<WordLexeme>(WordLexeme.DefaultCollectionName);
-    await wordLexemeCol.InsertOneAsync(wordLexeme);
-    // ...
-    i++;
-    Console.WriteLine($"{i}) {verb.Value}");
-}
+//    var wordLexemeCol = database.GetCollection<WordLexeme>(WordLexeme.DefaultCollectionName);
+//    await wordLexemeCol.InsertOneAsync(wordLexeme);
+//    // ...
+//    i++;
+//    Console.WriteLine($"{i}) {verb.Value}");
+//}
 
-return;
+//return;
 
 //var wordEnts = await wordCollection.Aggregate().ToListAsync();
 //var verbs = wordEnts
