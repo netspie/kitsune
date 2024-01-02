@@ -21,6 +21,10 @@ div ::deep
     font-weight: bold;
 }
 
+.fox-bg {
+    background-image: url('images/fox-bg.jpeg');
+}
+
 .context {
     width: 100%;
     position: absolute;

@@ -92,7 +92,8 @@
         </MudTooltip>
     </MudStack> *@
 
-<div class="test w-full h-full flex flex-col gap-5 items-center mb-10 top-[72px] pt-5">
+<div class="word-themes w-full h-full flex flex-col gap-5 items-center mb-10 top-[72px] pt-5">
+    <div class="fox-bg bg-cover bg-center fixed top-0 w-full h-full opacity-[0.1]" />
     <div class="scroll-enabler absolute h-full w-full"></div>
     <div class="relative">
         <MudText Class="font-bold text-4xl mb-5">Words By Theme</MudText>
@@ -103,35 +104,20 @@
         <MudText Class="font-bold text-2xl text-left z-10">Simple Words 1-50</MudText>
     </div>
     
-    <MudStack Class="flex w-full">
-        <MudSwitch @bind-Checked=@MeaningsEnabled Label="Show Meanings" Color="Color.Info" Class="switch" />
-    </MudStack>
+    <div class="flex w-full">
+        <MudSwitch @bind-Checked=@MeaningsEnabled Label="Show Meanings" Color="Color.Info" Class="w-fit" />
+        <MudSwitch @bind-Checked=@HiraganaEnabled Label="Show Readings" Color="Color.Info" Class="w-fit" />
+    </div>
     <div class="relative w-full h-full flex flex-wrap gap-7 items-center justify-center py-3">
         @* <div class="absolute bg-slate-800 w-[100000px] h-full `top-[100px] -z-10" /> *@
         @for (int i = 0; i < 50; i++) 
         {
-            <div class="
-                relative w-[65px] flex flex-col h-[65px] 
-                items-center justify-center 
-                transition transform duration-150 hover:scale-[1.25]
-                hover:font-bold">
-                @* <div class="border-box-bg" /> *@
-                @* <div class="btn-bg absolute w-full h-full bg-gradient-to-b from-red-700 to-neutral-900" /> *@
-                @* <div class="border-box" /> *@
-                <h5 class=@($@"anim text-black cursor-pointer
-                    -translate-y-[5px]")
-                    style=@($@"
-                        font-family: kaisei; 
-                        font-size: 40px;
-                        z-index: 10;
-                        text-shadow: 0 0 10px gray;")>
-                    @GetRandomKanji()
-                </h5>
-                @if (MeaningsEnabled)
-                {
-                    <h6 class="">@GetRandomNoun()</h6>
-                }
-            </div>
+            <WordTile
+                MainText=@GetRandomKanji()
+                MeaningText=@GetRandomNoun()
+                HiraganaText=@GetRandomJLPTN5Word()
+                MeaningEnabled=@MeaningsEnabled 
+                HiraganaEnabled=@HiraganaEnabled />
         }
     </div>
 
@@ -248,20 +234,29 @@
 
 @code {
     private bool _meaningsEnabled;
-
     private bool MeaningsEnabled {
         get => _meaningsEnabled;
         set {
-            _meaningsEnabled= value;
+            _meaningsEnabled = value;
             InvokeAsync(StateHasChanged);
         }
     }
-    static char GetRandomKanji()
+
+    private bool _hiraganaEnabled;
+    private bool HiraganaEnabled {
+        get => _hiraganaEnabled;
+        set {
+            _hiraganaEnabled = value;
+            InvokeAsync(StateHasChanged);
+        }
+    }
+
+    static string GetRandomKanji()
     {
         var random = new Random();
         int randomCodePoint = random.Next(0x4E00, 0x4EFF);
         char randomKanji = Convert.ToChar(randomCodePoint);
-        return randomKanji;
+        return randomKanji.ToString();
     }
 
     static string GetRandomNoun()
@@ -274,12 +269,26 @@
             "sunset", "candle", "magic", "serenity", "treasure", "jungle", "laughter", "butterfly", "dolphin",
             "whale", "castle", "chocolate", "journey", "moonlight", "swan", "feather", "harmony", "sapphire",
             "thunder", "lighthouse", "harbor", "breeze", "cosmos", "mystery", "whisper", "zeppelin", "carousel"
-    // Add more nouns as needed
-    };
+        };
 
         var random = new Random();
         int randomIndex = random.Next(0, nouns.Length);
         return nouns[randomIndex];
+    }
+
+    static string GetRandomJLPTN5Word()
+    {
+        string[] jlptN5WordsHiragana = {
+            "こんにちは", "ありがとう", "がっこう", "べんきょう", "たべる", "のむ", "いぬ", "ねこ", "ともだち", "かぞく",
+            "とけい", "はな", "やま", "かわ", "あめ", "はれ", "くもり", "あかい", "あおい", "しろい",
+            "くろい", "あたらしい", "ふるい", "おおきい", "ちいさい", "じょうず", "へた", "うれしい", "かなしい", "げんき",
+            "びょうき", "いく", "くる", "みる", "きく", "はなす", "よむ", "かく", "かう", "うる",
+            "もつ", "つかう", "おしえる", "ならう", "しる", "あう", "まつ", "とぶ", "およぐ", "はしる"
+        };
+
+        var random = new Random();
+        int randomIndex = random.Next(0, jlptN5WordsHiragana.Length);
+        return jlptN5WordsHiragana[randomIndex];
     }
 
     string GetRandomAnimClass()
