@@ -1,24 +1,83 @@
 ﻿@page "/test"
 
-<div class="main-section w-full h-full flex flex-col p-5">
-    <div class="w-full h-full flex flex-wrap gap-2 items-center justify-center" style="font-family: Arial">
-        <div class="shadow-lg w-[50px] flex h-[50px] items-center justify-center text-2xl hover:scale-75">@GetRandomKanji()</div>
-        <div class="shadow-lg w-[50px] flex h-[50px] items-center justify-center text-2xl hover:scale-75">@GetRandomKanji()</div>
-        <div class="shadow-lg w-[50px] flex h-[50px] items-center justify-center text-2xl hover:scale-75">@GetRandomKanji()</div>
-        <div class="shadow-lg w-[50px] flex h-[50px] items-center justify-center text-2xl hover:scale-75">@GetRandomKanji()</div>
-        <div class="shadow-lg w-[50px] flex h-[50px] items-center justify-center text-2xl hover:scale-75">@GetRandomKanji()</div>
-        <div class="shadow-lg w-[50px] flex h-[50px] items-center justify-center text-2xl hover:scale-75">@GetRandomKanji()</div>
-        <div class="shadow-lg w-[50px] flex h-[50px] items-center justify-center text-2xl hover:scale-75">@GetRandomKanji()</div>
-        <div class="shadow-lg w-[50px] flex h-[50px] items-center justify-center text-2xl hover:scale-75">@GetRandomKanji()</div>
-        <div class="shadow-lg w-[50px] flex h-[50px] items-center justify-center text-2xl hover:scale-75">@GetRandomKanji()</div>
-        <div class="shadow-lg w-[50px] flex h-[50px] items-center justify-center text-2xl hover:scale-75">@GetRandomKanji()</div>
-        <div class="shadow-lg w-[50px] flex h-[50px] items-center justify-center text-2xl hover:scale-75">@GetRandomKanji()</div>
-        <div class="shadow-lg w-[50px] flex h-[50px] items-center justify-center text-2xl hover:scale-75">@GetRandomKanji()</div>
-        <div class="shadow-lg w-[50px] flex h-[50px] items-center justify-center text-2xl hover:scale-75">@GetRandomKanji()</div>
-        <div class="shadow-lg w-[50px] flex h-[50px] items-center justify-center text-2xl hover:scale-75">@GetRandomKanji()</div>
-        <div class="shadow-lg w-[50px] flex h-[50px] items-center justify-center text-2xl hover:scale-75">@GetRandomKanji()</div>
-        <div class="shadow-lg w-[50px] flex h-[50px] items-center justify-center text-2xl hover:scale-75">@GetRandomKanji()</div>
+<div class="area">
+    <ul class="circles">
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+    </ul>
+</div>
+
+<div class="main-section w-full h-full flex flex-col items-center p-5">
+    <MudText Class="font-bold text-4xl mb-5">Simple Words 1-50</MudText>
+    @* <MudStack Row=true Class="flex flex-wrap">
+        <MudTooltip Text="Add Phrase">
+            <MudIconButton Icon="@Icons.Material.Outlined.AddBox" aria-label="delete" />
+        </MudTooltip>
+        <MudDivider Vertical="true" FlexItem="true" />
+        <MudTooltip Text="Multiselect">
+            <MudIconButton Icon="@Icons.Material.Outlined.SelectAll" aria-label="delete" />
+        </MudTooltip>
+        <MudTooltip Text="Edit">
+            <MudIconButton Icon="@Icons.Material.Outlined.Edit" aria-label="delete" />
+        </MudTooltip>
+        <MudTooltip Text="Cut">
+            <MudIconButton Icon="@Icons.Material.Outlined.ContentCut" aria-label="delete" />
+        </MudTooltip>
+        <MudTooltip Text="Copy All">
+            <MudIconButton Icon="@Icons.Material.Outlined.CopyAll" aria-label="delete" />
+        </MudTooltip>
+        <MudTooltip Text="Paste">
+            <MudIconButton Icon="@Icons.Material.Outlined.ContentPaste" aria-label="delete" />
+        </MudTooltip>
+        <MudTooltip Text="Settings">
+            <MudIconButton Icon="@Icons.Material.Outlined.Settings" aria-label="delete" />
+        </MudTooltip>
+        <MudTooltip Text="Display Settings">
+            <MudIconButton Icon="@Icons.Material.Outlined.Create" aria-label="delete" />
+        </MudTooltip>
+    </MudStack> *@
+    @* <div class="bg-slate- h-[65px]"></div> *@
+    <div class="relative w-full h-full flex flex-wrap gap-7 items-center justify-center py-3">
+        @* <div class="absolute bg-slate-800 w-[100000px] h-full `top-[100px] -z-10" /> *@
+        @for (int i = 0; i < 50; i++) 
+        {
+            <div class="
+                relative w-[65px] flex flex-col h-[65px] 
+                items-center justify-center 
+                transition transform duration-150 hover:scale-[1.25]
+                hover:font-bold">
+                @* <div class="absolute w-full h-full bg-gradient-to-b from-red-700 to-neutral-900 rounded-lg" /> *@
+                <h5 class="text-black cursor-pointer"
+                    style="
+                        font-family: kaisei; 
+                        font-size: 40px; 
+                        z-index: 10;
+                        text-shadow: 2px 2px 6px gray;">
+                    @GetRandomKanji()
+                </h5>
+                <h6 class="">@GetRandomNoun()</h6>
+            </div>
+        }
     </div>
+
 </div>
 
 @code {
@@ -26,9 +85,26 @@
     static char GetRandomKanji()
     {
         var random = new Random();
-        int randomCodePoint = random.Next(0x4E00, 0x4F00);
+        int randomCodePoint = random.Next(0x4E00, 0x4EFF);
         char randomKanji = Convert.ToChar(randomCodePoint);
         return randomKanji;
     }
 
+    static string GetRandomNoun()
+    {
+        string[] nouns = {
+            "cat", "dog", "apple", "book", "tree", "computer", "flower", "coffee", "moon", "mountain",
+            "ocean", "car", "house", "music", "guitar", "sun", "rainbow", "friend", "pizza", "beach",
+            "garden", "cloud", "star", "bird", "dragon", "island", "river", "unicorn", "key", "door",
+            "time", "mirror", "sky", "fire", "ice cream", "wizard", "dream", "adventure", "robot", "puzzle",
+            "sunset", "candle", "magic", "serenity", "treasure", "jungle", "laughter", "butterfly", "dolphin",
+            "whale", "castle", "chocolate", "journey", "moonlight", "swan", "feather", "harmony", "sapphire",
+            "thunder", "lighthouse", "harbor", "breeze", "cosmos", "mystery", "whisper", "zeppelin", "carousel"
+        // Add more nouns as needed
+    };
+
+        var random = new Random();
+        int randomIndex = random.Next(0, nouns.Length);
+        return nouns[randomIndex];
+    }
 }

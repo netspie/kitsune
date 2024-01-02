@@ -28,6 +28,31 @@
     src: url(../fonts/Lora/Lora.ttf);
 }
 
+@font-face {
+    font-family: noto_jp;
+    src: url(../fonts/Noto_Serif_JP/NotoSerifJP-Regular.otf);
+}
+
+@font-face {
+    font-family: kaisei;
+    src: url(../fonts/Kaisei_Tokumin/KaiseiTokumin-Regular.ttf);
+}
+
+@font-face {
+    font-family: yuji;
+    src: url(../fonts/YujiSyuku-Regular.ttf);
+}
+
+@font-face {
+    font-family: genkai;
+    src: url(../fonts/genkai-mincho.ttf);
+}
+
+@font-face {
+    font-family: hk;
+    src: url(../fonts/hkhigerei.ttf);
+}
+
 body {
     font-family: lora;
     background: white;
