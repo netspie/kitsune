@@ -1,13 +1,15 @@
 ﻿.main {
     position: relative;
-    height: 100%;
+    height: calc(100vh - 72px);
+    top: 72px;
+    overflow: auto;
 }
 
 .main-content {
     padding-left: 335px;
     padding-right: 335px;
     padding-bottom: 35px;
-    margin-top: 75px; 
+    overflow: hidden;
 
     display:flex; 
     flex-direction: column; 
@@ -16,7 +18,6 @@
 }
 
 .main-content-free {
-    margin-top: 75px; 
 }
 
 @media only screen and (max-width: 1500px) {

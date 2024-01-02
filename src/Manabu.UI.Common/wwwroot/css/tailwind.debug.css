@@ -518,11 +518,23 @@ video {
 .relative {
   position: relative;
 }
+.left-0 {
+  left: 0px;
+}
+.top-0 {
+  top: 0px;
+}
 .top-\[100px\] {
   top: 100px;
 }
+.top-\[72px\] {
+  top: 72px;
+}
 .-z-10 {
   z-index: -10;
+}
+.z-10 {
+  z-index: 10;
 }
 .mb-2 {
   margin-bottom: 0.5rem;
@@ -617,9 +629,6 @@ video {
 .to-neutral-900 {
   --tw-gradient-to: #171717 var(--tw-gradient-to-position);
 }
-.p-5 {
-  padding: 1.25rem;
-}
 .py-3 {
   padding-top: 0.75rem;
   padding-bottom: 0.75rem;
@@ -630,6 +639,13 @@ video {
 }
 .pl-3 {
   padding-left: 0.75rem;
+}
+.text-left {
+  text-align: left;
+}
+.text-2xl {
+  font-size: 1.5rem;
+  line-height: 2rem;
 }
 .text-4xl {
   font-size: 2.25rem;

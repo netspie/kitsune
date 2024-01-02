@@ -61,7 +61,6 @@ body {
 .main-section {
     gap: 15px;
 }
-
     
 .mud-popover:has(.mud-list .main-menu) {
     top: 64px !important;
@@ -82,6 +81,5 @@ body {
 
 @media only screen and (max-width: 600px) {
     .main-section {
-        margin-top: 60px;
     }
 }
