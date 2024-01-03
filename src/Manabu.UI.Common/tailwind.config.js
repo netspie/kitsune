@@ -1,6 +1,9 @@
 module.exports = {
 	theme: {
-		extend: {}
+		extend: {},
+		screens: {
+			'usmx': { 'max': '600px' }
+		}
 	},
 	content: ["./**/*.{razor,html}"],
 	plugins: []
