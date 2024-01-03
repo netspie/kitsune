@@ -67,7 +67,7 @@ public class Phrase : Entity<PhraseId>, IAggregateRoot<PhraseId>
 
         return WordMeanings.Remove(word);
     }
-
+        
     public bool ReorderWord(WordLink word, int index)
     {
         if (WordMeanings!.IsNullOrEmpty() || !WordMeanings!.Contains(word))

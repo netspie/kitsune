@@ -1,0 +1,28 @@
+﻿@using Manabu.UseCases.Content.Words
+@inherits CoreComponent
+
+<MudStack Class="main-section complexity" Style=@($"width: 100%")>
+
+</MudStack>
+
+@code {
+    private WordsDTO? _dto;
+    private List<WordItem> _elements = new();
+
+    protected override async Task RefreshViewModel()
+    {
+        var response = await QueryExecutor.Execute<GetWordsQuery, GetWordsQueryResponse>(
+            new GetWordsQuery(Range: null));
+
+        _dto = response.Content;
+
+        _elements = _dto.Words.Select(w => new WordItem(w.Id, w.Value, w.Meaning, w.PartOfSpeech, w.Reading)).ToList();
+    }
+
+    public record WordItem(
+        string Id,
+        string? Word = null,
+        string? Meaning = null,
+        string? PartOfSpeech = null,
+        string? Reading = null);
+}
