@@ -1,4 +1,8 @@
 ﻿@page "/words/themes"
+@using Manabu.UI.Common.Components
+@using Manabu.UI.Common.State
+
+@inherits CoreComponent
 
 <style>
     .bg {
@@ -100,37 +104,204 @@
 
 
 <div class="word-themes w-full h-full flex flex-col gap-5 items-center mb-10 top-[72px] pt-5">
-    <MudIconButton Icon=@Icons.Material.Filled.Settings 
-        OnClick=@(() => _drawer.Open = true )
-        Class="z-10 settings-button top-[75px] usmx:top-[11px] right-[15px] fixed hover:brightness-80 " />
+    @if (!_drawerOpen)
+    {
+        <MudIconButton Icon=@Icons.Material.Filled.Settings 
+            OnClick=@(() => _drawer.Open = true )
+            Class="z-30 settings-button top-[75px] usmx:top-[11px] right-[15px] fixed hover:brightness-80" />
+    }
+
+    @* <button class="fixed bg-red-200 h-[30px] w-[30px] border-none brightness-50 z-20 hover:brightness-[1.75]" style="filter: brightness(0)"></button> *@
         
     <div class="fox-bg bg-cover bg-center fixed top-0 w-full h-full opacity-[0.1]" />
     <div class="scroll-enabler absolute h-full w-full"></div>
     <div class="relative">
-        <MudText Class="font-bold text-4xl mb-5 usmx:text-3xl">Words By Theme</MudText>
-        <MudText Class="text-md mb-5 z-10 cursor-pointer">
+        <MudText Class="font-bold text-4xl mb-5 usmx:text-3xl w-full text-center">Words By Theme</MudText>
+        <MudText Class="text-md z-10">
             &nbsp;&nbsp;&nbsp;&nbsp; Initial lists contain basic vocabulary grouped by theme. It overlaps with JLPT level words starting from N5 level, but might include more similar words, so
             it can be learned at the same time.
         </MudText>
-        <MudText Class="font-bold text-2xl text-left z-10">Simple Words 1-50</MudText>
     </div>
     
-    <div class="relative w-full h-full flex flex-wrap gap-7 items-center justify-center py-3">
-        @* <div class="absolute bg-slate-800 w-[100000px] h-full `top-[100px] -z-10" /> *@
-        @for (int i = 0; i < 50; i++) 
-        {
+    <div class="relative flex flex-col items-center gap-3 mt-10">
+        <MudText Class="font-bold text-2xl text-left z-10 text-center">Numbers</MudText>
+        <div class="relative w-full h-full flex flex-wrap gap-7 items-center justify-center py-3">
+            
             <WordTile
-                MainText=@GetRandomKanji()
-                MeaningText=@GetRandomNoun()
-                HiraganaText=@GetRandomJLPTN5Word()
-                MeaningEnabled=@MeaningsEnabled 
-                HiraganaEnabled=@HiraganaEnabled />
-        }
+                MainText="零"
+                MeaningText="zero"
+                HiraganaText="れい"
+                MeaningEnabled=@IsMeaningsShown.Value
+                HiraganaEnabled=@IsReadingsShown.Value
+            />
+
+            <WordTile
+                MainText="一"
+                MeaningText="one"
+                HiraganaText="いち"
+                MeaningEnabled=@IsMeaningsShown.Value
+                HiraganaEnabled=@IsReadingsShown.Value
+            />
+            
+            <WordTile
+                MainText="二"
+                MeaningText="two"
+                HiraganaText="に"
+                MeaningEnabled=@IsMeaningsShown.Value
+                HiraganaEnabled=@IsReadingsShown.Value
+            />
+
+            <WordTile
+                MainText="三"
+                MeaningText="three"
+                HiraganaText="さん"
+                MeaningEnabled=@IsMeaningsShown.Value
+                HiraganaEnabled=@IsReadingsShown.Value
+            />
+
+            <WordTile
+                MainText="四"
+                MeaningText="four"
+                HiraganaText="よん"
+                MeaningEnabled=@IsMeaningsShown.Value
+                HiraganaEnabled=@IsReadingsShown.Value
+            />
+
+            <WordTile
+                MainText="五"
+                MeaningText="five"
+                HiraganaText="ご"
+                MeaningEnabled=@IsMeaningsShown.Value
+                HiraganaEnabled=@IsReadingsShown.Value
+            />
+
+            <WordTile
+                MainText="六"
+                MeaningText="six"
+                HiraganaText="ろく"
+                MeaningEnabled=@IsMeaningsShown.Value
+                HiraganaEnabled=@IsReadingsShown.Value
+            />
+
+            <WordTile
+                MainText="七"
+                MeaningText="seven"
+                HiraganaText="なな"
+                MeaningEnabled=@IsMeaningsShown.Value
+                HiraganaEnabled=@IsReadingsShown.Value
+            />
+
+            <WordTile
+                MainText="八"
+                MeaningText="eight"
+                HiraganaText="はち"
+                MeaningEnabled=@IsMeaningsShown.Value
+                HiraganaEnabled=@IsReadingsShown.Value
+            />
+
+            <WordTile
+                MainText="九"
+                MeaningText="nine"
+                HiraganaText="きゅう"
+                MeaningEnabled=@IsMeaningsShown.Value
+                HiraganaEnabled=@IsReadingsShown.Value
+            />
+
+            <WordTile
+                MainText="十"
+                MeaningText="nine"
+                HiraganaText="じゅう"
+                MeaningEnabled=@IsMeaningsShown.Value
+                HiraganaEnabled=@IsReadingsShown.Value
+            />
+
+            <WordTile
+                MainText="二十"
+                MeaningText="twenty"
+                HiraganaText="にじゅう"
+                MeaningEnabled=@IsMeaningsShown.Value
+                HiraganaEnabled=@IsReadingsShown.Value
+            />
+
+            <WordTile
+                MainText="三十"
+                MeaningText="thirty"
+                HiraganaText="さんじゅう"
+                MeaningEnabled=@IsMeaningsShown.Value
+                HiraganaEnabled=@IsReadingsShown.Value
+            />
+
+            <WordTile
+                MainText="四十"
+                MeaningText="forty"
+                HiraganaText="よんじゅう"
+                MeaningEnabled=@IsMeaningsShown.Value
+                HiraganaEnabled=@IsReadingsShown.Value
+            />
+
+            <WordTile
+                MainText="五十"
+                MeaningText="fifty"
+                HiraganaText="ごじゅう"
+                MeaningEnabled=@IsMeaningsShown.Value
+                HiraganaEnabled=@IsReadingsShown.Value
+            />
+
+            <WordTile
+                MainText="六十"
+                MeaningText="sixty"
+                HiraganaText="ろくじゅう"
+                MeaningEnabled=@IsMeaningsShown.Value
+                HiraganaEnabled=@IsReadingsShown.Value
+            />
+
+            <WordTile
+                MainText="七十"
+                MeaningText="seventy"
+                HiraganaText="ななじゅう"
+                MeaningEnabled=@IsMeaningsShown.Value
+                HiraganaEnabled=@IsReadingsShown.Value
+            />
+
+            <WordTile
+                MainText="八十"
+                MeaningText="eighty"
+                HiraganaText="はちじゅう"
+                MeaningEnabled=@IsMeaningsShown.Value
+                HiraganaEnabled=@IsReadingsShown.Value
+            />
+
+            <WordTile
+                MainText="九十"
+                MeaningText="ninety"
+                HiraganaText="きゅうじゅう"
+                MeaningEnabled=@IsMeaningsShown.Value
+                HiraganaEnabled=@IsReadingsShown.Value
+            />
+
+            <WordTile
+                MainText="百"
+                MeaningText="hundred"
+                HiraganaText="ひゃく"
+                MeaningEnabled=@IsMeaningsShown.Value
+                HiraganaEnabled=@IsReadingsShown.Value
+            />
+
+            @* <div class="absolute bg-slate-800 w-[100000px] h-full `top-[100px] -z-10" /> *@
+           @*  @for (int i = 0; i < 50; i++) 
+            {
+                <WordTile
+                    MainText=@GetRandomKanji()
+                    MeaningText=@GetRandomNoun()
+                    HiraganaText=@GetRandomJLPTN5Word()
+                    MeaningEnabled=@IsMeaningsShown.Value 
+                    HiraganaEnabled=@IsReadingsShown.Value />
+            }*@
+        </div> 
     </div>
 
-    <div class="flex flex-col gap-15">
+    @* <div class="flex flex-col gap-15">
         <div class="flex gap-10">
-            @* <div class="absolute bg-slate-800 w-[100000px] h-full `top-[100px] -z-10" /> *@
             <div>
                 <div class="
                 relative w-[65px] flex flex-col h-[65px]
@@ -146,9 +317,9 @@
                         text-shadow: 0 0 10px gray;")>
                         @GetRandomKanji()
                     </h5>
-                    @if (MeaningsEnabled)
+                    @if (IsMeaningsShown.Value)
                     {
-                        @* <h6 class="">@GetRandomNoun()</h6> *@
+                        @* <h6 class="">@GetRandomNoun()</h6> 
                     }
                 </div>
             </div>
@@ -158,90 +329,13 @@
                 <MudText style="position:relative; z-index:10; cursor-pointer">Lorem ipor incididuniqua.llamco laboris</MudText>
             </div>
         </div>
-        <div class="flex gap-10">
-            @* <div class="absolute bg-slate-800 w-[100000px] h-full `top-[100px] -z-10" /> *@
-            <div>
-                <div class="
-                relative w-[65px] flex flex-col h-[65px]
-                items-center justify-center
-                transition transform duration-150 hover:scale-[1.25]
-                hover:font-bold">
-                    <h5 class="anim text-black cursor-pointer
-                    -translate-y-[5px]"
-                        style=@($@"
-                        font-family: kaisei;
-                        font-size: 80px;
-                        z-index: 10;
-                        text-shadow: 0 0 10px gray;")>
-                        @GetRandomKanji()
-                    </h5>
-                    @* <h6 class="">@GetRandomNoun()</h6> *@
-                </div>
-            </div>
-            <div class="flex flex-col">
-                <MudText style="position:relative; z-index:10; cursor-pointer">Lorem ipsum dolor sit amet, </MudText>
-                <MudText style="position:relative; z-index:10; cursor-pointer">Lorem ipsum dolor siim ad minim veniamercitation ullamco laboris</MudText>
-                <MudText style="position:relative; z-index:10; cursor-pointer">Lorem ipor incididuniqua.llamco laboris</MudText>
-            </div>
-        </div>
-        <div class="flex gap-10">
-            @* <div class="absolute bg-slate-800 w-[100000px] h-full `top-[100px] -z-10" /> *@
-            <div>
-                <div class="
-                relative w-[65px] flex flex-col h-[65px]
-                items-center justify-center
-                transition transform duration-150 hover:scale-[1.25]
-                hover:font-bold">
-                    <h5 class="anim text-black cursor-pointer
-                    -translate-y-[5px]"
-                        style=@($@"
-                        font-family: kaisei;
-                        font-size: 80px;
-                        z-index: 10;
-                        text-shadow: 0 0 10px gray;")>
-                        @GetRandomKanji()
-                    </h5>
-                    @* <h6 class="">@GetRandomNoun()</h6> *@
-                </div>
-            </div>
-            <div class="flex flex-col">
-                <MudText style="position:relative; z-index:10; cursor-pointer">Lorem ipsum dolor sit amet, </MudText>
-                <MudText style="position:relative; z-index:10; cursor-pointer">Lorem ipsum dolor siim ad minim veniamercitation ullamco laboris</MudText>
-                <MudText style="position:relative; z-index:10; cursor-pointer">Lorem ipor incididuniqua.llamco laboris</MudText>
-            </div>
-        </div>
-        <div class="flex gap-10">
-            @* <div class="absolute bg-slate-800 w-[100000px] h-full `top-[100px] -z-10" /> *@
-            <div>
-                <div class="
-                relative w-[65px] flex flex-col h-[65px]
-                items-center justify-center
-                transition transform duration-150 hover:scale-[1.25]
-                hover:font-bold">
-                    <h5 class="anim text-black cursor-pointer
-                    -translate-y-[5px]"
-                        style=@($@"
-                        font-family: kaisei;
-                        font-size: 80px;
-                        z-index: 10;
-                        text-shadow: 0 0 10px gray;")>
-                        @GetRandomKanji()
-                    </h5>
-                    <h6 class="">@GetRandomNoun()</h6>
-                </div>
-            </div>
-            <div class="flex flex-col">
-                <MudText style="position:relative; z-index:10; cursor-pointer">Lorem ipsum dolor sit amet, </MudText>
-                <MudText style="position:relative; z-index:10; cursor-pointer">Lorem ipsum dolor siim ad minim veniamercitation ullamco laboris</MudText>
-                <MudText style="position:relative; z-index:10; cursor-pointer">Lorem ipor incididuniqua.llamco laboris</MudText>
-            </div>
-        </div>
-    </div>
+    </div> 
+    *@
 
     <MudSwipeArea 
         OnSwipe="@OnSwipe" Class="fixed top-0 right-0 h-full w-[5%] z-20">
         <MudDrawer @ref=_drawer @bind-Open=@_drawerOpen Fixed=false Elevation=1 Anchor=@Anchor.Right
-            Variant=@DrawerVariant.Persistent
+            Variant=@DrawerVariant.Temporary
             Class="relative right-0 z-20">
             <div class="absolute bg-settings w-full h-full opacity-25" />
             <MudDrawerHeader Class="fixed flex flex-col">
@@ -251,8 +345,8 @@
                     OnClick=@(() => _drawer.Open = false ) 
                     Class="absolute right-0 top-[7px]"/>
                 <div class="flex flex-col w-full">
-                    <MudSwitch @bind-Checked=@MeaningsEnabled Label="Show Meanings" Color="Color.Info" Class="w-fit" />
-                    <MudSwitch @bind-Checked=@HiraganaEnabled Label="Show Readings" Color="Color.Info" Class="w-fit" />
+                    <MudSwitch @bind-Checked=@IsMeaningsShown.Value Label="Show Meanings" Color="Color.Info" Class="w-fit" />
+                    <MudSwitch @bind-Checked=@IsReadingsShown.Value Label="Show Readings" Color="Color.Info" Class="w-fit" />
                 </div>
             </MudDrawerHeader>
         </MudDrawer>
@@ -262,23 +356,17 @@
 @code {
     private MudDrawer _drawer;
 
-    private bool _meaningsEnabled;
-    private bool MeaningsEnabled {
-        get => _meaningsEnabled;
-        set {
-            _meaningsEnabled = value;
-            InvokeAsync(StateHasChanged);
-        }
-    }
+    [Inject] public WordThemes_IsMeaningsShown IsMeaningsShown { get; set; }
+    [Inject] public WordThemes_IsReadingsShown IsReadingsShown { get; set; }
 
-    private bool _hiraganaEnabled;
-    private bool HiraganaEnabled {
-        get => _hiraganaEnabled;
-        set {
-            _hiraganaEnabled = value;
-            InvokeAsync(StateHasChanged);
-        }
-    }
+    // public void Dispose()
+    // {
+    //     IsMeaningsShown.OnValueChanged -= OnMeaningsShownValueChanged;
+    //     IsReadingsShown.OnValueChanged -= OnReadingsShownChanged;
+    // }
+
+    // private async Task OnMeaningsShownValueChanged(bool value) => await RefreshView();
+    // private async Task OnReadingsShownChanged(bool value) => await RefreshView();
 
     bool _drawerOpen;
     public void OnSwipe(SwipeDirection direction)

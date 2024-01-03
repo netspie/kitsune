@@ -2,9 +2,4 @@
 
 namespace Manabu.UI.Common.State;
 
-public class IsSpeakersShown : StateItem<bool>
-{
-    public IsSpeakersShown(IStorage storage) : base(storage)
-    {
-    }
-}
+public class IsSpeakersShown(IStorage storage) : StateItem<bool>(storage);
