@@ -2,13 +2,13 @@
 @page "/home"
 @using Microsoft.AspNetCore.Components.Authorization;
 
-<div class="main-hero">
-    <div class="grid">
-        <div class="grid-left">
-            <MudImage Src=@($"{Config.BaseAssetsPath}/images/icons8-fox-96.png") Height=100 Style="margin-top: 10px;" />
-            <h2 class="title noselect">Kitsune Study</h2>
+<div class="flex flex-col w-full gap-[25px] items-center pt-[45px] px-[20px] min-h-full h-full">
+    <div class="flex flex-col h-full w-full">
+        <div class="h-full px-[30px] shrink">
+            @* <MudImage Src=@($"{Config.BaseAssetsPath}/images/icons8-fox-96.png") Height=100 Style="margin-top: 10px;" /> *@
+            <h2 class="font-bold mt-[150px] text-6xl font-[nt] text-red-700 w-full text-center">Kitsune Study</h2>
             <div class="description-block">
-                <p class="description">
+                <p class="description font-[nt]">
                     Learn <strong>Japanese</strong> the way you want with <strong>ease</strong> and <strong>fun</strong>!
                 </p>
                 @*<p class="description">Never forget!</p>
@@ -17,7 +17,7 @@
                 <p class="description">Review anytime you want!</p>
                 <p class="description">Learn by reading, listening, speaking and writing!</p>*@
             </div>
-            <MudButton OnClick=@OnGetStartedButtonClick Style="background: orangered; color: white;" Variant="Variant.Filled" DisableElevation=true>
+            @* <MudButton OnClick=@OnGetStartedButtonClick Style="background: orangered; color: white;" Variant="Variant.Filled" DisableElevation=true>
                 @if (_isSignedIn)
                 {
                     <span>Learn</span>
@@ -26,7 +26,7 @@
                 {
                     <span>Get Started</span>
                 }
-            </MudButton>
+            </MudButton> *@
         </div>
       
         @*<div class="news">

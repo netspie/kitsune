@@ -6,6 +6,22 @@
 <MudDialogProvider/>
 <MudSnackbarProvider/>
 
+<style>
+    .wall-bg {
+        background-image: url('_content/Manabu.UI.Common/images/wall.jpg');
+        background-repeat: repeat-y;
+        background-size: cover;
+        opacity: 0.2;
+    }
+
+    .fox-bg {
+        background-image: url('_content/Manabu.UI.Common/images/fox-bg.jpeg');
+    }
+</style>
+<div class="fixed wall-bg top-0 left-0 w-full h-full" />
+<div class="fixed fox-bg bg-cover bg-center top-0 w-full h-full opacity-[0.1]" />
+<SteamBgEffect />
+
 <main class="main">
     
     @*<TopAndSideMenu

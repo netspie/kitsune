@@ -15,7 +15,7 @@
 
 @font-face {
     font-family: unica;
-    src: url(../fonts/UnicaOne-Regular.ttf);
+    src: url(../fonts/night-in-tokyo.regular.ttf);
 }
 
 @font-face {
@@ -51,6 +51,11 @@
 @font-face {
     font-family: hk;
     src: url(../fonts/hkhigerei.ttf);
+}
+
+@font-face {
+    font-family: nt;
+    src: url(../fonts/night-in-tokyo.regular.ttf);
 }
 
 body {

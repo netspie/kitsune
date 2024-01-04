@@ -1,26 +1,35 @@
 ﻿@using Manabu.UI.Common.Components
+@using Manabu.UI.Common.State
 @using Microsoft.AspNetCore.Components.Authorization;
 
 <div class="hmenu">
     <MudPaper Class="hmenu-paper" Style="display: flex;">
         <MudToolBar class="hmenu-toolbar" Style="align-items: center; width: 100%;">
-            <MudLink Href="" Style="text-decoration: none; padding-right: 25px; font-size:20px; font-weight: bold; font-family: gentle; color: darkorange !important;">KITSUNE</MudLink>
+            <MudLink Href="" 
+                class="font-['nt'] pt-[2px] pr-[15px] font-bold text-center text-center text-2xl"
+                     Style="text-decoration: none; text-shadow: 0 0 10px gray; color: #cf0000 !important">
+                KITSUNE
+            </MudLink>
             @for (int i = 0; i < _leftButtons.Count; i++)
             {
                 var button = _leftButtons[i];
                 @if (button.Buttons is null)
                 {
-                    <MudButton OnClick=@(arg => OnMenuItemButtonClick(arg, button)) Href=@button.Href Style="border-radius: 0; font-weight: bold; font-family: unica; font-size: 15px; height: 100%;">@button.Name</MudButton>
+                    <MudButton 
+                        OnClick=@(arg => OnMenuItemButtonClick(arg, button)) 
+                        Href=@button.Href 
+                        Class="font-['nt']"
+                        Style="border-radius: 0; font-weight: bold; height: 100%; font-size: 80px;">@button.Name</MudButton>
                 }
                 else
                 {
-                    <MudMenu Label=@button.Name ActivationEvent="@MouseEvent.MouseOver" Style="height: 100%;">
+                    <MudMenu @ref=_menu Class="" Label=@button.Name ActivationEvent=@MouseEvent.MouseOver Style="height: 100%; font-size: 80px;">
                         <ChildContent>
                             <div class="main-menu" style="width: 100%">
                                 @foreach (var nButton in button.Buttons)
                                 {
                                     <MudMenuItem OnClick=@(arg => OnMenuItemButtonClick(arg, button)) Href=@nButton.Href>
-                                        <span style="font-family: unica; text-transform: uppercase;">@nButton.Name</span>
+                                        <span class="font-['nt']text-2xl">@nButton.Name</span>
                                     </MudMenuItem>
                                 }
                             </div>
@@ -35,7 +44,10 @@
                 var button = _rightButtons[i];
                 @if (button.Buttons is null)
                 {
-                    <MudButton OnClick=@(arg => OnMenuItemButtonClick(arg, button)) Href=@button.Href Style="border-radius: 0; font-weight: bold; font-family: unica; font-size: 15px; height: 100%;">
+                    <MudButton 
+                        OnClick=@(arg => OnMenuItemButtonClick(arg, button))
+                        Class="font-['nt']" 
+                        Href=@button.Href Style="border-radius: 0; font-weight: bold; font-size: 15px; height: 100%;">
                         <span style=" white-space:nowrap; word-break:keep-all">@button.Name</span>
                     </MudButton>
                 }
@@ -67,23 +79,27 @@
     }
     <MudPaper Class=@($"vmenu-paper py-3 {_vmenuDisplayCssClass}") Width="150px" Elevation="0">
         <MudNavMenu Bordered="true" Style="display: flex;  flex-direction: column; align-items: start;">
-            <MudLink Href="" Style="text-decoration: none; text-align: center; padding-left: 20px; padding-bottom: 15px; font-size:20px; font-weight: bold; font-family: gentle; color: darkorange !important;">KITSUNE</MudLink>
+            <MudLink Href="" 
+                class="font-['nt'] pl-[20px] pt-[2px] font-bold text-center text-center text-2xl"
+                Style="text-decoration: none; text-shadow: 0 0 10px gray; color: #cf0000 !important">
+                KITSUNE
+            </MudLink>
             @foreach (var button in _leftButtons)
             {
                 @if (button.Buttons is null)
                 {
                     <MudButton OnClick=@(arg => OnMenuItemButtonClick(arg, button)) Href=@button.Href 
-                        Style="padding-left: 20px; display: flex; justify-content: start; text-align: left; width:100%; border-radius: 0; font-weight: bold; font-family: unica;">
+                        Style="padding-left: 20px; display: flex; justify-content: start; text-align: left; width:100%; border-radius: 0; font-weight: bold; font-family: nt;">
                         @button.Name
                     </MudButton>
                 }
                 else
                 {
-                    <MudNavGroup Title=@button.Name Style="text-transform: uppercase; margin: 0; padding-top: 0px; padding-bottom: 0px;" HideExpandIcon=true>
+                    <MudNavGroup Title=@button.Name Style=" margin: 0; padding-top: 0px; padding-bottom: 0px;" HideExpandIcon=true>
                         @foreach (var nButton in button.Buttons)
                         {
                             <MudNavLink OnClick=@(arg => OnMenuItemButtonClick(arg, button)) Href=@nButton.Href
-                                Style="text-transform: uppercase; margin: 0; padding-top: 0px; padding-bottom: 0px; font-family: unica;">
+                                Style=" margin: 0; padding-top: 0px; padding-bottom: 0px; font-family: nt;">
                                 @nButton.Name
                             </MudNavLink>
                         }
@@ -94,7 +110,7 @@
             {
                 @if (button.Buttons is null)
                 {
-                    <MudButton OnClick=@(arg => OnMenuItemButtonClick(arg, button)) Href=@button.Href Style="padding-left: 20px; display: flex; justify-content: start; text-align: left; width:100%; border-radius: 0; font-weight: bold; font-family: unica;">
+                    <MudButton OnClick=@(arg => OnMenuItemButtonClick(arg, button)) Href=@button.Href Style="padding-left: 20px; display: flex; justify-content: start; text-align: left; width:100%; border-radius: 0; font-weight: bold; font-family: nt;">
                         <span style=" white-space:nowrap; word-break:keep-all">@button.Name</span>
                     </MudButton>
                 }
@@ -119,7 +135,10 @@
     [Inject] public NavigationManager Navigation { get; set; }
     [Inject] public State.SiteTitle SiteTitle { get; set; }
 
+    [Inject] public MainLayout_IsOriginalMenuShown IsOriginalMenuShown { get; set; }
+
     private bool _menuOn;
+    private MudMenu? _menu;
 
     private string _vmenuDisplayCssClass => _menuOn ? "" : "display-none";
 
@@ -129,7 +148,27 @@
     protected override async Task OnInitializedAsync()
     {
         SiteTitle.Subscribe(() => InvokeAsync(StateHasChanged));
+        IsOriginalMenuShown.OnValueChanged += IsOriginalMenuShownState_OnValueChange;
+    }
 
+    private async Task IsOriginalMenuShownState_OnValueChange(bool value) => await RefreshMenu();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+            return;
+
+        await IsOriginalMenuShown.Init();
+        await RefreshMenu();
+    }
+
+    private async Task RefreshMenu()
+    {
+        if (!IsOriginalMenuShown.Value)
+        {
+            _leftButtons.Add(new("Words", "/words/themes"));
+        }
+        else
         if (await Auth.IsSignedIn() is false)
         {
             _leftButtons.Add(new("Courses", "/courses"));
@@ -160,6 +199,9 @@
             _leftButtons.Add(new("Contact", "/contact"));
             _rightButtons.Add(new("Sign Out"));
         }
+
+        await InvokeAsync(StateHasChanged);
+        _menu?.Activate(null, null);
     }
 
     private Task OnMenuButtonClick(MouseEventArgs args)
@@ -179,7 +221,6 @@
         _menuOn = false;
         await InvokeAsync(StateHasChanged);
     }
-
 
     public Task OnOverlayClick()
     {

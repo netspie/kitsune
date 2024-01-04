@@ -4,15 +4,18 @@
     transition transform duration-150 
     hover:scale-[1.10] hover:font-bold">
 
-    <h5 class=@($@"anim text-black cursor-pointer
-        -translate-y-[5px] nowrap")
-        style=@($@"
-        font-family: kaisei;
-        font-size: 40px;
-        z-index: 10;
-        text-shadow: 0 0 10px gray;")>
-        @MainText
-    </h5>
+    @if (OriginalEnabled)
+    {
+        <h5 class=@($@"anim text-black cursor-pointer
+            -translate-y-[5px] nowrap")
+            style=@($@"
+            font-family: kaisei;
+            font-size: 40px;
+            z-index: 10;
+            text-shadow: 0 0 10px gray;")>
+            @MainText
+        </h5>
+    }
     @if (HiraganaEnabled)
     {
         <h6 class="">@HiraganaText</h6>
@@ -28,6 +31,7 @@
     [Parameter] public string? MeaningText { get; set; }
     [Parameter] public string? HiraganaText { get; set; }
 
+    [Parameter] public bool OriginalEnabled { get; set; }
     [Parameter] public bool MeaningEnabled { get; set; }
     [Parameter] public bool HiraganaEnabled { get; set; }
 }

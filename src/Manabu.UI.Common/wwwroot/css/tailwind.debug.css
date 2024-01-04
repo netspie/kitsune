@@ -518,6 +518,9 @@ video {
 .relative {
   position: relative;
 }
+.bottom-0 {
+  bottom: 0px;
+}
 .left-0 {
   left: 0px;
 }
@@ -575,6 +578,12 @@ video {
 .mt-4 {
   margin-top: 1rem;
 }
+.mt-\[150px\] {
+  margin-top: 150px;
+}
+.box-border {
+  box-sizing: border-box;
+}
 .flex {
   display: flex;
 }
@@ -587,6 +596,9 @@ video {
 .h-\[30px\] {
   height: 30px;
 }
+.h-\[35px\] {
+  height: 35px;
+}
 .h-\[65px\] {
   height: 65px;
 }
@@ -596,6 +608,9 @@ video {
 }
 .h-full {
   height: 100%;
+}
+.min-h-full {
+  min-height: 100%;
 }
 .w-\[100000px\] {
   width: 100000px;
@@ -620,6 +635,9 @@ video {
   min-width: 65px;
 }
 .flex-shrink {
+  flex-shrink: 1;
+}
+.shrink {
   flex-shrink: 1;
 }
 .flex-grow {
@@ -665,6 +683,12 @@ video {
 .gap-7 {
   gap: 1.75rem;
 }
+.gap-\[25px\] {
+  gap: 25px;
+}
+.justify-self-end {
+  justify-self: end;
+}
 .border {
   border-width: 1px;
 }
@@ -685,6 +709,14 @@ video {
 .bg-center {
   background-position: center;
 }
+.px-\[20px\] {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+.px-\[30px\] {
+  padding-left: 30px;
+  padding-right: 30px;
+}
 .py-3 {
   padding-top: 0.75rem;
   padding-bottom: 0.75rem;
@@ -696,14 +728,32 @@ video {
 .pl-3 {
   padding-left: 0.75rem;
 }
+.pl-\[20px\] {
+  padding-left: 20px;
+}
+.pr-\[15px\] {
+  padding-right: 15px;
+}
 .pt-5 {
   padding-top: 1.25rem;
+}
+.pt-\[2px\] {
+  padding-top: 2px;
+}
+.pt-\[45px\] {
+  padding-top: 45px;
 }
 .text-left {
   text-align: left;
 }
 .text-center {
   text-align: center;
+}
+.font-\[\'nt\'\] {
+  font-family: 'nt';
+}
+.font-\[nt\] {
+  font-family: nt;
 }
 .text-2xl {
   font-size: 1.5rem;
@@ -712,6 +762,10 @@ video {
 .text-4xl {
   font-size: 2.25rem;
   line-height: 2.5rem;
+}
+.text-6xl {
+  font-size: 3.75rem;
+  line-height: 1;
 }
 .font-bold {
   font-weight: 700;
@@ -725,6 +779,10 @@ video {
 .text-black {
   --tw-text-opacity: 1;
   color: rgb(0 0 0 / var(--tw-text-opacity));
+}
+.text-red-700 {
+  --tw-text-opacity: 1;
+  color: rgb(185 28 28 / var(--tw-text-opacity));
 }
 .opacity-25 {
   opacity: 0.25;

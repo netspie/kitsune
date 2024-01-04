@@ -74,13 +74,13 @@ div ::deep .mud-button-label {
     border-radius: 0; 
     font-weight: bold; 
     font-family: unica; 
-    font-size: 15px; 
+    font-size: 18px; 
     height: 100%;
 }
 
 div ::deep .mud-nav-link-text {
     border-radius: 0; 
-    font-family: unica; 
+    font-family: nt; 
     font-size: 15px; 
     height: 100%;
     padding-left: 5px;
