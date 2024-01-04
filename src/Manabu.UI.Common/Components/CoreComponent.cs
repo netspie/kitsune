@@ -4,7 +4,6 @@ using Manabu.UI.Common.Auth;
 using Manabu.UI.Common.Extensions;
 using Manabu.UI.Common.Storage;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
 using System.Reflection;
 

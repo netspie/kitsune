@@ -95,188 +95,203 @@
     </div>
     
     <div class="relative flex flex-col items-center gap-3 mt-10">
-        <MudText Class="font-bold text-2xl text-left z-10 text-center">Numbers</MudText>
-        <div class="relative w-full h-full flex flex-wrap gap-7 items-center justify-center py-3">
+        <div class="relative flex w-full items-center gap-4">
+            <MudDivider Class="border-gray-400 bottom-0 shrink" />
+            <MudText Class="font-bold text-2xl text-left z-10 text-center">Numbers</MudText>
+            <MudDivider Class="border-gray-400 bottom-0 shrink" />
+        </div>
+        <div class="flex flex-col gap-2">
+            <MudText Class="font-bold text-lg text-left z-10 text-center">Digits</MudText>
+            <div class="relative w-full h-full flex flex-wrap gap-7 items-center justify-center py-3">
+                <WordTile
+                    MainText="零"
+                    MeaningText="zero"
+                    HiraganaText="れい"
+                    OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
+				    MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
+                    HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet)
+                />
+
+                <WordTile
+                    MainText="一"
+                    MeaningText="one"
+                    HiraganaText="いち"
+                    OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
+				    MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
+                    HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet)
+                />
             
-            <WordTile
-                MainText="零"
-                MeaningText="zero"
-                HiraganaText="れい"
-                OriginalEnabled=@IsOriginalShown.Value
-				MeaningEnabled=@IsMeaningsShown.Value
-                HiraganaEnabled=@IsReadingsShown.Value
-            />
+                <WordTile
+                    MainText="二"
+                    MeaningText="two"
+                    HiraganaText="に"
+                    OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
+				    MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
+                    HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet)
+                />
 
-            <WordTile
-                MainText="一"
-                MeaningText="one"
-                HiraganaText="いち"
-                OriginalEnabled=@IsOriginalShown.Value
-				MeaningEnabled=@IsMeaningsShown.Value
-                HiraganaEnabled=@IsReadingsShown.Value
-            />
-            
-            <WordTile
-                MainText="二"
-                MeaningText="two"
-                HiraganaText="に"
-                OriginalEnabled=@IsOriginalShown.Value
-				MeaningEnabled=@IsMeaningsShown.Value
-                HiraganaEnabled=@IsReadingsShown.Value
-            />
+                <WordTile
+                    MainText="三"
+                    MeaningText="three"
+                    HiraganaText="さん"
+                    OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
+				    MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
+                    HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet)
+                />
 
-            <WordTile
-                MainText="三"
-                MeaningText="three"
-                HiraganaText="さん"
-                OriginalEnabled=@IsOriginalShown.Value
-				MeaningEnabled=@IsMeaningsShown.Value
-                HiraganaEnabled=@IsReadingsShown.Value
-            />
+                <WordTile
+                    MainText="四"
+                    MeaningText="four"
+                    HiraganaText="よん"
+                    OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
+				    MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
+                    HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet)
+                />
 
-            <WordTile
-                MainText="四"
-                MeaningText="four"
-                HiraganaText="よん"
-                OriginalEnabled=@IsOriginalShown.Value
-				MeaningEnabled=@IsMeaningsShown.Value
-                HiraganaEnabled=@IsReadingsShown.Value
-            />
+                <WordTile
+                    MainText="五"
+                    MeaningText="five"
+                    HiraganaText="ご"
+                    OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
+				    MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
+                    HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet)
+                />
 
-            <WordTile
-                MainText="五"
-                MeaningText="five"
-                HiraganaText="ご"
-                OriginalEnabled=@IsOriginalShown.Value
-				MeaningEnabled=@IsMeaningsShown.Value
-                HiraganaEnabled=@IsReadingsShown.Value
-            />
+                <WordTile
+                    MainText="六"
+                    MeaningText="six"
+                    HiraganaText="ろく"
+                    OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
+				    MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
+                    HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet)
+                />
 
-            <WordTile
-                MainText="六"
-                MeaningText="six"
-                HiraganaText="ろく"
-                OriginalEnabled=@IsOriginalShown.Value
-				MeaningEnabled=@IsMeaningsShown.Value
-                HiraganaEnabled=@IsReadingsShown.Value
-            />
+                <WordTile
+                    MainText="七"
+                    MeaningText="seven"
+                    HiraganaText="なな"
+                    OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
+				    MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
+                    HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet)
+                />
 
-            <WordTile
-                MainText="七"
-                MeaningText="seven"
-                HiraganaText="なな"
-                OriginalEnabled=@IsOriginalShown.Value
-				MeaningEnabled=@IsMeaningsShown.Value
-                HiraganaEnabled=@IsReadingsShown.Value
-            />
+                <WordTile
+                    MainText="八"
+                    MeaningText="eight"
+                    HiraganaText="はち"
+                    OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
+				    MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
+                    HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet)
+                />
 
-            <WordTile
-                MainText="八"
-                MeaningText="eight"
-                HiraganaText="はち"
-                OriginalEnabled=@IsOriginalShown.Value
-				MeaningEnabled=@IsMeaningsShown.Value
-                HiraganaEnabled=@IsReadingsShown.Value
-            />
+                <WordTile
+                    MainText="九"
+                    MeaningText="nine"
+                    HiraganaText="きゅう"
+                    OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
+				    MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
+                    HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet)
+                />
 
-            <WordTile
-                MainText="九"
-                MeaningText="nine"
-                HiraganaText="きゅう"
-                OriginalEnabled=@IsOriginalShown.Value
-				MeaningEnabled=@IsMeaningsShown.Value
-                HiraganaEnabled=@IsReadingsShown.Value
-            />
+                <WordTile
+                    MainText="十"
+                    MeaningText="ten"
+                    HiraganaText="じゅう"
+                    OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
+				    MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
+                    HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet)
+                />
+        </div>
+        <div class="flex flex-col gap-2">
+            <MudText Class="font-bold text-lg text-left z-10 text-center">Tens</MudText>
+            <div class="relative w-full h-full flex flex-wrap gap-7 items-center justify-center py-3">
+                <WordTile
+                    MainText="二十"
+                    MeaningText="twenty"
+                    HiraganaText="にじゅう"
+                    OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
+				    MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
+                    HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet)
+                />
 
-            <WordTile
-                MainText="十"
-                MeaningText="nine"
-                HiraganaText="じゅう"
-                OriginalEnabled=@IsOriginalShown.Value
-				MeaningEnabled=@IsMeaningsShown.Value
-                HiraganaEnabled=@IsReadingsShown.Value
-            />
+                <WordTile
+                    MainText="三十"
+                    MeaningText="thirty"
+                    HiraganaText="さんじゅう"
+                    OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
+				    MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
+                    HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet)
+                />
 
-            <WordTile
-                MainText="二十"
-                MeaningText="twenty"
-                HiraganaText="にじゅう"
-                OriginalEnabled=@IsOriginalShown.Value
-				MeaningEnabled=@IsMeaningsShown.Value
-                HiraganaEnabled=@IsReadingsShown.Value
-            />
+                <WordTile
+                    MainText="四十"
+                    MeaningText="forty"
+                    HiraganaText="よんじゅう"
+                    OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
+				    MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
+                    HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet)
+                />
 
-            <WordTile
-                MainText="三十"
-                MeaningText="thirty"
-                HiraganaText="さんじゅう"
-                OriginalEnabled=@IsOriginalShown.Value
-				MeaningEnabled=@IsMeaningsShown.Value
-                HiraganaEnabled=@IsReadingsShown.Value
-            />
+                <WordTile
+                    MainText="五十"
+                    MeaningText="fifty"
+                    HiraganaText="ごじゅう"
+                    OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
+				    MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
+                    HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet)
+                />
 
-            <WordTile
-                MainText="四十"
-                MeaningText="forty"
-                HiraganaText="よんじゅう"
-                OriginalEnabled=@IsOriginalShown.Value
-				MeaningEnabled=@IsMeaningsShown.Value
-                HiraganaEnabled=@IsReadingsShown.Value
-            />
+                <WordTile
+                    MainText="六十"
+                    MeaningText="sixty"
+                    HiraganaText="ろくじゅう"
+                    OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
+				    MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
+                    HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet)
+                />
 
-            <WordTile
-                MainText="五十"
-                MeaningText="fifty"
-                HiraganaText="ごじゅう"
-                OriginalEnabled=@IsOriginalShown.Value
-				MeaningEnabled=@IsMeaningsShown.Value
-                HiraganaEnabled=@IsReadingsShown.Value
-            />
+                <WordTile
+                    MainText="七十"
+                    MeaningText="seventy"
+                    HiraganaText="ななじゅう"
+                    OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
+				    MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
+                    HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet)
+                />
 
-            <WordTile
-                MainText="六十"
-                MeaningText="sixty"
-                HiraganaText="ろくじゅう"
-                OriginalEnabled=@IsOriginalShown.Value
-				MeaningEnabled=@IsMeaningsShown.Value
-                HiraganaEnabled=@IsReadingsShown.Value
-            />
+                <WordTile
+                    MainText="八十"
+                    MeaningText="eighty"
+                    HiraganaText="はちじゅう"
+                    OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
+				    MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
+                    HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet)
+                />
 
-            <WordTile
-                MainText="七十"
-                MeaningText="seventy"
-                HiraganaText="ななじゅう"
-                OriginalEnabled=@IsOriginalShown.Value
-				MeaningEnabled=@IsMeaningsShown.Value
-                HiraganaEnabled=@IsReadingsShown.Value
-            />
+                <WordTile
+                    MainText="九十"
+                    MeaningText="ninety"
+                    HiraganaText="きゅうじゅう"
+                    OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
+				    MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
+                    HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet)
+                />
+            </div>
+        </div>
 
-            <WordTile
-                MainText="八十"
-                MeaningText="eighty"
-                HiraganaText="はちじゅう"
-                OriginalEnabled=@IsOriginalShown.Value
-				MeaningEnabled=@IsMeaningsShown.Value
-                HiraganaEnabled=@IsReadingsShown.Value
-            />
-
-            <WordTile
-                MainText="九十"
-                MeaningText="ninety"
-                HiraganaText="きゅうじゅう"
-                OriginalEnabled=@IsOriginalShown.Value
-				MeaningEnabled=@IsMeaningsShown.Value
-                HiraganaEnabled=@IsReadingsShown.Value
-            />
-
-            <WordTile
-                MainText="百"
-                MeaningText="hundred"
-                HiraganaText="ひゃく"
-                OriginalEnabled=@IsOriginalShown.Value
-				MeaningEnabled=@IsMeaningsShown.Value
-                HiraganaEnabled=@IsReadingsShown.Value
-            />
+        <div class="flex flex-col gap-2">
+            <MudText Class="font-bold text-lg text-left z-10 text-center">Big Numbers</MudText>
+            <div class="relative w-full h-full flex flex-wrap gap-7 items-center justify-center py-3">
+                <WordTile
+                    MainText="百"
+                    MeaningText="hundred"
+                    HiraganaText="ひゃく"
+                    OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
+				    MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
+                    HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet)
+                />
+            </div>
+        </div>
 
             @* <div class="absolute bg-slate-800 w-[100000px] h-full `top-[100px] -z-10" /> *@
            @*  @for (int i = 0; i < 50; i++) 
@@ -285,9 +300,9 @@
                     MainText=@GetRandomKanji()
                     MeaningText=@GetRandomNoun()
                     HiraganaText=@GetRandomJLPTN5Word()
-                    OriginalEnabled=@IsOriginalShown.Value
-				MeaningEnabled=@IsMeaningsShown.Value 
-                    HiraganaEnabled=@IsReadingsShown.Value />
+                    OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
+				MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet) 
+                    HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
             }*@
         </div> 
     </div>
@@ -324,18 +339,13 @@
     </div> 
     *@
 
-    <MudSwipeArea 
-        OnSwipe="@OnSwipe" Class="fixed top-0 right-0 h-full w-[5%] z-20">
+    <div class="fixed h-full top-0 right-0">
         <MudDrawer @ref=_drawer @bind-Open=@_drawerOpen Fixed=false Elevation=1 Anchor=@Anchor.Right
             Variant=@DrawerVariant.Temporary
-            Class="relative right-0 z-20">
+            Class="relative right-0 z-30 h-full">
             <div class="absolute bg-settings w-full h-full opacity-25" />
             <MudDrawerHeader Class="fixed flex flex-col">
                 <MudText Typo=@Typo.h6 Class="font-bold mb-5">Settings</MudText>
-                <MudIconButton 
-                    Icon=@Icons.Material.Filled.Close
-                    OnClick=@(() => _drawer.Open = false ) 
-                    Class="absolute right-0 top-[7px]"/>
                 <div class="flex flex-col w-full">
                     <MudSwitch @bind-Checked=@IsOriginalShown.Value Label="Show Originals" Color="Color.Info" Class="w-fit" />
                     <MudSwitch @bind-Checked=@IsMeaningsShown.Value Label="Show Meanings" Color="Color.Info" Class="w-fit" />
@@ -343,10 +353,11 @@
                 </div>
             </MudDrawerHeader>
         </MudDrawer>
-    </MudSwipeArea>
+    </div>
 </div>
 
 @code {
+    bool _drawerOpen;
     private MudDrawer _drawer;
 
     [Inject] public WordThemes_IsOriginalShown IsOriginalShown { get; set; }
@@ -362,7 +373,6 @@
     // private async Task OnMeaningsShownValueChanged(bool value) => await RefreshView();
     // private async Task OnReadingsShownChanged(bool value) => await RefreshView();
 
-    bool _drawerOpen;
     public void OnSwipe(SwipeDirection direction)
     {
         if (direction == SwipeDirection.RightToLeft && !_drawerOpen)
@@ -420,7 +430,7 @@
     string GetRandomAnimClass()
     {
         string[] animClasses = { "anim", "anim2", "anim3", "anim4", "anim5" };
-        Random random = new Random();
+        var random = new Random();
         int index = random.Next(animClasses.Length);
         return animClasses[index];
     }

@@ -2,14 +2,14 @@
     position: relative;
     height: calc(100vh - 72px);
     top: 72px;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 .main-content {
     padding-right: 335px;
     padding-left: 335px;
     padding-bottom: 35px;
-    overflow-x: hidden;
 
     display:flex; 
     flex-direction: column; 

@@ -7,6 +7,7 @@ public abstract class StateItem<T> : IStateItem
     private readonly IStorage _storage;
 
     public event Func<T, Task> OnValueChanged;
+    public bool IsSet { get; private set; }
 
     protected StateItem(IStorage storage)
     {
@@ -31,6 +32,7 @@ public abstract class StateItem<T> : IStateItem
             return;
 
         await _storage.Save(this, GetType());
+        IsSet = true;
 
         if (OnValueChanged is not null)
             await OnValueChanged?.Invoke(_value);
@@ -43,9 +45,11 @@ public abstract class StateItem<T> : IStateItem
         if (@object is null)
             return;
 
-        _value = (T)type
+        _value = (T) type
             .GetField(nameof(_value), BindingFlags.NonPublic | BindingFlags.Instance)
             .GetValue(@object);
+
+        IsSet = true;
     }
 }
 
