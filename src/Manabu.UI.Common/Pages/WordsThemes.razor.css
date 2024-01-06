@@ -21,6 +21,18 @@ div ::deep
     font-weight: bold;
 }
 
+div ::deep .exp-panel > .mud-expand-panel-header {
+    display: none;
+}
+
+div ::deep .exp-panel > .mud-collapse-container > .mud-collapse-wrapper > .mud-collapse-wrapper-inner > .mud-expand-panel-content {
+    padding: 0;
+}
+
+div ::deep .exp-panel > .mud-collapse-container > .mud-collapse-wrapper > .mud-collapse-wrapper-inner > .mud-expand-panel-content {
+    padding: 0;
+}
+
 .context {
     width: 100%;
     position: absolute;

@@ -1,9 +1,9 @@
 ﻿@using Corelibs.Basic.Functional
-<div class="
+<div class=@($@"
     relative min-w-[65px] w-fit flex flex-col h-fit
     items-center justify-center
     transition transform duration-150 
-    hover:scale-[1.10] hover:-mx-[2px] hover:font-bold">
+    hover:scale-[1.10] hover:-mx-[2px] hover:font-bold {Class}")>
 
     @if (OriginalEnabled)
     {
@@ -28,11 +28,13 @@
 </div>
 
 @code {
+    [Parameter] public string Class { get; set; }
+
     [Parameter] public string? MainText { get; set; }
     [Parameter] public string? MeaningText { get; set; }
     [Parameter] public string? HiraganaText { get; set; }
 
-    [Parameter] public bool OriginalEnabled { get; set; }
-    [Parameter] public bool MeaningEnabled { get; set; }
-    [Parameter] public bool HiraganaEnabled { get; set; }
+    [Parameter] public bool OriginalEnabled { get; set; } = true;
+    [Parameter] public bool MeaningEnabled { get; set; } = true;
+    [Parameter] public bool HiraganaEnabled { get; set; } = true;
 }
