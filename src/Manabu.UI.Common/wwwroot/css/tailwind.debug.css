@@ -815,6 +815,10 @@ video {
 .duration-150 {
   transition-duration: 150ms;
 }
+.hover\:-mx-\[2px\]:hover {
+  margin-left: -2px;
+  margin-right: -2px;
+}
 .hover\:scale-\[1\.10\]:hover {
   --tw-scale-x: 1.10;
   --tw-scale-y: 1.10;
