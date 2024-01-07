@@ -3,7 +3,7 @@
 # Init
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
-EXPOSE 8000
+EXPOSE 8080
 EXPOSE 8081
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
@@ -49,6 +49,10 @@ WORKDIR "/src/Manabu.Infrastructure/"
 RUN dotnet build "Manabu.Infrastructure.csproj" -c Release -o /app/build
 
 # Manabu.UI.Common
+WORKDIR /src
+COPY ["kitsune/src/Manabu.UI.Common/package.json", "Manabu.UI.Common/"]
+RUN apt-get update && apt-get install -y nodejs npm
+RUN npm install -D tailwindcss cross-env postcss postcss-cli autoprefixer cssnano
 WORKDIR /src
 COPY ["kitsune/src/Manabu.UI.Common/Manabu.UI.Common.csproj", "Manabu.UI.Common/"]
 RUN dotnet restore "Manabu.UI.Common/Manabu.UI.Common.csproj"
