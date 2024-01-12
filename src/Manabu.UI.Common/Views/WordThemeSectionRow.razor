@@ -1,0 +1,16 @@
+﻿<div class="flex flex-col gap-2 my-8">
+    <div class="relative flex w-full items-center gap-4">
+        <MudDivider Class="border-gray-400 bottom-0 shrink" />
+        <MudText Class="font-bold text-lg text-left z-10 text-center grow text-nowrap">@Title</MudText>
+        <MudDivider Class="border-gray-400 bottom-0 shrink" />
+    </div>
+    <div class="relative w-full h-full flex flex-wrap gap-7 items-center justify-center py-3">
+        @ChildContent
+    </div>
+</div>
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    [Parameter] public string? Title { get; set; }
+}

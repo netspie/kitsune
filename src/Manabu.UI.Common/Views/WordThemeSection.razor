@@ -1,0 +1,17 @@
+﻿<div class="relative flex flex-col items-center">
+    <div class="relative flex w-full items-center justify-center gap-4 py-3 cursor-pointer" @onclick=@(() => _numbersEPanel?.ToggleExpansion())>
+        <div class="absolute h-full w-[100000px] bg-blue-900 -translate-[50%]  hover:brightness-75" style="box-shadow: 0 0 3px black;" />
+        <MudText Class="font-bold text-2xl text-left z-10 text-center text-white uppercase">@Title</MudText>
+    </div>
+    <MudExpansionPanel @ref=_numbersEPanel Text="" Class="exp-panel bg-transparent" IsInitiallyExpanded=true Style="margin: 0; border: none;">
+        @ChildContent
+    </MudExpansionPanel>
+</div>
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    [Parameter] public string? Title { get; set; }
+
+    private MudExpansionPanel? _numbersEPanel;
+}
