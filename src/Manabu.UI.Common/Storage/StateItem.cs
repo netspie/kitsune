@@ -2,11 +2,14 @@
 
 namespace Manabu.UI.Common.Storage;
 
+[Serializable]
 public abstract class StateItem<T> : IStateItem
 {
     private readonly IStorage _storage;
 
     public event Func<T, Task> OnValueChanged;
+
+    [Newtonsoft.Json.JsonIgnore]
     public bool IsSet { get; private set; }
 
     protected StateItem(IStorage storage)

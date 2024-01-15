@@ -1,5 +1,6 @@
 ﻿using Blazored.LocalStorage;
 using Corelibs.Basic.Collections;
+using Newtonsoft.Json;
 
 namespace Manabu.UI.Common.Storage;
 
@@ -25,7 +26,7 @@ public class BlazoredJsonLocalStorage : IStorage
             return;
 
         var key = type.Name;
-        var json = Newtonsoft.Json.JsonConvert.SerializeObject(@object);
+        var json = JsonConvert.SerializeObject(@object);
         await _localStorage.SetItemAsStringAsync(key, json);
     }
 

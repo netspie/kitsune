@@ -1,6 +1,7 @@
 ﻿@page "/words/themes"
 @using Manabu.UI.Common.Components
 @using Manabu.UI.Common.State
+@using MudBlazor.Interfaces
 
 @inherits CoreComponent
 
@@ -76,13 +77,11 @@
     </MudStack> *@
 
 <div class="word-themes w-full h-full flex flex-col items-center mb-10 top-[72px] pt-5">
-    @if (!_drawerOpen)
-    {
-        <MudIconButton Icon=@Icons.Material.Filled.Settings 
-            OnClick=@(() => _drawer.Open = true )
-            Class="fixed z-30 settings-button top-[75px] usmx:top-[11px] right-[15px] hover:brightness-80" />
-    }
-
+    
+    <MudIconButton Icon=@Icons.Material.Filled.Settings 
+        OnClick=@(() => _settings.SwitchOpen())
+        Class="fixed z-10 settings-button top-[75px] usmx:top-[11px] right-[15px] hover:brightness-80" />
+    
     @* <button class="fixed bg-red-200 h-[30px] w-[30px] border-none brightness-50 z-20 hover:brightness-[1.75]" style="filter: brightness(0)"></button> *@
         
     <div class="scroll-enabler absolute h-full w-full"></div>
@@ -94,706 +93,542 @@
         </MudText>
     </div>
     
-    <WordThemeSection Title="Numbers">
-        <WordThemeSectionRow Title="Digits">
-            <WordTile MainText="零"
-                        MeaningText="zero"
-                        HiraganaText="れい"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
+    <WordThemesSettings @ref=@_settings OnChanged=@OnSettingsChanged />
 
-            <WordTile MainText="一"
-                        MeaningText="one"
-                        HiraganaText="いち"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
+    @{ 
+    }
+    <div class="flex @layoutCss">
+        <WordThemeSection Title="Numbers" 
+            Color=@WordThemeSection.SectionColor.Blue
+            Layout=@(_settings is null ? WordThemesSettings.LayoutType.Vertical : _settings.Layout)>
+            <WordThemeSectionRow Title="Digits">
+                <WordTile MainText="零"
+                          MeaningText="zero"
+                          HiraganaText="れい"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
 
-            <WordTile MainText="二"
-                        MeaningText="two"
-                        HiraganaText="に"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
+                <WordTile MainText="一"
+                          MeaningText="one"
+                          HiraganaText="いち"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
 
-            <WordTile MainText="三"
-                        MeaningText="three"
-                        HiraganaText="さん"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
+                <WordTile MainText="二"
+                          MeaningText="two"
+                          HiraganaText="に"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
 
-            <WordTile MainText="四"
-                        MeaningText="four"
-                        HiraganaText="よん"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
+                <WordTile MainText="三"
+                          MeaningText="three"
+                          HiraganaText="さん"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
 
-            <WordTile MainText="五"
-                        MeaningText="five"
-                        HiraganaText="ご"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
+                <WordTile MainText="四"
+                          MeaningText="four"
+                          HiraganaText="よん"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
 
-            <WordTile MainText="六"
-                        MeaningText="six"
-                        HiraganaText="ろく"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
+                <WordTile MainText="五"
+                          MeaningText="five"
+                          HiraganaText="ご"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
 
-            <WordTile MainText="七"
-                        MeaningText="seven"
-                        HiraganaText="なな"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
+                <WordTile MainText="六"
+                          MeaningText="six"
+                          HiraganaText="ろく"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
 
-            <WordTile MainText="八"
-                        MeaningText="eight"
-                        HiraganaText="はち"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
+                <WordTile MainText="七"
+                          MeaningText="seven"
+                          HiraganaText="なな"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
 
-            <WordTile MainText="九"
-                        MeaningText="nine"
-                        HiraganaText="きゅう"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
-        </WordThemeSectionRow>
-        <WordThemeSectionRow Title="Tens">
-            <WordTile Class="w-full"
-                        MainText="十"
-                        MeaningText="ten"
-                        HiraganaText="じゅう"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
+                <WordTile MainText="八"
+                          MeaningText="eight"
+                          HiraganaText="はち"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
 
-            <WordTile MainText="二十"
-                        MeaningText="twenty"
-                        HiraganaText="にじゅう"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
+                <WordTile MainText="九"
+                          MeaningText="nine"
+                          HiraganaText="きゅう"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
+            </WordThemeSectionRow>
+            <WordThemeSectionRow Title="Tens">
+                <WordTile Class="w-full"
+                          MainText="十"
+                          MeaningText="ten"
+                          HiraganaText="じゅう"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
 
-            <WordTile MainText="三十"
-                        MeaningText="thirty"
-                        HiraganaText="さんじゅう"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
+                <WordTile MainText="二十"
+                          MeaningText="twenty"
+                          HiraganaText="にじゅう"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
 
-            <WordTile MainText="四十"
-                        MeaningText="forty"
-                        HiraganaText="よんじゅう"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
+                <WordTile MainText="三十"
+                          MeaningText="thirty"
+                          HiraganaText="さんじゅう"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
 
-            <WordTile MainText="五十"
-                        MeaningText="fifty"
-                        HiraganaText="ごじゅう"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
+                <WordTile MainText="四十"
+                          MeaningText="forty"
+                          HiraganaText="よんじゅう"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
 
-            <WordTile MainText="六十"
-                        MeaningText="sixty"
-                        HiraganaText="ろくじゅう"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
+                <WordTile MainText="五十"
+                          MeaningText="fifty"
+                          HiraganaText="ごじゅう"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
 
-            <WordTile MainText="七十"
-                        MeaningText="seventy"
-                        HiraganaText="ななじゅう"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
+                <WordTile MainText="六十"
+                          MeaningText="sixty"
+                          HiraganaText="ろくじゅう"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
 
-            <WordTile MainText="八十"
-                        MeaningText="eighty"
-                        HiraganaText="はちじゅう"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
+                <WordTile MainText="七十"
+                          MeaningText="seventy"
+                          HiraganaText="ななじゅう"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
 
-            <WordTile MainText="九十"
-                        MeaningText="ninety"
-                        HiraganaText="きゅうじゅう"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
-        </WordThemeSectionRow>
-        <WordThemeSectionRow Title="Hundreds">
-            <WordTile Class="w-full"
-                        MainText="百"
-                        MeaningText="hundred"
-                        HiraganaText="ひゃく"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
-            <WordTile MainText="一百"
-                        MeaningText="one hundred"
-                        HiraganaText="ひゃく"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
-            <WordTile MainText="二百"
-                        MeaningText="two hundreds"
-                        HiraganaText="にひゃく"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
-            <WordTile MainText="三百"
-                        MeaningText="three hundreds"
-                        HiraganaText="さんびゃく"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
+                <WordTile MainText="八十"
+                          MeaningText="eighty"
+                          HiraganaText="はちじゅう"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
 
-            <WordTile MainText="四百"
-                        MeaningText="four hundreds"
-                        HiraganaText="よんひゃく"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
+                <WordTile MainText="九十"
+                          MeaningText="ninety"
+                          HiraganaText="きゅうじゅう"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
+            </WordThemeSectionRow>
+            <WordThemeSectionRow Title="Hundreds">
+                <WordTile Class="w-full"
+                          MainText="百"
+                          MeaningText="hundred"
+                          HiraganaText="ひゃく"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
+                <WordTile MainText="一百"
+                          MeaningText="one hundred"
+                          HiraganaText="ひゃく"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
+                <WordTile MainText="二百"
+                          MeaningText="two hundreds"
+                          HiraganaText="にひゃく"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
+                <WordTile MainText="三百"
+                          MeaningText="three hundreds"
+                          HiraganaText="さんびゃく"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
 
-            <WordTile MainText="五百"
-                        MeaningText="five hundreds"
-                        HiraganaText="ごひゃく"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
+                <WordTile MainText="四百"
+                          MeaningText="four hundreds"
+                          HiraganaText="よんひゃく"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
 
-            <WordTile MainText="六百"
-                        MeaningText="six hundreds"
-                        HiraganaText="ろっぴゃく"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
+                <WordTile MainText="五百"
+                          MeaningText="five hundreds"
+                          HiraganaText="ごひゃく"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
 
-            <WordTile MainText="七百"
-                        MeaningText="seven hundreds"
-                        HiraganaText="ななひゃく"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
+                <WordTile MainText="六百"
+                          MeaningText="six hundreds"
+                          HiraganaText="ろっぴゃく"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
 
-            <WordTile MainText="八百"
-                        MeaningText="eight hundreds"
-                        HiraganaText="はっぴゃく"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
+                <WordTile MainText="七百"
+                          MeaningText="seven hundreds"
+                          HiraganaText="ななひゃく"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
 
-            <WordTile MainText="九百"
-                        MeaningText="nine hundreds"
-                        HiraganaText="きゅうひゃく"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
-        </WordThemeSectionRow>
-        <WordThemeSectionRow Title="Thousands">
-            <WordTile Class="w-full"
-                        MainText="千"
-                        MeaningText="thousand"
-                        HiraganaText="せん"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
-            <WordTile MainText="一千"
-                        MeaningText="one thousand"
-                        HiraganaText="いっせん"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
-            <WordTile MainText="二千"
-                        MeaningText="two thousands"
-                        HiraganaText="にせん"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
-            <WordTile MainText="三千"
-                        MeaningText="three thousands"
-                        HiraganaText="さんぜん"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
-            <WordTile MainText="四千"
-                        MeaningText="four thousands"
-                        HiraganaText="よんせん"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
-            <WordTile MainText="五千"
-                        MeaningText="five thousands"
-                        HiraganaText="ごせん"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
-            <WordTile MainText="六千"
-                        MeaningText="six thousands"
-                        HiraganaText="ろくせん"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
-            <WordTile MainText="七千"
-                        MeaningText="seven thousands"
-                        HiraganaText="ななせん"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
-            <WordTile MainText="八千"
-                        MeaningText="eight thousands"
-                        HiraganaText="はっせん"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
-            <WordTile MainText="九千"
-                        MeaningText="nine thousands"
-                        HiraganaText="きゅうせん"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
-        </WordThemeSectionRow>
-        <WordThemeSectionRow Title="Tens of Thousands">
-            <WordTile Class="w-full"
-                        MainText="十万"
-                        MeaningText="ten thousands"
-                        HiraganaText="じゅう"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
-            <WordTile MainText="一万"
-                        MeaningText="one ten thousands"
-                        HiraganaText="いちまん"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
-            <WordTile MainText="二万"
-                        MeaningText="twenty thousands"
-                        HiraganaText="にまん"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
+                <WordTile MainText="八百"
+                          MeaningText="eight hundreds"
+                          HiraganaText="はっぴゃく"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
 
-            <WordTile MainText="三万"
-                        MeaningText="thirty thousands"
-                        HiraganaText="さんまん"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
+                <WordTile MainText="九百"
+                          MeaningText="nine hundreds"
+                          HiraganaText="きゅうひゃく"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
+            </WordThemeSectionRow>
+            <WordThemeSectionRow Title="Thousands">
+                <WordTile Class="w-full"
+                          MainText="千"
+                          MeaningText="thousand"
+                          HiraganaText="せん"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
+                <WordTile MainText="一千"
+                          MeaningText="one thousand"
+                          HiraganaText="いっせん"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
+                <WordTile MainText="二千"
+                          MeaningText="two thousands"
+                          HiraganaText="にせん"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
+                <WordTile MainText="三千"
+                          MeaningText="three thousands"
+                          HiraganaText="さんぜん"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
+                <WordTile MainText="四千"
+                          MeaningText="four thousands"
+                          HiraganaText="よんせん"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
+                <WordTile MainText="五千"
+                          MeaningText="five thousands"
+                          HiraganaText="ごせん"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
+                <WordTile MainText="六千"
+                          MeaningText="six thousands"
+                          HiraganaText="ろくせん"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
+                <WordTile MainText="七千"
+                          MeaningText="seven thousands"
+                          HiraganaText="ななせん"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
+                <WordTile MainText="八千"
+                          MeaningText="eight thousands"
+                          HiraganaText="はっせん"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
+                <WordTile MainText="九千"
+                          MeaningText="nine thousands"
+                          HiraganaText="きゅうせん"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
+            </WordThemeSectionRow>
+            <WordThemeSectionRow Title="Tens of Thousands">
+                <WordTile Class="w-full"
+                          MainText="十万"
+                          MeaningText="ten thousands"
+                          HiraganaText="じゅう"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
+                <WordTile MainText="一万"
+                          MeaningText="one ten thousands"
+                          HiraganaText="いちまん"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
+                <WordTile MainText="二万"
+                          MeaningText="twenty thousands"
+                          HiraganaText="にまん"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
 
-            <WordTile MainText="四万"
-                        MeaningText="forty thousands"
-                        HiraganaText="よんまん"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
+                <WordTile MainText="三万"
+                          MeaningText="thirty thousands"
+                          HiraganaText="さんまん"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
 
-            <WordTile MainText="五万"
-                        MeaningText="fifty thousands"
-                        HiraganaText="ごまん"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
+                <WordTile MainText="四万"
+                          MeaningText="forty thousands"
+                          HiraganaText="よんまん"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
 
-            <WordTile MainText="六万"
-                        MeaningText="sixty thousands"
-                        HiraganaText="ろくまん"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
+                <WordTile MainText="五万"
+                          MeaningText="fifty thousands"
+                          HiraganaText="ごまん"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
 
-            <WordTile MainText="七万"
-                        MeaningText="seventy thousands"
-                        HiraganaText="ななまん"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
+                <WordTile MainText="六万"
+                          MeaningText="sixty thousands"
+                          HiraganaText="ろくまん"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
 
-            <WordTile MainText="八万"
-                        MeaningText="eighty thousands"
-                        HiraganaText="はちまん"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
+                <WordTile MainText="七万"
+                          MeaningText="seventy thousands"
+                          HiraganaText="ななまん"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
 
-            <WordTile MainText="九万"
-                        MeaningText="ninety thousands"
-                        HiraganaText="きゅうまん"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
-        </WordThemeSectionRow>
-        <WordThemeSectionRow Title="Hundreds of Thousands">
-            <WordTile MainText="十万"
-                        MeaningText="one hundred thousands"
-                        HiraganaText="じゅうまん"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
+                <WordTile MainText="八万"
+                          MeaningText="eighty thousands"
+                          HiraganaText="はちまん"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
 
-            <WordTile MainText="二十万"
-                        MeaningText="two hundred thousands"
-                        HiraganaText="にじゅうまん"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
+                <WordTile MainText="九万"
+                          MeaningText="ninety thousands"
+                          HiraganaText="きゅうまん"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
+            </WordThemeSectionRow>
+            <WordThemeSectionRow Title="Hundreds of Thousands">
+                <WordTile MainText="十万"
+                          MeaningText="one hundred thousands"
+                          HiraganaText="じゅうまん"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
 
-            <WordTile MainText="三十万"
-                        MeaningText="three hundred thousands"
-                        HiraganaText="さんじゅうまん"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
+                <WordTile MainText="二十万"
+                          MeaningText="two hundred thousands"
+                          HiraganaText="にじゅうまん"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
 
-            <WordTile MainText="四十万"
-                        MeaningText="four hundred thousands"
-                        HiraganaText="よんじゅうまん"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
+                <WordTile MainText="三十万"
+                          MeaningText="three hundred thousands"
+                          HiraganaText="さんじゅうまん"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
 
-            <WordTile MainText="五十万"
-                        MeaningText="five hundred thousands"
-                        HiraganaText="ごじゅうまん"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
+                <WordTile MainText="四十万"
+                          MeaningText="four hundred thousands"
+                          HiraganaText="よんじゅうまん"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
 
-            <WordTile MainText="六十万"
-                        MeaningText="six hundred thousands"
-                        HiraganaText="ろくじゅうまん"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
+                <WordTile MainText="五十万"
+                          MeaningText="five hundred thousands"
+                          HiraganaText="ごじゅうまん"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
 
-            <WordTile MainText="七十万"
-                        MeaningText="seven hundred thousands"
-                        HiraganaText="ななじゅうまん"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
+                <WordTile MainText="六十万"
+                          MeaningText="six hundred thousands"
+                          HiraganaText="ろくじゅうまん"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
 
-            <WordTile MainText="八十万"
-                        MeaningText="eight hundred thousands"
-                        HiraganaText="はちじゅうまん"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
+                <WordTile MainText="七十万"
+                          MeaningText="seven hundred thousands"
+                          HiraganaText="ななじゅうまん"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
 
-            <WordTile MainText="九十万"
-                        MeaningText="nine hundred thousands"
-                        HiraganaText="きゅうじゅうまん"
-                        OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-                        MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                        HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet) />
-        </WordThemeSectionRow>
-    </WordThemeSection>
-    <div class="relative flex flex-col items-center gap-3">
-        <div class="relative flex w-full items-center justify-center gap-4 py-3 mb-5">
-            <div class="absolute h-full w-[100000px] bg-red-700 -translate-[50%]" style="box-shadow: 0 0 3px black;"/>
-            <MudText Class="font-bold text-2xl text-left z-10 text-center text-white uppercase">Colors</MudText>
-        </div>
-        <div class="flex flex-col gap-2">
-            <div class="relative flex w-full items-center gap-4">
-                <MudDivider Class="border-gray-400 bottom-0 shrink" />
-                <MudText Class="font-bold text-lg text-left z-10 text-center grow text-nowrap">Simple Colors</MudText>
-                <MudDivider Class="border-gray-400 bottom-0 shrink" />
-            </div>
-            @* <MudText Class="font-bold text-lg text-left z-10 text-center">Simple Colors</MudText> *@
-            <div class="relative w-full h-full flex flex-wrap gap-7 items-center justify-center py-3">
-                <WordTile
-                    MainText="白"
-                    MeaningText="white color"
-                    HiraganaText="しろ"
-                    OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-				    MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                    HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet)
-                />
-                <WordTile
-                    MainText="黒"
-                    MeaningText="black"
-                    HiraganaText="くろ"
-                    OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-				    MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                    HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet)
-                />
-                <WordTile
-                    MainText="赤"
-                    MeaningText="red"
-                    HiraganaText="あか"
-                    OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-				    MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                    HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet)
-                />
-                <WordTile
-                    MainText="緑"
-                    MeaningText="green"
-                    HiraganaText="みどり"
-                    OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-				    MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                    HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet)
-                />
-                <WordTile
-                    MainText="青"
-                    MeaningText="blue"
-                    HiraganaText="みどり"
-                    OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-				    MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                    HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet)
-                />
-                <WordTile
-                    MainText="黄色"
-                    MeaningText="yellow"
-                    HiraganaText="きいろ"
-                    OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-				    MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                    HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet)
-                />
-                <WordTile
-                    MainText="茶色"
-                    MeaningText="brown"
-                    HiraganaText="ちゃいろ"
-                    OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-				    MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                    HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet)
-                />
-                <WordTile
-                    MainText="オレンジ"
-                    MeaningText="orange"
-                    HiraganaText="おれんぎ"
-                    OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-				    MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                    HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet)
-                />
-                <WordTile 
-                    MainText="ピンク"
-                    MeaningText="pink"
-                    HiraganaText="ぴんく"
-                    OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-				    MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                    HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet)
-                />
-            </div>
-        </div>
-        <div class="flex flex-col gap-2">
-            <div class="relative flex w-full items-center gap-4">
-                <MudDivider Class="border-gray-400 bottom-0 shrink" />
-                <MudText Class="font-bold text-lg text-left z-10 text-center grow text-nowrap">Simple Colors (adjectives)</MudText>
-                <MudDivider Class="border-gray-400 bottom-0 shrink" />
-            </div>
-            <div class="relative w-full h-full flex flex-wrap gap-7 items-center justify-center py-3">
-                <WordTile
-                    MainText="白い"
-                    MeaningText="white"
-                    HiraganaText="しろ"
-                    OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-				    MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                    HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet)
-                />
-                <WordTile
-                    MainText="黒い"
-                    MeaningText="black"
-                    HiraganaText="くろ"
-                    OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-				    MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                    HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet)
-                />
-                <WordTile
-                    MainText="赤い"
-                    MeaningText="red"
-                    HiraganaText="あか"
-                    OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-				    MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                    HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet)
-                />
-                <WordTile
-                    MainText="緑い"
-                    MeaningText="green"
-                    HiraganaText="みどり"
-                    OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-				    MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                    HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet)
-                />
-                <WordTile
-                    MainText="青い"
-                    MeaningText="blue"
-                    HiraganaText="みどり"
-                    OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-				    MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                    HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet)
-                />
-                <WordTile
-                    MainText="黄色い"
-                    MeaningText="yellow"
-                    HiraganaText="きいろ"
-                    OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-				    MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                    HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet)
-                />
-                <WordTile
-                    MainText="茶色い"
-                    MeaningText="brown"
-                    HiraganaText="ちゃいろ"
-                    OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-				    MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                    HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet)
-                />
-            </div>
-        </div>
-        <div class="flex flex-col gap-2">
-            <div class="relative flex w-full items-center gap-4">
-                <MudDivider Class="border-gray-400 bottom-0 shrink" />
-                <MudText Class="font-bold text-lg text-left z-10 text-center grow text-nowrap">Brightness</MudText>
-                <MudDivider Class="border-gray-400 bottom-0 shrink" />
-            </div>
-            <div class="relative w-full h-full flex flex-wrap gap-7 items-center justify-center py-3">
-                <WordTile
-                    MainText="明るい"
-                    MeaningText="light"
-                    HiraganaText="あかるい"
-                    OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-				    MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                    HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet)
-                />
-                <WordTile
-                    MainText="暗い"
-                    MeaningText="dark"
-                    HiraganaText="くらい"
-                    OriginalEnabled=@(IsOriginalShown.Value || !IsOriginalShown.IsSet)
-				    MeaningEnabled=@(IsMeaningsShown.Value || !IsMeaningsShown.IsSet)
-                    HiraganaEnabled=@(IsReadingsShown.Value || !IsReadingsShown.IsSet)
-                />
-            </div>
-        </div>
+                <WordTile MainText="八十万"
+                          MeaningText="eight hundred thousands"
+                          HiraganaText="はちじゅうまん"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
+
+                <WordTile MainText="九十万"
+                          MeaningText="nine hundred thousands"
+                          HiraganaText="きゅうじゅうまん"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
+            </WordThemeSectionRow>
+        </WordThemeSection>
+        <WordThemeSection Title="Colors" Color=@WordThemeSection.SectionColor.Red>
+            <WordThemeSectionRow Title="Simple Colors">
+                <WordTile MainText="白"
+                          MeaningText="white color"
+                          HiraganaText="しろ"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
+                <WordTile MainText="黒"
+                          MeaningText="black"
+                          HiraganaText="くろ"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
+                <WordTile MainText="赤"
+                          MeaningText="red"
+                          HiraganaText="あか"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
+                <WordTile MainText="緑"
+                          MeaningText="green"
+                          HiraganaText="みどり"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
+                <WordTile MainText="青"
+                          MeaningText="blue"
+                          HiraganaText="みどり"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
+                <WordTile MainText="黄色"
+                          MeaningText="yellow"
+                          HiraganaText="きいろ"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
+                <WordTile MainText="茶色"
+                          MeaningText="brown"
+                          HiraganaText="ちゃいろ"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
+                <WordTile MainText="オレンジ"
+                          MeaningText="orange"
+                          HiraganaText="おれんぎ"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
+                <WordTile MainText="ピンク"
+                          MeaningText="pink"
+                          HiraganaText="ぴんく"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
+            </WordThemeSectionRow>
+            <WordThemeSectionRow Title="Simple Colors (adjectives)">
+                <WordTile MainText="白い"
+                          MeaningText="white"
+                          HiraganaText="しろ"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
+                <WordTile MainText="黒い"
+                          MeaningText="black"
+                          HiraganaText="くろ"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
+                <WordTile MainText="赤い"
+                          MeaningText="red"
+                          HiraganaText="あか"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
+                <WordTile MainText="緑い"
+                          MeaningText="green"
+                          HiraganaText="みどり"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
+                <WordTile MainText="青い"
+                          MeaningText="blue"
+                          HiraganaText="みどり"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
+                <WordTile MainText="黄色い"
+                          MeaningText="yellow"
+                          HiraganaText="きいろ"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
+                <WordTile MainText="茶色い"
+                          MeaningText="brown"
+                          HiraganaText="ちゃいろ"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
+            </WordThemeSectionRow>
+            <WordThemeSectionRow>
+                <WordTile MainText="明るい"
+                          MeaningText="light"
+                          HiraganaText="あかるい"
+                          OriginalEnabled=@_settings.IsOriginalShown
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
+                <WordTile MainText="暗い"
+                          MeaningText="dark"
+                          HiraganaText="くらい"
+                          MeaningEnabled=@_settings.IsMeaningsShown
+                          OriginalEnabled=@_settings.IsReadingsShown
+                          HiraganaEnabled=@_settings.IsReadingsShown />
+            </WordThemeSectionRow>
+        </WordThemeSection>
     </div>
-    @* <div class="flex flex-col gap-15">
-        <div class="flex gap-10">
-            <div>
-                <div class="
-                relative w-[65px] flex flex-col h-[65px]
-                items-center justify-center
-                transition transform duration-150 hover:scale-[1.25]
-                hover:font-bold">
-                    <h5 class="anim text-black cursor-pointer
-                    -translate-y-[5px]"
-                        style=@($@"
-                        font-family: kaisei;
-                        font-size: 80px;
-                        z-index: 10;
-                        text-shadow: 0 0 10px gray;")>
-                        @GetRandomKanji()
-                    </h5>
-                    @if (IsMeaningsShown.Value)
-                    {
-                        @* <h6 class="">@GetRandomNoun()</h6> 
-                    }
-                </div>
-            </div>
-            <div class="flex flex-col">
-                <MudText style="position:relative; z-index:10; cursor-pointer">Lorem ipsum dolor sit amet, </MudText>
-                <MudText style="position:relative; z-index:10; cursor-pointer">Lorem ipsum dolor siim ad minim veniamercitation ullamco laboris</MudText>
-                <MudText style="position:relative; z-index:10; cursor-pointer">Lorem ipor incididuniqua.llamco laboris</MudText>
-            </div>
-        </div>
-    </div> 
-    *@
 
-    <div class="fixed h-full top-0 right-0">
-        <MudDrawer @ref=_drawer @bind-Open=@_drawerOpen Fixed=false Elevation=1 Anchor=@Anchor.Right
-            Variant=@DrawerVariant.Temporary
-            Class="relative right-0 z-30 h-full">
-            <div class="absolute bg-settings w-full h-full opacity-25" />
-            <MudDrawerHeader Class="fixed flex flex-col">
-                <MudText Typo=@Typo.h6 Class="font-bold mb-5">Settings</MudText>
-                <div class="flex flex-col w-full">
-                    <MudSwitch @bind-Checked=@IsOriginalShown.Value Label="Show Originals" Color="Color.Info" Class="w-fit" />
-                    <MudSwitch @bind-Checked=@IsMeaningsShown.Value Label="Show Meanings" Color="Color.Info" Class="w-fit" />
-                    <MudSwitch @bind-Checked=@IsReadingsShown.Value Label="Show Readings" Color="Color.Info" Class="w-fit" />
-                </div>
-            </MudDrawerHeader>
-        </MudDrawer>
-    </div>
 </div>
 
 @code {
-    bool _drawerOpen;
-    private MudDrawer _drawer;
+    private WordThemesSettings _settings;
 
-    [Inject] public WordThemes_IsOriginalShown IsOriginalShown { get; set; }
-    [Inject] public WordThemes_IsMeaningsShown IsMeaningsShown { get; set; }
-    [Inject] public WordThemes_IsReadingsShown IsReadingsShown { get; set; }
+    string layoutCss => _settings is null || _settings.LayoutTypeSg.Value == WordThemesSettings.LayoutType.Vertical ?
+        "flex-col" : "";
 
-    private MudExpansionPanel? _numbersEPanel;
-
-    public void OnSwipe(SwipeDirection direction)
-    {
-        if (direction == SwipeDirection.RightToLeft && !_drawerOpen)
-        {
-            _drawerOpen = true;
-            StateHasChanged();
-        }
-        else if (direction == SwipeDirection.LeftToRight && _drawerOpen)
-        {
-            _drawerOpen = false;
-            StateHasChanged();
-        }
-    }
-
-    static string GetRandomKanji()
-    {
-        var random = new Random();
-        int randomCodePoint = random.Next(0x4E00, 0x4EFF);
-        char randomKanji = Convert.ToChar(randomCodePoint);
-        return randomKanji.ToString();
-    }
-
-    static string GetRandomNoun()
-    {
-        string[] nouns = {
-            "cat", "dog", "apple", "book", "tree", "computer", "flower", "coffee", "moon", "mountain",
-            "ocean", "car", "house", "music", "guitar", "sun", "rainbow", "friend", "pizza", "beach",
-            "garden", "cloud", "star", "bird", "dragon", "island", "river", "unicorn", "key", "door",
-            "time", "mirror", "sky", "fire", "ice cream", "wizard", "dream", "adventure", "robot", "puzzle",
-            "sunset", "candle", "magic", "serenity", "treasure", "jungle", "laughter", "butterfly", "dolphin",
-            "whale", "castle", "chocolate", "journey", "moonlight", "swan", "feather", "harmony", "sapphire",
-            "thunder", "lighthouse", "harbor", "breeze", "cosmos", "mystery", "whisper", "zeppelin", "carousel"
-        };
-
-        var random = new Random();
-        int randomIndex = random.Next(0, nouns.Length);
-        return nouns[randomIndex];
-    }
-
-    static string GetRandomJLPTN5Word()
-    {
-        string[] jlptN5WordsHiragana = {
-            "こんにちは", "ありがとう", "がっこう", "べんきょう", "たべる", "のむ", "いぬ", "ねこ", "ともだち", "かぞく",
-            "とけい", "はな", "やま", "かわ", "あめ", "はれ", "くもり", "あかい", "あおい", "しろい",
-            "くろい", "あたらしい", "ふるい", "おおきい", "ちいさい", "じょうず", "へた", "うれしい", "かなしい", "げんき",
-            "びょうき", "いく", "くる", "みる", "きく", "はなす", "よむ", "かく", "かう", "うる",
-            "もつ", "つかう", "おしえる", "ならう", "しる", "あう", "まつ", "とぶ", "およぐ", "はしる"
-        };
-
-        var random = new Random();
-        int randomIndex = random.Next(0, jlptN5WordsHiragana.Length);
-        return jlptN5WordsHiragana[randomIndex];
-    }
-
-    string GetRandomAnimClass()
-    {
-        string[] animClasses = { "anim", "anim2", "anim3", "anim4", "anim5" };
-        var random = new Random();
-        int index = random.Next(animClasses.Length);
-        return animClasses[index];
-    }
+    private Task OnSettingsChanged() =>  RefreshView();
 }

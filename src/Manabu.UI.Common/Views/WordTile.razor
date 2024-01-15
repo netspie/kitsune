@@ -37,4 +37,7 @@
     [Parameter] public bool OriginalEnabled { get; set; } = true;
     [Parameter] public bool MeaningEnabled { get; set; } = true;
     [Parameter] public bool HiraganaEnabled { get; set; } = true;
+
+    [Parameter]
+    public EventCallback<bool> OriginalEnabledChanged { get; set; }
 }

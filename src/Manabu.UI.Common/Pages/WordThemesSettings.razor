@@ -1,0 +1,98 @@
+﻿@using Manabu.UI.Common.Components
+@using Manabu.UI.Common.State
+
+@inherits CoreComponent
+@implements IDisposable
+
+<div class="fixed h-full top-0 right-0 z-10">
+    <MudDrawer @ref=_drawer @bind-Open=@DrawerOpen Fixed=false Elevation=1 Anchor=@Anchor.Right
+               Variant=@DrawerVariant.Temporary
+               Class="relative right-0 z-30 h-full">
+        <div class="absolute bg-settings w-full h-full opacity-25" />
+        <MudDrawerHeader Class="flex flex-col w-full">
+            <MudText Typo=@Typo.h6 Class="font-bold mb-5">Settings</MudText>
+            <div class="flex flex-col w-full">
+                <MudText Class="font-bold">Display</MudText>
+                <MudDivider Class="mb-2 w-full" />
+                <MudSelect @bind-Value=@LayoutTypeSg.Value T=LayoutType
+                    Label="Layout" Variant=@Variant.Outlined AnchorOrigin=@Origin.BottomCenter FullWidth=true>
+                    @foreach (LayoutType item in Enum.GetValues(typeof(LayoutType)))
+                    {
+                        <MudSelectItem Value=@item>@item</MudSelectItem>
+                    }
+                </MudSelect>
+                <div class="flex flex-col w-full mt-2 @_displayCssClass">
+                    <MudSwitch @bind-Checked=@IsOriginalShownSg.Value Label="Show Originals" Color="Color.Info" Class="w-fit" />
+                    <MudSwitch @bind-Checked=@IsMeaningsShownSg.Value Label="Show Meanings" Color="Color.Info" Class="w-fit" />
+                    <MudSwitch @bind-Checked=@IsReadingsShownSg.Value Label="Show Readings" Color="Color.Info" Class="w-fit" />
+                </div>
+            </div>
+        </MudDrawerHeader>
+    </MudDrawer>
+</div>
+
+@code {
+    [Parameter] public EventCallback OnChanged { get; set; }
+
+    [Inject] public WordThemes_IsOriginalShown IsOriginalShownSg { get; set; }
+    [Inject] public WordThemes_IsMeaningsShown IsMeaningsShownSg { get; set; }
+    [Inject] public WordThemes_IsReadingsShown IsReadingsShownSg { get; set; }
+    [Inject] public WordThemes_LayoutType LayoutTypeSg { get; set; }
+
+    private MudDrawer _drawer;
+    public bool DrawerOpen { get; set; }
+
+    public LayoutType Layout { get; set; }
+
+    public bool IsOriginalShown => IsOriginalShownSg.Value || !IsOriginalShownSg.IsSet;
+    public bool IsMeaningsShown => IsMeaningsShownSg.Value || !IsMeaningsShownSg.IsSet;
+    public bool IsReadingsShown => IsReadingsShownSg.Value || !IsReadingsShownSg.IsSet;
+
+    private string _displayCssClass = "hidden";
+
+    protected override async Task OnInitializedAsyncImpl()
+    {
+        IsOriginalShownSg.OnValueChanged += OnSettingChanged;
+        IsMeaningsShownSg.OnValueChanged += OnSettingChanged;
+        IsReadingsShownSg.OnValueChanged += OnSettingChanged;
+        LayoutTypeSg.OnValueChanged += OnSettingChanged;
+    }
+
+    public void Dispose()
+    {
+        IsOriginalShownSg.OnValueChanged -= OnSettingChanged;
+        IsMeaningsShownSg.OnValueChanged -= OnSettingChanged;
+        IsReadingsShownSg.OnValueChanged -= OnSettingChanged;
+        LayoutTypeSg.OnValueChanged -= OnSettingChanged;
+    }
+
+    private async Task OnSettingChanged<T>(T value)
+    {
+        _displayCssClass = "";
+        await OnChanged.InvokeAsync();
+        await RefreshView();
+    }
+
+    private bool _firstRenderDone;
+    protected override async Task OnAfterRenderAsyncImpl(bool firstRender)
+    {
+        _firstRenderDone = true;
+        if (!_displayCssClass.IsNullOrEmpty())
+        {
+            _displayCssClass = "";
+            await RefreshView();
+        }
+    }
+
+    public void SwitchOpen() 
+    {
+        _drawer.Open = !_drawer.Open;
+        _displayCssClass = _drawer.Open ? "hidden" : "";
+    }
+
+    public enum LayoutType
+    {
+        Vertical,
+        Grid
+    }
+}
